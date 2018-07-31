@@ -14,7 +14,7 @@
           </Col>
           <Col span="12">
           <Divider orientation="right">
-            <div class="pointer primary">
+            <div class="pointer primary" @click="queryAllProject">
               <span style='font-size:16px;'>查看全部
                 <Icon type="ios-more" class="more-icon" />
               </span>
@@ -37,7 +37,7 @@
           </Col>
           <Col span="12">
           <Divider orientation="right">
-            <div class="pointer primary">
+            <div class="pointer primary" @click="queryMyAllProject">
               <span style='font-size:16px;'>查看全部
                 <Icon type="ios-more" class="more-icon" />
               </span>
@@ -59,11 +59,15 @@
         <member-task></member-task>
       </Row>
     </div>
+<all-project v-if='allProjectShow'></all-project>
+<all-task v-if='allTaskShow'></all-task>
   </div>
 </template>
 
 <script>
 import ProjectSurvey from "./projectSurvey.vue";
+import AllProject from "./allProject.vue";
+import AllTask from "./allTask.vue";
 import MyTask from "./myTask.vue";
 import MemberTask from "./memberTask.vue";
 import StylePush from "./stylePush.vue";
@@ -75,15 +79,25 @@ export default {
     StylePush,
     MyTask,
     MemberTask,
-    Icon
+    Icon,AllProject,AllTask
   },
   data() {
     return {
-      projectShow: false
+      projectShow: false,
+      allProjectShow:false,
+      allTaskShow:false,
     };
   },
   mounted() {
     this.projectShow = !this.projectShow;
+  },
+  methods:{
+    queryMyAllProject(){
+      this.allTaskShow=!this.allTaskShow;
+    },
+    queryAllProject(){
+      this.allProjectShow=!this.allProjectShow;
+    }
   }
 };
 </script>
