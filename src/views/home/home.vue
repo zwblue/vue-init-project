@@ -3,7 +3,7 @@
     <div>
       <!-- 类型推送 -->
       <style-push></style-push>
-    
+
       <!-- 项目概况 -->
       <Row>
         <Row style='margin-top:20px;'>
@@ -59,11 +59,10 @@
         <member-task></member-task>
       </Row>
     </div>
-<all-project v-if='allProjectShow'></all-project>
-<all-task v-if='allTaskShow'></all-task>
+    <all-project :modelShow='modelShow'></all-project>
+    <all-task :modelShow='modelShow'></all-task>
   </div>
 </template>
-
 <script>
 import ProjectSurvey from "./projectSurvey.vue";
 import AllProject from "./allProject.vue";
@@ -71,7 +70,7 @@ import AllTask from "./allTask.vue";
 import MyTask from "./myTask.vue";
 import MemberTask from "./memberTask.vue";
 import StylePush from "./stylePush.vue";
-import { Divider ,Icon} from "iview";
+import { Divider, Icon } from "iview";
 export default {
   components: {
     ProjectSurvey,
@@ -79,24 +78,28 @@ export default {
     StylePush,
     MyTask,
     MemberTask,
-    Icon,AllProject,AllTask
+    Icon,
+    AllProject,
+    AllTask
   },
   data() {
     return {
       projectShow: false,
-      allProjectShow:false,
-      allTaskShow:false,
+      modelShow:{
+        allProjectShow: false,
+        allTaskShow: false
+      }
     };
   },
   mounted() {
     this.projectShow = !this.projectShow;
   },
-  methods:{
-    queryMyAllProject(){
-      this.allTaskShow=!this.allTaskShow;
+  methods: {
+    queryMyAllProject() {
+      this.modelShow.allTaskShow = !this.modelShow.allTaskShow;
     },
-    queryAllProject(){
-      this.allProjectShow=!this.allProjectShow;
+    queryAllProject() {
+      this.modelShow.allProjectShow = !this.modelShow.allProjectShow;
     }
   }
 };

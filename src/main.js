@@ -11,6 +11,7 @@ Vue.component('Col', Col);
 Vue.component('Table', Table);
 Vue.prototype.$Message = Message
 Vue.config.productionTip = false
+Vue.prototype.$IVIEW = {}//size报错的处理
 
 router.beforeEach(
   (to, from, next) => {

@@ -45,6 +45,8 @@ body {
 .rt{
   float: right;
 }
+
+
 .primary{
   color:#2d8cf0!important;
 }
@@ -57,6 +59,7 @@ body {
 .warning{
   color:#ff9900!important;
 }
+
 .primary-bg{
   background:#2d8cf0!important;
 }

@@ -8,11 +8,11 @@
   </FormItem>
   <FormItem prop="password">
     <Input type="password" size='large' v-model="formInline.password" placeholder="Password">
-    <Icon type="ios-locked-outline" slot="prepend"></Icon>
+    <Icon type="ios-lock-outline" slot="prepend"></Icon>
     </Input>
   </FormItem>
   <FormItem>
-    <Button type="primary" long @click="handleSubmit('formInline')">登录</Button>
+    <Button type="primary" long  @click="handleSubmit('formInline')">登录</Button>
   </FormItem>
 </Form>
 </template>

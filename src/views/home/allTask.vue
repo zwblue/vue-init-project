@@ -1,7 +1,7 @@
 <template>
 <div class="page">
-  <Modal v-model="modal2"  width="1000" transfer>
-        <p slot="header">我的任务</p>
+  <Modal v-model="modelShow.allTaskShow"  width="1000" :fullscreen='ifFullScreen' transfer>
+        <p slot="header">我的任务<Button @click="ifFullScreen=!ifFullScreen" icon="md-qr-scanner" size='small' type='text' shape="circle"></Button></p>
         <div>
             <my-task></my-task>
         </div>
@@ -14,14 +14,24 @@
 
 <script>
 import MyTask from './myTask.vue'
-import {Modal,Page} from 'iview'
+import {Modal,Page,Icon} from 'iview'
 export default {
+   props:{
+     modelShow:{
+      type:Object,
+      default: function() {
+        return {
+          allTaskShow: false
+        };
+      }
+    }
+  },
   components:{
-    Modal,MyTask,Page
+    Modal,MyTask,Page,Icon
   },
   data () {
     return {
-      modal2:true
+       ifFullScreen:false
     }
   }
 }
