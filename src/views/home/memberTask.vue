@@ -10,7 +10,7 @@
 </template>
 <script>
 import { Table } from "iview";
-import RightModel from "components/rightModel/rightModel.vue";
+import RightModel from "./rightModel.vue";
 export default {
   components: {
     Table,

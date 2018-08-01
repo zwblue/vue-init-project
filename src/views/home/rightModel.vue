@@ -1,46 +1,50 @@
 <template>
-<div class="page" :style='rightModelstyle'>
-  <Icon type="md-close" class="close primary" @click="rightModel.ifShow=false"/>
-  <div class="title">左旺</div>
-   <Table border  :columns="columns1" :data="tableData">
+  <div class="page" :style='rightModelstyle'>
+    <Icon type="md-close" class="close primary" @click="rightModel.ifShow=false" />
+    <div class="title name">{{tableData[0].name||''}}</div>
+    <Table border :columns="columns1" :data="tableData">
     </Table>
-</div>
+    <Divider class="title"> 全部任务
+      <span class="error">（共6个）</span>
+    </Divider>
+    <my-task></my-task>
+  </div>
 </template>
-
 <script>
-import {Icon} from 'iview'
+import { Icon,Divider } from "iview";
+import MyTask from "./myTask.vue";
 export default {
-  components:{
-    Icon
+  components: {
+    Icon,Divider,MyTask
   },
   props: {
     rightModelstyle: {
       type: Object,
       default: function() {
         return {
-          background: '#fafcfe',
-          width: '800px',
-        }
+          background: "#fafcfe",
+          width: "1000px"
+        };
       }
     },
-    tableData:{
-      type:Array,
-      default:function(){
-        return []
+    tableData: {
+      type: Array,
+      default: function() {
+        return [];
       }
     },
-    rightModel:{
-      type:Object,
-      default:function(){
+    rightModel: {
+      type: Object,
+      default: function() {
         return {
-          ifShow:false
-        }
+          ifShow: false
+        };
       }
     }
   },
   data() {
     return {
-  columns1: [
+      columns1: [
         {
           title: "开发中的任务",
           align: "center",
@@ -75,37 +79,36 @@ export default {
           }
         }
       ]
-    }
+    };
   },
-  mounted(){
-    console.log(this.tableData)
+  mounted() {
+    console.log(this.tableData);
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .page {
   position: fixed;
   border-left: 1px solid #ccc;
-  padding:10px 30px;
+  padding: 10px 30px;
   top: 0;
   bottom: 0;
   right: 0;
   z-index: 6;
 }
-.close{
+.close {
   font-size: 24px;
-  padding:3px 10px;
+  padding: 3px 10px;
   position: absolute;
-  right:30px;
-  top:10px;
+  right: 30px;
+  top: 10px;
   cursor: pointer;
 }
-.title{
+.name {
   height: 30px;
   line-height: 30px;
   font-weight: 700;
-  font-size: 22px;
-  margin-bottom:10px;
+  margin-bottom: 10px;
 }
 </style>

@@ -16,7 +16,7 @@
     <Divider><span class="title">活动推送</span></Divider>
     <Row :gutter='16' class="text">
       <Col span="6" v-for='(item,index) in list' :key='index'>
-      <div class='pro-box text bdcolor'>
+      <div class='pro-box'>
         <div class='pro-title'>{{item.title}}</div>
         <div class='pro-num'>{{item.num}}</div>
       </div>

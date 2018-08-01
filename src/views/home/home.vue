@@ -51,7 +51,7 @@
       <Row>
         <Row style='margin-top:20px;'>
           <Col span="24">
-          <Divider class="title"> 我的任务
+          <Divider class="title"> 组员任务
             <span class="error">（共6个）</span>
           </Divider>
           </Col>

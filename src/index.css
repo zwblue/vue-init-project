@@ -5,6 +5,7 @@ body {
   background: #fff;
   font-size: 14px;
 }
+
 .clearfix:after{
   content: "." ; 
   display: block ;
@@ -12,27 +13,7 @@ body {
   clear: both ;
   visibility: hidden ;  
 }
-.title{
-  color:#17233d!important;
-}
-.page .text{
-  color:#515a6e;
-}
-.page .wxtip{
-  color:#808695;
-}
-.disabled{
-  color:#c5c8ce!important;
-}
-.page .bg{
-  background: #f8f8f9;
-}
-.page .bdcolor{
-  border-color: #f8f8f9;
-}
-.page .my-table{
-  font-size: 14px;
-}
+
 .pointer{
   cursor: pointer;
 }
@@ -44,34 +25,4 @@ body {
 }
 .rt{
   float: right;
-}
-
-
-.primary{
-  color:#2d8cf0!important;
-}
-.success{
-  color:#19be6b!important;
-}
-.error{
-  color:#ed4014!important;
-}
-.warning{
-  color:#ff9900!important;
-}
-
-.primary-bg{
-  background:#2d8cf0!important;
-}
-.light-bg{
-  background:#5cadff!important;
-}
-.success-bg{
-  background:#19be6b!important;
-}
-.error-bg{
-  background:#ed4014!important;
-}
-.warning-bg{
-  background:#ff9900!important;
 }
