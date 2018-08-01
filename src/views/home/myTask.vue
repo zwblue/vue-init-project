@@ -16,8 +16,6 @@ export default {
   },
   data() {
     return {
-      currentProgress: 40,
-      planProgress: 80,
       columns1: [
         {
           title: "任务名称",
