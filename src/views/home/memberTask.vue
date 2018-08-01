@@ -9,8 +9,8 @@
   </div>
 </template>
 <script>
-import { Table } from "iview";
-import RightModel from "./rightModel.vue";
+import { Table } from 'iview';
+import RightModel from './rightModel.vue';
 export default {
   components: {
     Table,

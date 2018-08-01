@@ -18,8 +18,6 @@ export default {
   },
   data() {
     return {
-      currentProgress: 40,
-      planProgress: 80,
       columns1: [{
           title: "项目名称",
           align: 'center',

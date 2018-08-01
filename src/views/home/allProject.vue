@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { Modal, Page, Icon } from "iview";
-import ProjectSurvey from "./projectSurvey.vue";
+import { Modal, Page, Icon } from 'iview';
+import ProjectSurvey from './projectSurvey.vue';
 export default {
   props: {
     modelShow: {

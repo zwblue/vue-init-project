@@ -6,12 +6,12 @@ import axios from 'axios'
 // 封装axios 创建基础实例以及axios拦截
 let baseURL = ''
 if (process.env.NODE_ENV === 'development') {
-  baseURL = 'http://192.168.3.26:6426'
+  baseURL = "http://192.168.3.26:5826";
 } else {
   if (process.env.type === 'test') {
-    baseURL = 'http://36.7.138.114:5026/ws-syslogin/'
+    baseURL = "http://192.168.3.26:5826";
   } else {
-    baseURL = 'http://report.wsloan.com:8888/ws-syslogin'
+    baseURL = "http://report.wsloan.com:8888/projectManage";
   }
 }
 const service = axios.create({
@@ -36,7 +36,6 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => {
     if (response.status !== 200) {
-      // Message.error(response.data.message)
     } else {
       let loginURL = '';
       if (response.data.code === 403) {

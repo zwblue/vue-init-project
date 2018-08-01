@@ -11,8 +11,8 @@
   </div>
 </template>
 <script>
-import { Icon,Divider } from "iview";
-import MyTask from "./myTask.vue";
+import { Icon,Divider } from 'iview';
+import MyTask from './myTask.vue';
 export default {
   components: {
     Icon,Divider,MyTask

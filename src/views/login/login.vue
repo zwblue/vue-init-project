@@ -25,7 +25,7 @@ import {
 } from 'iview';
 import {
   login
-} from "../../api/user.js";
+} from '../../api/user.js';
 export default {
   components: {
     Form,

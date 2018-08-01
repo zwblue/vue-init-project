@@ -64,13 +64,13 @@
   </div>
 </template>
 <script>
-import ProjectSurvey from "./projectSurvey.vue";
-import AllProject from "./allProject.vue";
-import AllTask from "./allTask.vue";
-import MyTask from "./myTask.vue";
-import MemberTask from "./memberTask.vue";
-import StylePush from "./stylePush.vue";
-import { Divider, Icon } from "iview";
+import ProjectSurvey from './projectSurvey.vue';
+import AllProject from './allProject.vue';
+import AllTask from './allTask.vue';
+import MyTask from './myTask.vue';
+import MemberTask from './memberTask.vue';
+import StylePush from './stylePush.vue';
+import { Divider, Icon } from 'iview';
 export default {
   components: {
     ProjectSurvey,

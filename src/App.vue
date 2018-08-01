@@ -30,6 +30,9 @@ html {
   width: 100%;
 }
 #app {
+  .page-box{
+    padding-top:15px;
+  }
   .title {
     color: #17233d ;
     font-weight: bold ;

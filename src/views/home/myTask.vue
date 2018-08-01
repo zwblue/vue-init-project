@@ -5,8 +5,8 @@
   </div>
 </template>
 <script>
-import ProGress from "components/proGress/proGress";
-import { Table, Icon, Divider } from "iview";
+import ProGress from 'components/proGress/proGress';
+import { Table, Icon, Divider } from 'iview';
 export default {
   components: {
     Table,
