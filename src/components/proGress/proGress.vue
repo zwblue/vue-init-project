@@ -42,10 +42,10 @@ export default {
       return this.currentProgress < this.planProgress
     },
     success() {
-      return this.currentProgress > this.planProgress || this.currentProgress==100
+      return  this.currentProgress==this.planProgress
     },
     primary() {
-     return this.currentProgress === this.planProgress && this.currentProgress!==100
+     return this.currentProgress >= this.planProgress
     }
   },
   data() {
@@ -62,7 +62,7 @@ export default {
 .text {
   margin: 0 10px;
   text-align: center;
-  width: 70px;
+  width: 80px;
   font-size: 12px;
   margin-top:-4px;
 }
