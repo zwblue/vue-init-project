@@ -1,7 +1,7 @@
 <template>
   <div class="page" :style='rightModelstyle'>
     <Icon type="md-close" class="close primary" @click="rightModel.ifShow=false" />
-    <div class="title name">{{tableData[0].name||''}}</div>
+    <div class="title name">{{tableData.length!==0?tableData[0].name:''}}</div>
     <Table border :columns="columns1" :data="tableData">
     </Table>
     <Divider class="title"> 全部任务
@@ -23,7 +23,7 @@ export default {
       default: function() {
         return {
           background: "#fafcfe",
-          width: "1000px"
+          width: "1200px"
         };
       }
     },
@@ -82,7 +82,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.tableData);
   }
 };
 </script>
