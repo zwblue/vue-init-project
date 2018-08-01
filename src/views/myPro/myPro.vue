@@ -30,15 +30,16 @@
         <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
       </FormItem>
     </Form>
-    <Table border class="my-table" :columns="columns1" size='default' :data="data1">
+    <Table border class="my-table" :columns="prjectColumns" size='default' :data="projectList">
     </Table>
     <div class="page-box clearfix">
-      <Page class="rt" :total="100" show-sizer  show-total transfer/>
+      <Page class="rt" :current='page.current' :pageSize='page.pageSize'  :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize'  show-total  transfer/>
     </div>
   </div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
+import {getProjectState} from 'utils/common.js';
 import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page } from 'iview';
 import {getAllMyProjectListApi} from 'api/myproject'
 export default {
@@ -55,7 +56,9 @@ export default {
   data() {
     return {
       page:{
-
+        current:1,
+        pageSize:10,
+        page:1
       },
       formInline: {
         originator: "",
@@ -67,7 +70,7 @@ export default {
         current:1,
         pageSize:10
       },
-      columns1: [
+      prjectColumns: [
         {
           title: "项目名称",
           align: "center",
@@ -75,7 +78,7 @@ export default {
             return h("div", [
               h("Icon", {
                 props: {
-                  type: params.row.age >= 20 ? "" : "md-bookmark"
+                  type: params.row.overdueDays ? "" : "md-bookmark"
                 },
                 style: {
                   marginRight: "10px",
@@ -93,7 +96,7 @@ export default {
                     primary: true
                   }
                 },
-                params.row.name
+                params.row.proName
               )
             ]);
           }
@@ -101,7 +104,7 @@ export default {
         {
           title: "上线时间",
           align: "center",
-          key: "age"
+          key: "planSDate"
         },
         {
           title: "项目状态",
@@ -111,17 +114,19 @@ export default {
               "div",
               {
                 class: {
-                  error: params.row.age > 25
+                  error: params.row.proState == 7||params.row.proState == 8
                 }
               },
-              this.dealWith(params.row.address)
+              getProjectState(params.row.proState)
             );
           }
         },
         {
           title: "任务数进度",
           align: "center",
-          key: "age"
+          render:function(h,params){
+            return h('div',{},params.row.finishTaskNum+' / '+params.row.allTaskNum)
+          }
         },
         {
           title: "项目进度（实际进度/预期进度）",
@@ -130,8 +135,8 @@ export default {
           render: (h, params) => {
             return h(ProGress, {
               props: {
-                currentProgress: Number(params.row.currentjd),
-                planProgress: Number(params.row.planjd)
+                currentProgress: Number(params.row.proProgress),
+                planProgress: Number(params.row.theoryProProgress)
               }
             });
           }
@@ -140,10 +145,10 @@ export default {
         {
           title: "发起人",
           align: "center",
-          key: "address"
+          key: "creater"
         }
       ],
-      data1: [
+      projectList: [
         {
           name: "项目管理",
           age: 18,
@@ -232,38 +237,35 @@ export default {
   },
   methods: {
     getAllMyProjectListData(){
-      getAllMyProjectListApi().then(res=>{
+      getAllMyProjectListApi(this.formInline).then(res=>{
         console.log(res);
+        if(res.data.code===200){
+          this.projectList=res.data.data;
+          this.page=res.data.page;
+        }else{
+          this.$Message.error(res.data.msg);
+        }
       }).catch(
         error=>{
           this.$Message.error('接口故障（/getAllMyProjectList）')
         }
       )
     },
-    dealWith(val) {
-      switch (val) {
-        case "1":
-          return "上线待审批";
-        case "2":
-          return "逾期";
-        case "3":
-          return "延期待审批";
-        case "4":
-          return "开发中";
-        case "5":
-          return "立项待审批";
-        default:
-          return "其他";
-      }
-    },
     selectTime(time) {
-      console.log(time);
       this.formInline.createDateStart = time[0];
       this.formInline.createDateEnd = time[1];
     },
     handleSubmit(name) {
-      console.log("查询入参", this.formInline);
-    }
+      this.getAllMyProjectListData();
+    },
+    changeCurrent(current){
+      this.formInline.current=current;
+      this.getAllMyProjectListData();
+    },
+    changePageSize(pageSize){
+      this.formInline.pageSize=pageSize;
+      this.getAllMyProjectListData();
+    },
   }
 };
 </script>

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Qs from 'qs'
 // import {
 //   Message,
 //   Modal
@@ -18,15 +19,18 @@ const service = axios.create({
   timeout: 10000,
   baseURL: baseURL,
   headers: {
-    'Content-Type': 'application/json;charset=utf-8'
+    'Content-Type': 'application/x-www-form-urlencoded'
   }
 });
 service.interceptors.request.use(config => {
   if (sessionStorage.getItem('token')) {
-    config.headers.common['Authorization'] = localStorage.getItem('token')
+    config.headers.common['Authorization'] = sessionStorage.getItem('token')
   }
-
-  config.data = JSON.stringify(config.data)
+  if(config.url==='/user/login'){
+    config.data=JSON.stringify(config.data);
+  }else{
+    config.data = Qs.stringify(config.data)
+  }
   return config
 }, error => {
   console.log(error)
