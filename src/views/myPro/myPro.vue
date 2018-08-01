@@ -28,7 +28,9 @@
     </Form>
     <Table border class="my-table" :columns="prjectColumns" size='default' :data="projectList">
     </Table>
-    <div class="page-box clearfix">
+     <div class="wxtip wx-tip">温馨提示：
+          <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务</div>
+    <div class="clearfix">
       <Page class="rt" :current='page.current' :pageSize='page.pageSize'  :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize'  show-total  transfer/>
     </div>
   </div>
@@ -71,10 +73,11 @@ export default {
           title: "项目名称",
           align: "center",
           render: (h, params) => {
+            console.log(params.row.overdueDays)
             return h("div", [
               h("Icon", {
                 props: {
-                  type: params.row.overdueDays ? "" : "md-bookmark"
+                  type: params.row.overdueDays===null ? "md-bookmark" : "" 
                 },
                 style: {
                   marginRight: "10px",
@@ -280,6 +283,15 @@ export default {
 <style lang="scss" scoped>
 .page {
   padding: 10px 0;
+}
+.wx-tip {
+  font-size: 14px;
+  margin-top: 10px;
+}
+.icon {
+  font-size: 18px;
+  margin: 0 2px;
+  vertical-align: -3px;
 }
 </style>
 

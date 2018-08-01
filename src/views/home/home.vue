@@ -121,6 +121,6 @@ export default {
 .icon {
   font-size: 18px;
   margin: 0 2px;
-  vertical-align: -4px;
+  vertical-align: -3px;
 }
 </style>
