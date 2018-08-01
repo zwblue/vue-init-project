@@ -1,28 +1,24 @@
 <template>
   <div class="page">
     <Form ref="formInline" :model="formInline" inline :label-width='100'>
-      <FormItem prop="originator" label="项目发起方">
+      <FormItem  label="项目发起方">
         <Input type="text" v-model="formInline.originator" placeholder="请输入人名或部门名">
         </Input>
       </FormItem>
       <FormItem  label="项目发起时间">
         <DatePicker type="daterange" placement="bottom-end" @on-change='selectTime' split-panels placeholder="请选择时间" style="width: 200px"></DatePicker>
       </FormItem>
-      <FormItem prop="proType" label="项目类型">
+      <FormItem label="项目类型">
         <Select v-model="formInline.proType" style="width: 150px">
-          <Option value="beijing">New York</Option>
-          <Option value="shanghai">London</Option>
-          <Option value="shenzhen">Sydney</Option>
+          <Option v-for='item in projectTypeArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem prop="prostate" label="项目状态">
+      <FormItem label="项目状态">
         <Select v-model="formInline.proState" style="width: 150px">
-          <Option value="beijing">New York</Option>
-          <Option value="shanghai">London</Option>
-          <Option value="shenzhen">Sydney</Option>
+          <Option v-for='item in projectStateArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem prop="proName" label="项目名称">
+      <FormItem label="项目名称">
         <Input type="text" v-model="formInline.proName" placeholder="请输入项目名称">
         </Input>
       </FormItem>
@@ -39,7 +35,7 @@
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
-import {getProjectState} from 'utils/common.js';
+import {getProjectState,projectStateArray,projectTypeArray} from 'utils/common.js';
 import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page } from 'iview';
 import {getAllMyProjectListApi} from 'api/myproject'
 export default {
@@ -232,8 +228,18 @@ export default {
       ]
     };
   },
+  computed:{
+    projectStateArray(){
+      return projectStateArray
+    },
+    projectTypeArray(){
+      return projectTypeArray
+    }
+  },
   mounted(){
     this.getAllMyProjectListData();
+    console.log(getProjectState(1),projectStateArray)
+  
   },
   methods: {
     getAllMyProjectListData(){
@@ -256,6 +262,7 @@ export default {
       this.formInline.createDateEnd = time[1];
     },
     handleSubmit(name) {
+      console.log(this.formInline)
       this.getAllMyProjectListData();
     },
     changeCurrent(current){
