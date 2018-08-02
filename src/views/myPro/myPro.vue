@@ -28,8 +28,11 @@
     </Form>
     <Table border class="my-table" :columns="prjectColumns" size='default' @on-row-click='gotoDetails' :data="projectList">
     </Table>
-     <div class="wxtip wx-tip">温馨提示：
-          <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务</div>
+      <Alert :style='{margin:"10px 0"}'>
+          <div class="wxtip wx-tip">温馨提示：
+           <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务
+          </div>
+      </Alert>
     <div class="clearfix">
       <Page class="rt" :current='page.current' :pageSize='page.pageSize'  :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize'  show-total  transfer/>
     </div>
@@ -38,7 +41,7 @@
 <script>
 import ProGress from 'components/proGress/proGress';
 import {getProjectState,projectStateArray,projectTypeArray} from 'utils/common.js';
-import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page } from 'iview';
+import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page,Alert } from 'iview';
 import {getAllMyProjectListApi} from 'api/myproject'
 export default {
   components: {
@@ -49,7 +52,7 @@ export default {
     Input,
     DatePicker,
     Icon,
-    ProGress
+    ProGress,Alert
   },
   data() {
     return {
@@ -207,7 +210,6 @@ export default {
 }
 .wx-tip {
   font-size: 14px;
-  margin-top: 10px;
 }
 .icon {
   font-size: 18px;

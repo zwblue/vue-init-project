@@ -1,10 +1,10 @@
 <template>
 <div class="page">
   <div class="progress bg">
-    <div :class="{'current':true,'success-bg':success,'error-bg':error,'light-bg':primary}" :style='currentStyle'></div>
-    <div class="plan light-bg" :style='planStyle'></div>
+    <div :class="{'current':true,'success-bg':success,'error-bg':error,'primary':primary}" :style='currentStyle'></div>
+    <div class="plan gray" :style='planStyle'></div>
   </div>
-  <div class="text">{{currentStyle.width}} <span class="primary"> / </span> {{planStyle.width}}</div>
+  <div class="text">{{currentStyle.width}} <span v-show='planProgress!==-1'><span class="primary" > / </span> {{planStyle.width}}</span> </div>
 </div>
 </template>
 <script>
@@ -15,12 +15,12 @@ import {
 export default {
   props: {
     currentProgress: {
-      type: Number,
+      type: [Number,String],
       default: 0
     },
     planProgress: {
-      type: Number,
-      default: 0
+      type: [Number,String],
+      default: -1
     }
   },
   components: {
@@ -58,14 +58,16 @@ export default {
 .page {
   width: 100%;
   display: flex;
+  align-items: center;
 }
 .text {
   margin: 0 10px;
   text-align: center;
   font-size: 12px;
-  margin-top:-4px;
 }
-
+.gray{
+  background: #ccc!important;
+}
 .progress {
   flex-grow: 1;
   flex-shrink: 1;

@@ -23,8 +23,11 @@
           </Col>
         </Row>
         <project-survey v-if='projectShow'></project-survey>
-        <div class="wxtip wx-tip">温馨提示：
-          <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务</div>
+          <Alert :style='{margin:"10px 0"}'>
+            <div class="wxtip wx-tip">温馨提示：
+           <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务</div>
+          </Alert>
+        
       </Row>
 
       <!-- 我的任务 -->
@@ -70,7 +73,7 @@ import AllTask from './allTask.vue';
 import MyTask from './myTask.vue';
 import MemberTask from './memberTask.vue';
 import StylePush from './stylePush.vue';
-import { Divider, Icon } from 'iview';
+import { Divider, Icon,Alert } from 'iview';
 export default {
   components: {
     ProjectSurvey,
@@ -80,7 +83,7 @@ export default {
     MemberTask,
     Icon,
     AllProject,
-    AllTask
+    AllTask,Alert
   },
   data() {
     return {
@@ -115,7 +118,6 @@ export default {
 
 .wx-tip {
   font-size: 14px;
-  margin-top: 10px;
 }
 
 .icon {
