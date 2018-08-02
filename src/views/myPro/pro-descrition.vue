@@ -12,15 +12,14 @@
     <Table border :columns="proColumns" :data="tableData">
     </Table>
     <Alert :style='{margin:"10px 0 20px"}'>{{projectDetails.proDeclare}}</Alert>
-       <Tabs value="name1" type="card" >
-          <TabPane label="开发日志" name="name1">
-              <Table :columns="devColumns" :data="projectDetails.proLogRecords"></Table>
-          </TabPane>
-          <TabPane label="操作日志" name="name2">
-              <Table :columns="handColumns" :data="projectDetails.subtaskDevelopLogByPro"></Table>
-          </TabPane>
-        </Tabs>
-     
+    <Tabs value="name1" type="card">
+      <TabPane label="开发日志" name="name1">
+        <Table height='470' :columns="devColumns" :data="projectDetails.subtaskDevelopLogByPro"></Table>
+      </TabPane>
+      <TabPane label="操作日志" name="name2">
+        <Table  height='470' :columns="handColumns" :data="projectDetails.proLogRecords"></Table>
+      </TabPane>
+    </Tabs>
   </div>
 </div>
 </template>
@@ -28,13 +27,21 @@
 <script>
 import {
   getProjectState,
-  getProjectType,getDevlogType
+  getProjectType,
+  getDevlogType,getHandlogType
 } from 'utils/common.js';
-import {Alert,Tabs,TabPane} from 'iview';
+import {
+  Alert,
+  Tabs,
+  TabPane
+} from 'iview';
 import ProGress from 'components/proGress/proGress.vue'
 export default {
   components: {
-    ProGress,Alert,Tabs,TabPane
+    ProGress,
+    Alert,
+    Tabs,
+    TabPane
   },
   props: {
     projectDetails: {
@@ -54,16 +61,59 @@ export default {
   },
   data() {
     return {
-      devColumns:[{
-        title:'类型',
-         align: 'center',
-         render(h,params){
-           return h('div',getDevlogType(params.row.type)
-
-           )
-         }
-      }
-        
+      devColumns: [{
+          title: '类型',
+          align: 'center',
+          render(h, params) {
+            return h('div', getDevlogType(params.row.type))
+          }
+        }, {
+          title: '时间',
+          align: 'center',
+          key: 'Date',
+        }, {
+          title: '操作人',
+          align: 'center',
+          key: 'Emp',
+        }, {
+          title: '说明',
+          align: 'center',
+          key: 'explain',
+        }, {
+          title: '任务进度',
+          align: 'center',
+          key: 'explain',
+          render: (h, params) => {
+            return h('div', params.row.taskProgress + '%')
+          }
+        }, {
+          title: '项目进度',
+          align: 'center',
+          key: 'explain',
+          render: (h, params) => {
+            return h('div', params.row.projectProgress) + '%'
+          }
+        }
+      ],
+       handColumns: [{
+          title: '类型',
+          align: 'center',
+          render(h, params) {
+            return h('div', getHandlogType(params.row.type))
+          }
+        }, {
+          title: '时间',
+          align: 'center',
+          key: 'Date',
+        }, {
+          title: '操作人',
+          align: 'center',
+          key: 'Emp',
+        }, {
+          title: '说明',
+          align: 'center',
+          key: 'explain',
+        }
       ],
       proColumns: [{
           title: "项目状态",
