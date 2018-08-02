@@ -62,7 +62,6 @@ export default {
 .text {
   margin: 0 10px;
   text-align: center;
-  width: 80px;
   font-size: 12px;
   margin-top:-4px;
 }

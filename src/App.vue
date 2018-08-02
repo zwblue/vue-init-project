@@ -30,6 +30,7 @@ html {
   width: 100%;
 }
 #app {
+  min-width: 1500px;
   .page-box{
     padding-top:15px;
   }
@@ -47,7 +48,7 @@ html {
     color: #c5c8ce ;
   }
   .page .bg {
-    background: #f8f8f9;
+    background: #e8eaec;
   }
   .page .bdcolor {
     border-color: #f8f8f9;

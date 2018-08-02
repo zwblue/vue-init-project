@@ -70,7 +70,7 @@ const router = new Router({
           path: '/proDetails/:id',
           name: 'ProDetails',
           component: ProDetails,
-          meta: pageItem
+          meta: {...pageItem,child:'项目详情页'}
         },
         {
           path: '/onlinePro',

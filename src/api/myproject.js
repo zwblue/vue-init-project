@@ -6,3 +6,11 @@ export function getAllMyProjectListApi (data = {}) {
     data: data,
   })
 }
+
+export function getLogDetailInfoApi (data = {}) {
+  return fetch({
+    url: '/getLogDetailInfo',
+    method: 'post',
+    data: data,
+  })
+}

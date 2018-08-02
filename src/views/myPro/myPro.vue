@@ -164,7 +164,7 @@ export default {
   methods: {
     gotoDetails(row){
       console.log(row);
-      this.$router.push('proDetails/'+row.id)
+      this.$router.push('proDetails/'+row.proId)
     },
     getAllMyProjectListData(){
       getAllMyProjectListApi(this.formInline).then(res=>{
