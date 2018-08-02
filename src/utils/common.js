@@ -66,7 +66,15 @@ export function getProjectType(num) {
 // 开发日志类型
 export let devlogType=[
   {index:1,name:'更新'},
-  {index:2,name:'完成'}
+  {index:2,name:'完成'},
+  { index: 1, name: "立项待审批" },
+  { index: 2, name: "开发中" },
+  { index: 3, name: "上线待审批" },
+  { index: 4, name: "完成" },
+  { index: 5, name: "驳回" },
+  { index: 6, name: "作废" },
+  { index: 7, name: "逾期" },
+  { index: 8, name: "延期待审批" }
 ]
 
 // 得到开发项目类型

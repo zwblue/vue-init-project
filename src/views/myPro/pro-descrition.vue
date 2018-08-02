@@ -91,7 +91,7 @@ export default {
           align: 'center',
           key: 'explain',
           render: (h, params) => {
-            return h('div', params.row.projectProgress) + '%'
+            return h('div', params.row.proProgress  + '%')
           }
         }
       ],
