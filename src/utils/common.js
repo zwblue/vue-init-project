@@ -1,5 +1,5 @@
 // 产品状态
-let projectStateArray = [
+export let projectStateArray = [
   { index: 1, name: "立项待审批" },
   { index: 2, name: "开发中" },
   { index: 3, name: "上线待审批" },
@@ -10,16 +10,16 @@ let projectStateArray = [
   { index: 8, name: "延期待审批" }
 ];
 // 产品类型
-let projectTypeArray=[
+export let projectTypeArray=[
   {index:1,name:'产品'},
   {index:2,name:'活动'}
 ]
+// 根据项目状态得到name
 export function getProjectState(num) {
   if (!num) return;
   for (let val of projectStateArray) {
-    if (val.index === num) {
+    if (val.index == num) {
       return val.name;
     }
   }
 }
-export { projectStateArray,projectTypeArray };

@@ -73,7 +73,6 @@ export default {
           title: "项目名称",
           align: "center",
           render: (h, params) => {
-            console.log(params.row.overdueDays)
             return h("div", [
               h("Icon", {
                 props: {
