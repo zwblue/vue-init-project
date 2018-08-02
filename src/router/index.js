@@ -13,6 +13,7 @@ const MyPro = resolve => require(['@/views/myPro/myPro'], resolve)
 const OnlinePro = resolve => require(['@/views/onlinePro/onlinePro'], resolve)
 const RecyclePro = resolve => require(['@/views/recyclePro/recyclePro'], resolve)
 const DayReport = resolve => require(['@/views/dayReport/dayReport'], resolve)
+const ProDetails = resolve => require(['@/views/myPro/ProDetails'], resolve)
 
 
 const pageItem = {
@@ -27,61 +28,67 @@ const router = new Router({
       path: '/',
       name: 'Layout',
       component: Layout,
-      meta: { ...pageItem },
+      meta: pageItem,
       children: [
         {
           path: '/',
           name: 'Home',
           component: Home,
-          meta: { ...pageItem }
+          meta: pageItem
         },
         {
           path: '/applyPro',
           name: 'ApplyPro',
           component: ApplyPro,
-          meta: { ...pageItem }
+          meta: pageItem
         },
         {
           path: '/countPro',
           name: 'CountPro',
           component: CountPro,
-          meta: { ...pageItem }
+          meta: pageItem
         },
         {
           path: '/delayPro',
           name: 'DelayPro',
           component: DelayPro,
-          meta: { ...pageItem }
+          meta: pageItem
         },
         {
           path: '/finishedPro',
           name: 'FinishedPro',
           component: FinishedPro,
-          meta: { ...pageItem }
+          meta: pageItem
         },
         {
           path: '/myPro',
           name: 'MyPro',
           component: MyPro,
-          meta: { ...pageItem }
+          meta: pageItem
+        },
+        {
+          path: '/proDetails/:id',
+          name: 'ProDetails',
+          component: ProDetails,
+          meta: pageItem
         },
         {
           path: '/onlinePro',
           name: 'OnlinePro',
           component: OnlinePro,
-          meta: { ...pageItem }
+          meta: pageItem
         },
         {
           path: '/recyclePro',
           name: 'RecyclePro',
           component: RecyclePro,
-          meta: { ...pageItem }
+          meta: pageItem
         },
         {
           path: '/dayReport',
           name: 'DayReport',
           component: DayReport,
-          meta: { ...pageItem }
+          meta: pageItem
         }
       ]
     },

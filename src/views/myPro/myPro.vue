@@ -26,7 +26,7 @@
         <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
       </FormItem>
     </Form>
-    <Table border class="my-table" :columns="prjectColumns" size='default' :data="projectList">
+    <Table border class="my-table" :columns="prjectColumns" size='default' @on-row-click='gotoDetails' :data="projectList">
     </Table>
      <div class="wxtip wx-tip">温馨提示：
           <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务</div>
@@ -147,86 +147,6 @@ export default {
         }
       ],
       projectList: [
-        {
-          name: "项目管理",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03",
-          currentjd: "30",
-          planjd: "70"
-        },
-        {
-          name: "项目管理",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01",
-          currentjd: "50",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: "80",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: "80",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04",
-          currentjd: "100",
-          planjd: "100"
-        },
-        {
-          name: "项目管理",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03",
-          currentjd: "30",
-          planjd: "70"
-        },
-        {
-          name: "项目管理",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01",
-          currentjd: "50",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: "80",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: "80",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04",
-          currentjd: "100",
-          planjd: "100"
-        }
       ]
     };
   },
@@ -240,10 +160,12 @@ export default {
   },
   mounted(){
     this.getAllMyProjectListData();
-    console.log(getProjectState(1),projectStateArray)
-  
   },
   methods: {
+    gotoDetails(row){
+      console.log(row);
+      this.$router.push('proDetails/'+row.id)
+    },
     getAllMyProjectListData(){
       getAllMyProjectListApi(this.formInline).then(res=>{
         console.log(res);
