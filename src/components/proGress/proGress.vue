@@ -1,7 +1,7 @@
 <template>
 <div class="page">
   <div class="progress bg">
-    <div :class="{'current':true,'success-bg':success,'error-bg':error,'primary':primary}" :style='currentStyle'></div>
+    <div :class="{'current':true,'success-bg':success,'error-bg':error}" :style='currentStyle'></div>
     <div class="plan gray" :style='planStyle'></div>
   </div>
   <div class="text">{{currentStyle.width}} <span v-show='planProgress!==-1'><span class="primary" > / </span> {{planStyle.width}}</span> </div>
@@ -42,10 +42,10 @@ export default {
       return this.currentProgress < this.planProgress
     },
     success() {
-      return  this.currentProgress==this.planProgress
+      return  this.currentProgress>=this.planProgress
     },
     primary() {
-     return this.currentProgress >= this.planProgress
+     return this.currentProgress == this.planProgress
     }
   },
   data() {

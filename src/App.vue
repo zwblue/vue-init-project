@@ -57,31 +57,31 @@ html {
     font-size: 14px;
   }
   .primary {
-    color: #2d8cf0 !important;
+    color: #2d8cf0 ;
   }
   .success {
-    color: #19be6b !important;
+    color: #19be6b ;
   }
   .error {
-    color: #ed4014 !important;
+    color: #ed4014 ;
   }
   .warning {
-    color: #ff9900 !important;
+    color: #ff9900 ;
   }
   .primary-bg {
-    background: #2d8cf0 !important;
+    background: #2d8cf0 ;
   }
   .light-bg {
-    background: #5cadff !important;
+    background: #5cadff ;
   }
   .success-bg {
-    background: #19be6b !important;
+    background: #19be6b ;
   }
   .error-bg {
-    background: #ed4014 !important;
+    background: #ed4014 ;
   }
   .warning-bg {
-    background: #ff9900 !important;
+    background: #ff9900 ;
   }
 }
 </style>

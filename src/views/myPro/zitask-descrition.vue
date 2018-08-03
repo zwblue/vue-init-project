@@ -1,25 +1,35 @@
 <template>
 <div class="page">
+  <h3 class="title center"> <Divider :style='{fontWeight:"bold"}'>{{zitaskDetails.subtaskName||''}}</Divider> </h3>
   <div class="header" :style='{margin:"10px 0"}'>
-    <h3 class="title">{{projectDetails.proName||''}}</h3>
+    <div>
+       <Tooltip content="修改任务" placement="bottom-start">
+       <Icon class="icon-edit_s iconfont primary click-btn"></Icon>
+    </Tooltip>
+    <Tooltip content="删除任务">
+       <Icon type="md-trash" class="primary click-btn" />
+    </Tooltip> 
+    <Tooltip content="提醒任务人">
+       <Icon type="md-notifications" class="primary click-btn" />
+    </Tooltip>
+
+    </div>
     <div class="center">
-      <Button type='warning' ghost v-if='projectDetails.proState==7'>延期申请</Button>
-      <Button type='success' ghost v-if='projectDetails.proProgress==100'>上线审批</Button>
-      <Button type='success' ghost v-if='projectDetails.proState==8'>上线审批中</Button>
-      <Button type='error' ghost>作废项目</Button>
+      所属项目：<span class="primary">{{proName}}</span>
     </div>
   </div>
+  
   <div :style='{margin:"30px 0"}'>
-    <Table border :columns="proColumns" :data="tableData">
+    <Table border :columns="zitaskColumns" :data="tableData">
     </Table>
-    <Alert :style='{margin:"10px 0 20px"}'>{{projectDetails.proDeclare}}</Alert>
-    <Tabs value="name1" type="card">
+    <Tabs value="name1"  size='small' type="card" :style='{margin:"20px 0"}'>
       <TabPane label="开发日志" name="name1">
-        <Table height='470' :columns="devColumns" :data="projectDetails.subtaskDevelopLogByPro"></Table>
+        <Table height='470' :columns="devColumns" :data="zitaskDetails.subtaskDevelopLogBySubtask"></Table>
       </TabPane>
       <TabPane label="操作日志" name="name2">
-        <Table  height='470' :columns="handColumns" :data="projectDetails.proLogRecords"></Table>
+        <Table  height='470' :columns="handColumns" :data="zitaskDetails.subtaskLogRecords"></Table>
       </TabPane>
+        <Button type='primary'  size='small' slot="extra">更新日志</Button>
     </Tabs>
   </div>
 </div>
@@ -27,14 +37,14 @@
 
 <script>
 import {
-  getProjectState,
+  getTaskState,
   getProjectType,
   getDevlogType,getHandlogType
 } from 'utils/common.js';
 import {
   Alert,
   Tabs,
-  TabPane
+  TabPane,Icon,Divider,Tooltip
 } from 'iview';
 import ProGress from 'components/proGress/proGress.vue'
 export default {
@@ -42,21 +52,24 @@ export default {
     ProGress,
     Alert,
     Tabs,
-    TabPane
+    TabPane,Icon,Divider,Tooltip
   },
   props: {
-    projectDetails: {
+    zitaskDetails: {
       type: Object,
       default: () => {
         return {
-
         }
       }
+    },
+    proName:{
+      type:String,
+      default:''
     }
   },
   computed: {
     tableData() {
-      return [{ ...this.projectDetails
+      return [{ ...this.zitaskDetails
       }]
     }
   },
@@ -117,7 +130,8 @@ export default {
         },{
           title: '附件',
           align: 'center',
-         render: (h, params) => {
+          key: 'filePath',
+          render: (h, params) => {
           const row = params.row;
           const fileurl = row.filePath;
           if (fileurl) {
@@ -136,63 +150,53 @@ export default {
         }
         }
       ],
-      proColumns: [{
-          title: "项目状态",
+      zitaskColumns: [{
+          title: "子任务状态",
           align: 'center',
           render: (h, params) => {
             return h(
               'div', {
                 class: {
-                  error: params.row.proState == 7 || params.row.proState == 8
+                  error: params.row.subtaskState == 5 
                 }
-              }, getProjectState(params.row.proState)
+              }, getTaskState(params.row.subtaskState)
             )
           }
         }, {
-          title: "任务数进度",
-          align: "center",
-          render: function(h, params) {
-            return h('div', {}, params.row.finishTaskNum + ' / ' + params.row.allTaskNum)
-          }
-        }, {
-          title: "项目进度（实际进度/预期进度）",
+          title: "子任务进度（实际进度/预期进度）",
           align: 'center',
           width: 300,
           render: (h, params) => {
             return h(ProGress, {
               props: {
-                currentProgress: Number(params.row.proProgress),
-                planProgress: Number(params.row.theoryProProgress)
+                currentProgress: Number(params.row.subtaskProgress),
+                planProgress: Number(params.row.subtaskTheoryProgress)
               }
             });
           }
         },
         {
-          title: "预计上线时间",
+          title: "开始时间",
           align: 'center',
-          key: "planSDate",
+          key: "sDate",
         },
         {
-          title: "预计下线时间",
+          title: "结束时间",
           align: 'center',
-          key: "planEDate",
+          key: "eDate",
           render: (h, params) => {
             return h('div', params.row.planEDate || '--')
           }
         },
         {
-          title: "类型",
+          title: "预期工期（天）",
           align: 'center',
-          render: (h, params) => {
-            return h(
-              'div', getProjectType(params.row.proType)
-            )
-          }
+          key:'workDate'
         }, {
-          title: "负责人",
+          title: "处理人",
           align: 'center',
-          key: "creater"
-        },
+          key:'subtaskHandler'
+        }
       ],
     }
   },
@@ -201,7 +205,15 @@ export default {
 </script>
 <style lang="scss" scoped>
 .page {}
-
+.click-btn{
+  padding:5px 5px;
+  margin:0 5px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.click-btn:hover{
+  color:#5cadff!important;
+}
 .header {
   display: flex;
   justify-content: space-between;
