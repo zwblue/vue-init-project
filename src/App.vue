@@ -30,7 +30,7 @@ html {
   width: 100%;
 }
 #app {
-  min-width: 1500px;
+  min-width: 1400px;
   .page-box{
     padding-top:15px;
   }

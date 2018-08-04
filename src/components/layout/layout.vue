@@ -45,7 +45,7 @@
         </MenuGroup>
       </Menu>
     </Sider>
-    <Layout>
+    <Layout :style="{minWidth:'1200px'}">
       <Content :style="{padding: '0 16px 16px'}" class="my-content">
         <div>
           <Breadcrumb :style="{margin: '16px'}">
@@ -171,7 +171,7 @@ export default {
   left: 200px;
   overflow: auto;
   background: #fff;
-  min-width: 1200px;
+  box-sizing: border-box;
 }
 </style>
 
