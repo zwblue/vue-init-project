@@ -7,6 +7,15 @@ export function getAllMyProjectListApi (data = {}) {
     data: data,
   })
 }
+// 项目参与组
+
+export function newGroupHandleApi (data = {}) {
+  return fetch({
+    url: '/newGroupHandle',
+    method: 'post',
+    data: data,
+  })
+}
 // 项目详情信息
 export function getLogDetailInfoApi (data = {}) {
   return fetch({
@@ -19,6 +28,14 @@ export function getLogDetailInfoApi (data = {}) {
 export function getTaskListByProIdApi (data = {}) {
   return fetch({
     url: '/getTaskListByProId',
+    method: 'post',
+    data: data,
+  })
+}
+// 项目申请
+export function newApplyProjectApi (data = {}) {
+  return fetch({
+    url: '/newApplyProject',
     method: 'post',
     data: data,
   })

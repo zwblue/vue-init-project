@@ -9,7 +9,9 @@ if (process.env.NODE_ENV === 'development') {
     baseURL = "http://report.wsloan.com:8888/projectManage";
   }
 }
-
+export function getUploadUrl() {
+  return baseURL + '/uploadFile';
+}
 // 得到403跳转的返回的登录的链接
 let loginURL;
 if (process.env.NODE_ENV === 'development') {
