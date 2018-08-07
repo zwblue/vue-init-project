@@ -12,7 +12,7 @@ const FinishedPro = resolve => require(['@/views/finishedPro/finishedPro'], reso
 const MyPro = resolve => require(['@/views/myPro/myPro'], resolve)
 const OnlinePro = resolve => require(['@/views/onlinePro/onlinePro'], resolve)
 const RecyclePro = resolve => require(['@/views/recyclePro/recyclePro'], resolve)
-const DayReport = resolve => require(['@/views/dayReport/dayReport'], resolve)
+const CreatePro = resolve => require(['@/views/createPro/createPro'], resolve)
 const ProDetails = resolve => require(['@/views/myPro/ProDetails'], resolve)
 
 
@@ -85,9 +85,9 @@ const router = new Router({
           meta: pageItem
         },
         {
-          path: '/dayReport',
-          name: 'DayReport',
-          component: DayReport,
+          path: '/createPro',
+          name: 'CreatePro',
+          component: CreatePro,
           meta: pageItem
         }
       ]

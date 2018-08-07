@@ -40,3 +40,11 @@ export function newApplyProjectApi (data = {}) {
     data: data,
   })
 }
+// 延期,立项,上线
+export function projectApprovalApi (data = {}) {
+  return fetch({
+    url: '/projectApproval',
+    method: 'post',
+    data: data,
+  })
+}

@@ -49,7 +49,7 @@
       <Content :style="{padding: '0 16px 16px'}" class="my-content">
         <div>
           <Breadcrumb :style="{margin: '16px'}">
-            <BreadcrumbItem to="/myPro" class="primary">{{pageTitle}}</BreadcrumbItem>
+            <BreadcrumbItem :to='activeMenu' class="primary">{{pageTitle}}</BreadcrumbItem>
             <BreadcrumbItem v-if='$route.meta.child' :to="'/proDetails/'+$route.params.id">{{this.$route.meta.child}}</BreadcrumbItem>
           </Breadcrumb>
         </div>
@@ -98,16 +98,20 @@ export default {
           url: "/applyPro"
         },
         {
+          title: "立项待审批",
+          url: "/createPro"
+        },
+        {
           title: "上线待审批",
           url: "/onlinePro"
         },
         {
-          title: "我的项目",
-          url: "/myPro"
-        },
-        {
           title: "延期待审批",
           url: "/delayPro"
+        },
+        {
+          title: "我的项目",
+          url: "/myPro"
         },
         {
           title: "归档项目",
@@ -120,30 +124,24 @@ export default {
         {
           title: "项目统计",
           url: "/countPro"
-        },
-        {
-          title: "日报",
-          url: "/dayReport"
         }
       ],
-      pageTitle: ""
+      pageTitle: "",
+      activeMenu: ''
     };
   },
-  computed: {
-    activeMenu() {
-      if (this.$route.name === 'ProDetails') {
-        return '/myPro'
-      }
-      return this.$route.path;
-    }
-  },
   watch: {
-    activeMenu() {
+    $route() {
       this.initData();
     }
   },
+  created() {
+    if (this.$route.name === 'ProDetails') {
+      this.pageTitle = sessionStorage.getItem('title')
+      this.activeMenu = sessionStorage.getItem('url')
+    }
+  },
   mounted() {
-    console.log(this.$route)
     this.initData();
   },
   methods: {
@@ -154,9 +152,9 @@ export default {
       this.menuList.forEach(val => {
         if (val.url === this.$route.path) {
           this.pageTitle = val.title;
-        }
-        if (this.$route.name === 'ProDetails') {
-          this.pageTitle = '我的项目'
+          sessionStorage.setItem('url', val.url)
+          sessionStorage.setItem('title', val.title)
+          this.activeMenu = this.$route.path;
         }
       });
     }

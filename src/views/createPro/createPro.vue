@@ -56,7 +56,7 @@ export default {
         type:'1',
         date1: "",
         date2: "",
-        proState: "3",
+        proState: "1",
         proType: "",
         current:1,
         pageSize:10
