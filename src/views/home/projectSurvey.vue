@@ -1,11 +1,12 @@
 <template>
 <div>
-    <Table border class="my-table" :columns="columns1" size='default' :data="data1">
+    <Table :loading="loading" border class="my-table" :columns="columns1" size='default' :data="dataList">
     </Table>
 </div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress'
+import {getProjectType,getProjectState} from 'utils/common.js'
 import {
   Table,
   Icon
@@ -16,6 +17,18 @@ export default {
     Icon,
     ProGress
   },
+   props:{
+    dataList:{
+      type:Array,
+      default:function(){
+        return []
+      }
+    },
+    loading:{
+      type:Boolean,
+      default:false
+    }
+  },
   data() {
     return {
       columns1: [{
@@ -24,8 +37,8 @@ export default {
           render: (h, params) => {
             return h(
               'div', [h('Icon', {
-                props: {
-                  type: params.row.age >= 20 ? '' : 'md-bookmark'
+                 props: {
+                  type: params.row.isAllotSubtask===null ? "md-bookmark" : "" 
                 },
                 style: {
                   marginRight: '10px',
@@ -39,13 +52,13 @@ export default {
                 'class': {
                   primary: true
                 }
-              }, params.row.name)])
+              }, params.row.proName)])
           }
         },
         {
           title: "预计完成时间",
           align: 'center',
-          key: "age",
+          key: "planSDate",
         },
         {
           title: "项目进度（实际进度/预期进度）",
@@ -55,8 +68,8 @@ export default {
             return h(
               ProGress, {
                 props: {
-                  currentProgress: Number(params.row.currentjd),
-                  planProgress: Number(params.row.planjd)
+                  currentProgress: Number(params.row.proProgress),
+                  planProgress: Number(params.row.theoryProProgress)
                 }
               }
             )
@@ -71,84 +84,28 @@ export default {
                 'class': {
                   error: params.row.age > 25
                 }
-              }, this.dealWith(params.row.address)
+              }, getProjectState(params.row.proState)
             )
           }
         },
         {
           title: "负责人",
           align: 'center',
-          key: "address"
+          key: "creater"
         },
         {
           title: "类型",
           align: 'center',
           render: (h, params) => {
             return h(
-              'div', this.dealWith(params.row.address)
+              'div', getProjectType(params.row.proType)
             )
           }
-        }
-      ],
-      data1: [{
-          name: "项目管理",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03",
-          currentjd: '30',
-          planjd: '70'
-        },
-        {
-          name: "项目管理",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01",
-          currentjd: '50',
-          planjd: '50'
-        },
-        {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: '80',
-          planjd: '50'
-        }, {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: '80',
-          planjd: '50'
-        },
-        {
-          name: "项目管理",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04",
-          currentjd: '100',
-          planjd: '100'
         }
       ]
     };
   },
   methods: {
-    dealWith(val) {
-      switch (val) {
-        case '1':
-          return '上线待审批';
-        case '2':
-          return '逾期';
-        case '3':
-          return '延期待审批';
-        case '4':
-          return '开发中';
-        case '5':
-          return '立项待审批';
-        default:
-          return '其他';
-      }
-    }
   }
 };
 </script>

@@ -1,18 +1,31 @@
 <template>
   <div>
-    <Table border class="my-table" :columns="columns1" size='default' :data="data1">
+    <Table border :loading='loading' class="my-table" :columns="columns1" size='default' :data="dataList">
     </Table>
   </div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
 import { Table, Icon, Divider } from 'iview';
+import {getTaskState} from 'utils/common.js'
 export default {
   components: {
     Table,
     Icon,
     Divider,
     ProGress
+  },
+   props:{
+    dataList:{
+      type:Array,
+      default:function(){
+        return []
+      }
+    },
+    loading:{
+      type:Boolean,
+      default:false
+    }
   },
   data() {
     return {
@@ -28,29 +41,29 @@ export default {
                   primary: true
                 }
               },
-              params.row.name
+              params.row.subtaskName
             );
           }
         },
         {
           title: "所属项目",
           align: "center",
-          key: "age"
+          key: "proName"
         },
         {
           title: "开始时间",
           align: "center",
-          key: "age"
+          key: "sDate"
         },
         {
           title: "结束时间",
           align: "center",
-          key: "age"
+          key: "eDate"
         },
         {
           title: "预计工期（天）",
           align: "center",
-          key: "age"
+          key: "workDate"
         },
 
         {
@@ -64,7 +77,7 @@ export default {
                   error: params.row.age > 25
                 }
               },
-              this.dealWith(params.row.address)
+              getTaskState(params.row.subtaskState)
             );
           }
         },
@@ -75,8 +88,8 @@ export default {
           render: (h, params) => {
             return h(ProGress, {
               props: {
-                currentProgress: Number(params.row.currentjd),
-                planProgress: Number(params.row.planjd)
+                currentProgress: Number(params.row.subtaskProgress),
+                planProgress: Number(params.row.theorySubtaskProgress)
               }
             });
           }
@@ -99,7 +112,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.remindClick(1);
+                      this.remindClick(params.row.subtaskId);
                     }
                   }
                 },
@@ -118,7 +131,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.eidtClick(2);
+                      this.eidtClick(params.row.subtaskId);
                     }
                   }
                 },
@@ -137,7 +150,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.delClick(3);
+                      this.delClick(params.row.subtaskId);
                     }
                   }
                 },
@@ -146,68 +159,10 @@ export default {
             ]);
           }
         }
-      ],
-      data1: [
-        {
-          name: "项目管理",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03",
-          currentjd: "30",
-          planjd: "70"
-        },
-        {
-          name: "项目管理",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01",
-          currentjd: "50",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: "80",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-          currentjd: "80",
-          planjd: "50"
-        },
-        {
-          name: "项目管理",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04",
-          currentjd: "100",
-          planjd: "100"
-        }
       ]
     };
   },
   methods: {
-    dealWith(val) {
-      switch (val) {
-        case "1":
-          return "上线待审批";
-        case "2":
-          return "逾期";
-        case "3":
-          return "延期待审批";
-        case "4":
-          return "开发中";
-        case "5":
-          return "立项待审批";
-        default:
-          return "其他";
-      }
-    },
     remindClick(val) {
       console.log('remind', val);
     },

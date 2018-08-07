@@ -5,16 +5,18 @@
         <Button @click="ifFullScreen=!ifFullScreen" icon="md-qr-scanner" size='small' type='text' shape="circle"></Button>
       </p>
       <div>
-        <project-survey></project-survey>
+        <project-survey :loading='loading' :dataList="dataList"></project-survey>
       </div>
       <div slot="footer">
-        <Page :total="100" show-sizer show-total transfer/>
+        <Page :total="100" show-sizer show-total transfer @on-change='changeCurrent' @on-page-size-change='changePageSize'/>
       </div>
     </Modal>
   </div>
 </template>
-
 <script>
+import {
+  getProInfoByIndexApi,
+} from "api/home.js";
 import { Modal, Page, Icon } from 'iview';
 import ProjectSurvey from './projectSurvey.vue';
 export default {
@@ -26,6 +28,16 @@ export default {
           allProjectShow: false
         };
       }
+    }, 
+    dataList:{
+      type:Array,
+      default:function(){
+        return []
+      }
+    },
+    loading:{
+      type:Boolean,
+      default:false
     }
   },
   components: {
@@ -36,8 +48,17 @@ export default {
   },
   data() {
     return {
-      ifFullScreen: false
+      ifFullScreen: false,
+      
     };
+  },
+  methods:{
+    changePageSize(val){
+      this.$emit('changePageSize',val,'pro')
+    }
+    ,changeCurrent(val){
+      this.$emit('changeCurrent',val,'pro')
+    }
   }
 };
 </script>

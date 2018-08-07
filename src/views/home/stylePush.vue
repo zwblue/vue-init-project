@@ -4,9 +4,9 @@
     <Col span="12">
     <Divider><span class="title">产品推送</span></Divider>
     <Row :gutter='16' class="text">
-      <Col span="6" v-for='(item,index) in list' :key='index'>
+      <Col span="6" v-for='(item,index) in sendTypeList.slice(0,4)' :key='index'>
       <div class='pro-box'>
-        <div class='pro-title'>{{item.title}}</div>
+        <div class='pro-title'>{{item.name}}</div>
         <div class='pro-num'>{{item.num}}</div>
       </div>
       </Col>
@@ -15,9 +15,9 @@
     <Col span="12">
     <Divider><span class="title">活动推送</span></Divider>
     <Row :gutter='16' class="text">
-      <Col span="6" v-for='(item,index) in list' :key='index'>
+      <Col span="6" v-for='(item,index) in sendTypeList.slice(-4)' :key='index'>
       <div class='pro-box'>
-        <div class='pro-title'>{{item.title}}</div>
+        <div class='pro-title'>{{item.name}}</div>
         <div class='pro-num'>{{item.num}}</div>
       </div>
       </Col>
@@ -31,6 +31,13 @@ import {
   Divider,
   Icon
 } from 'iview'
+import {
+  getProCountByCPAndHDApi
+} from 'api/home.js'
+import {
+  getSendType,
+  sendType
+} from 'utils/common.js'
 export default {
   components: {
     Divider,
@@ -38,19 +45,70 @@ export default {
   },
   data() {
     return {
-      list: [{
-        title: '开发中的项目',
-        num: 1
-      }, {
-        title: '开发项目',
-        num: 3
-      }, {
-        title: '未开始的项目',
-        num: 14
-      }, {
-        title: '归档的项目',
-        num: 8
-      }]
+      // 产品活动推送的类型
+      sendTypeList: [{
+          index: 'cp_kf',
+          name: "开发中的项目",
+          num: 0
+        },
+        {
+          index: 'cp_lx',
+          name: "立项待审批",
+          num: 0
+        },
+        {
+          index: 'cp_sx',
+          name: "上线待审批",
+          num: 0
+        },
+        {
+          index: 'cp_yq',
+          name: "延期待审批",
+          num: 0
+        },
+        {
+          index: 'hd_kf',
+          name: "开发中的项目",
+          num: 0
+        },
+        {
+          index: 'hd_lx',
+          name: "立项待审批",
+          num: 0
+        },
+        {
+          index: 'hd_sx',
+          name: "上线待审批",
+          num: 0
+        },
+        {
+          index: 'hd_yq',
+          name: "延期待审批",
+          num: 0
+        }
+      ]
+    }
+  },
+  mounted() {
+    this.getProCountByCPAndHDList();
+  },
+  methods: {
+    getProCountByCPAndHDList() {
+      getProCountByCPAndHDApi().then(res => {
+        if (res.data.code === 200) {
+          const data = res.data.data;
+          for (let type of this.sendTypeList) {
+            for (let val in data) {
+              if (type.index == val) {
+                type.num = data[val];
+                break;
+              }
+            }
+          }
+        }
+      }).catch(error => {
+        this.$Message.error('网络故障--/getProCountByCPAndHD')
+      })
     }
   }
 }
@@ -58,6 +116,7 @@ export default {
 
 <style lang="scss" scoped>
 .page {}
+
 $gray:#dcdee2;
 .pro-box {
   border: 1px solid $gray;

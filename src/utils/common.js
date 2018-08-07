@@ -20,10 +20,10 @@ export function getProjectState(num) {
   }
 }
 // 根据项目状态设置样式
-export function addClass(num){
-  if(num==7||num==8){
+export function addClass(num) {
+  if (num == 7 || num == 8) {
     return 'error'
-  }else{
+  } else {
     return ''
   }
 }
@@ -48,9 +48,9 @@ export function getTaskState(num) {
 
 
 // 产品类型
-export let projectTypeArray=[
-  {index:1,name:'产品'},
-  {index:2,name:'活动'}
+export let projectTypeArray = [
+  { index: 1, name: '产品' },
+  { index: 2, name: '活动' }
 ]
 
 // 得到项目类型
@@ -64,7 +64,7 @@ export function getProjectType(num) {
 }
 
 // 开发日志类型
-export let devlogType=[
+export let devlogType = [
   { index: 1, name: "开始" },
   { index: 2, name: "需求调整" },
   { index: 3, name: "会议" },
@@ -84,7 +84,7 @@ export function getDevlogType(num) {
 
 
 // 操作日志类型
-export let handlogType=[
+export let handlogType = [
   { index: 1, name: "创建" },
   { index: 2, name: "立项待审批" },
   { index: 3, name: "提交上线" },
@@ -107,4 +107,5 @@ export function getHandlogType(num) {
     }
   }
 }
+
 

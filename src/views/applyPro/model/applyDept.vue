@@ -182,7 +182,7 @@ export default {
         }
       ],
     }]
-    // this.initDept();
+    this.initDept();
   },
   methods: {
     submitClick(name) {

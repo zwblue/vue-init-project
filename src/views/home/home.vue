@@ -2,14 +2,14 @@
   <div class="page">
     <div>
       <!-- 类型推送 -->
-      <style-push></style-push>
-
+      <style-push>
+      </style-push>
       <!-- 项目概况 -->
       <Row>
         <Row style='margin-top:20px;'>
           <Col span="12">
-          <Divider class="title"> 项目概况
-            <span class="error">（共10个）</span>
+          <Divider class="title">项目概况
+            <span class="error">（共{{projectSurveyData.sum}}个）</span>
           </Divider>
           </Col>
           <Col span="12">
@@ -22,25 +22,23 @@
           </Divider>
           </Col>
         </Row>
-        <project-survey v-if='projectShow'></project-survey>
-          <Alert :style='{margin:"10px 0"}'>
-            <div class="wxtip wx-tip">温馨提示：
-           <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务</div>
-          </Alert>
-        
+        <project-survey v-if='projectShow' :dataList='projectSurveyData.dataList'></project-survey>
+        <Alert :style='{margin:"10px 0"}'>
+          <div class="wxtip wx-tip">温馨提示：
+            <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务</div>
+        </Alert>
       </Row>
-
       <!-- 我的任务 -->
       <Row>
         <Row style='margin-top:20px;'>
           <Col span="12">
-          <Divider class="title"> 我的任务
-            <span class="error">（共6个）</span>
+          <Divider class="title">我的任务
+            <span class="error">（共{{myTaskData.sum}}个）</span>
           </Divider>
           </Col>
           <Col span="12">
           <Divider orientation="right">
-            <div class="pointer primary" @click="queryMyAllProject">
+            <div class="pointer primary" @click="queryMyAllTask">
               <span style='font-size:16px;'>查看全部
                 <Icon type="ios-more" class="more-icon" />
               </span>
@@ -48,32 +46,39 @@
           </Divider>
           </Col>
         </Row>
-        <my-task></my-task>
+        <my-task :dataList='myTaskData.dataList'></my-task>
       </Row>
       <!-- 组员任务 -->
       <Row>
         <Row style='margin-top:20px;'>
           <Col span="24">
-          <Divider class="title"> 组员任务
-            <span class="error">（共6个）</span>
+          <Divider class="title">组员任务
+            <span class="error">（共{{myMemberData.sum}}个）</span>
           </Divider>
           </Col>
         </Row>
-        <member-task></member-task>
+        <member-task :dataList='myMemberData.dataList'></member-task>
       </Row>
     </div>
-    <all-project :modelShow='modelShow'></all-project>
-    <all-task :modelShow='modelShow'></all-task>
+    <all-project :modelShow='modelShow' :loading='proloading' :dataList='allProjectData' @changeCurrent='changeCurrent' @changePageSize='changePageSize'></all-project>
+    <all-task :modelShow='modelShow' :dataList='allTaskData' :loading='taskloading' @changePageSize='changePageSize' @changeCurrent='changeCurrent'></all-task>
   </div>
 </template>
+
 <script>
-import ProjectSurvey from './projectSurvey.vue';
-import AllProject from './allProject.vue';
-import AllTask from './allTask.vue';
-import MyTask from './myTask.vue';
-import MemberTask from './memberTask.vue';
-import StylePush from './stylePush.vue';
-import { Divider, Icon,Alert } from 'iview';
+import ProjectSurvey from "./projectSurvey.vue";
+import AllProject from "./allProject.vue";
+import AllTask from "./allTask.vue";
+import MyTask from "./myTask.vue";
+import MemberTask from "./memberTask.vue";
+import StylePush from "./stylePush.vue";
+import { Divider, Icon, Alert } from "iview";
+import {
+  getProInfoByIndexApi,
+  getMyTaskInfoByIndexApi,
+  getMyMemberSubtaskCountByIndexApi
+} from "api/home.js";
+import allProjectVue from "./allProject.vue";
 export default {
   components: {
     ProjectSurvey,
@@ -83,26 +88,128 @@ export default {
     MemberTask,
     Icon,
     AllProject,
-    AllTask,Alert
+    AllTask,
+    Alert
   },
   data() {
     return {
       projectShow: false,
-      modelShow:{
+      proloading:false,
+      taskloading:false,
+      modelShow: {
         allProjectShow: false,
         allTaskShow: false
-      }
+      },
+      projectSurveyParams: {
+        current: "1",
+        pageSize: "5"
+      },
+      myTaskParams: {
+        current: "1",
+        pageSize: "5"
+      },
+      projectSurveyData: {
+        sum: 0,
+        dataList: []
+      },
+      myTaskData: {
+        sum: 0,
+        dataList: []
+      },
+      myMemberData: {
+        sum: 0,
+        dataList: []
+      },
+      allProjectData: [],
+      allTaskData: []
     };
   },
   mounted() {
     this.projectShow = !this.projectShow;
+    this.getProInfoByIndexList();
+    this.getMyTaskInfoByIndexList();
+    this.getMyMemberSubtaskCountByIndexList();
   },
   methods: {
-    queryMyAllProject() {
+    getMyMemberSubtaskCountByIndexList() {
+      getMyMemberSubtaskCountByIndexApi()
+        .then(res => {
+          if (res.data.code === 200) {
+            console.log("组员任务", res.data);
+            this.myMemberData = res.data.data;
+          }
+        })
+        .catch(error => {
+          this.$Message.error("接口故障--/getProInfoByIndex");
+        });
+    },
+    getMyTaskInfoByIndexList(type = "") {
+      this.taskloading=true;
+      getMyTaskInfoByIndexApi(this.myTaskParams)
+        .then(res => {
+          if (res.data.code === 200) {
+            console.log("我的任务", res.data);
+            if (type === "all") {
+              this.allTaskData = res.data.data.dataList;
+              this.taskloading=false;
+            } else {
+              this.myTaskData = res.data.data;
+            }
+          }
+        })
+        .catch(error => {
+          this.$Message.error("接口故障--/getProInfoByIndex");
+        });
+    },
+    getProInfoByIndexList(type = "") {
+      this.proloading=true;
+      getProInfoByIndexApi(this.projectSurveyParams)
+        .then(res => {
+          if (res.data.code === 200) {
+            console.log("项目概况", res.data);
+            if (type === "all") {
+              this.allProjectData = res.data.data.dataList;
+              this.proloading=false;
+            } else {
+              this.projectSurveyData = res.data.data;
+            }
+          }
+        })
+        .catch(error => {
+          this.$Message.error("接口故障--/getProInfoByIndex");
+        });
+    },
+    queryMyAllTask() {
       this.modelShow.allTaskShow = !this.modelShow.allTaskShow;
+      this.myTaskParams.pageSize = "10";
+      this.myTaskParams.current = "1";
+      this.getMyTaskInfoByIndexList("all");
     },
     queryAllProject() {
       this.modelShow.allProjectShow = !this.modelShow.allProjectShow;
+      this.projectSurveyParams.pageSize = "10";
+      this.projectSurveyParams.current = "1";
+      this.getProInfoByIndexList("all");
+    },
+    changeCurrent(val, type) {
+      console.log(val, type);
+      if (type === "pro") {
+        this.projectSurveyParams.current = val;
+        this.getProInfoByIndexList("all");
+      } else if (type === "task") {
+        this.myTaskParams.current = val;
+        this.getMyTaskInfoByIndexList("all");
+      }
+    },
+    changePageSize(val, type) {
+      console.log(val, type);
+      if (type === "pro") {
+        this.projectSurveyParams.pageSize = val;
+        this.getProInfoByIndexList("all");
+      } else if (type === "task") {
+        this.myTaskParams.pageSize = val;
+        this.getMyTaskInfoByIndexList("all");
+      }
     }
   }
 };
@@ -111,6 +218,7 @@ export default {
 <style lang="scss" scoped>
 .page {
 }
+
 .more-icon {
   font-size: 20px;
   margin: 0 2px;

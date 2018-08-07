@@ -4,7 +4,7 @@
     <Row>
       <Col span="24">
       <div class="primary apply-title">基本信息</div>
-      <FormItem label="项目信息" prop="proName">
+      <FormItem label="项目名称" prop="proName">
         <Input v-model="formValidate.proName" placeholder="请输入项目名称（最多50字）"></Input>
       </FormItem>
       <FormItem label="项目类型" prop="proType">
