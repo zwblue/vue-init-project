@@ -1,8 +1,8 @@
 import axios from 'axios'
 import Qs from 'qs'
-import {baseURL,loginURL} from './geturl'
+import { baseURL, loginURL } from './geturl'
 import {
-  Message,
+  Spin,
   Modal
 } from 'iview';
 // 封装axios 创建基础实例以及axios拦截
@@ -14,12 +14,26 @@ const service = axios.create({
   }
 });
 service.interceptors.request.use(config => {
+  Spin.show({
+    render:(h) => {
+      return h('div', [
+        h('Icon', {
+          'class': 'demo-spin-icon-load',
+          props: {
+            type: 'ios-loading',
+            size: 18
+          }
+        }),
+        h('div', 'Loading')
+      ])
+    }
+  });
   if (sessionStorage.getItem('token')) {
     config.headers.common['Authorization'] = sessionStorage.getItem('token')
   }
-  if(config.url==='/user/login'){
-    config.data=JSON.stringify(config.data);
-  }else{
+  if (config.url === '/user/login') {
+    config.data = JSON.stringify(config.data);
+  } else {
     config.data = Qs.stringify(config.data)
   }
   return config
@@ -30,12 +44,13 @@ service.interceptors.request.use(config => {
 
 service.interceptors.response.use(
   response => {
+    Spin.hide();
     if (response.status !== 200) {
     } else {
       if (response.data.code === 403) {
         sessionStorage.clear()
         localStorage.clear()
-       
+
         Modal.error({
           title: '提示',
           content: '您的登录信息已过时，请重新登录!',
@@ -48,7 +63,7 @@ service.interceptors.response.use(
     return response
   },
   error => {
-    console.log('error:' + error)
+    Spin.hide();
     return Promise.reject(error)
   }
 )

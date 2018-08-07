@@ -3,12 +3,14 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { Button, Message, Row, Col ,Table} from 'iview'
+import { Button, Message, Row, Col ,Table,Icon} from 'iview'
 import 'iview/dist/styles/iview.css'
+import "./index.css";
 Vue.component('Button', Button);
 Vue.component('Row', Row);
 Vue.component('Col', Col);
 Vue.component('Table', Table);
+Vue.component('Icon', Icon);
 Vue.prototype.$Message = Message
 Vue.config.productionTip = false
 Vue.prototype.$IVIEW = {}//size报错的处理

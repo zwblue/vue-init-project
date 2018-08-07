@@ -82,7 +82,7 @@ export default {
             return h(
               'div', {
                 'class': {
-                  error: params.row.age > 25
+                  error: params.row.proState ==7 || params.row.proState ==8
                 }
               }, getProjectState(params.row.proState)
             )

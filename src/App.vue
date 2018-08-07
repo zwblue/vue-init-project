@@ -4,7 +4,6 @@
   </div>
 </template>
 <script>
-import "./index.css";
 export default {
   name: "App",
   data() {

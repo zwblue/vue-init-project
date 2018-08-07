@@ -6,5 +6,6 @@ export function getAllDepartmentInfoApi (data = {}) {
     url: '/getAllDepartmentInfo',
     method: 'post',
     data: data,
+   
   })
 }

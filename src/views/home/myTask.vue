@@ -74,7 +74,7 @@ export default {
               "div",
               {
                 class: {
-                  error: params.row.age > 25
+                  error: params.row.proState ==5
                 }
               },
               getTaskState(params.row.subtaskState)

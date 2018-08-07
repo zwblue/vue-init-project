@@ -144,14 +144,12 @@ export default {
         });
     },
     getMyTaskInfoByIndexList(type = "") {
-      this.taskloading=true;
       getMyTaskInfoByIndexApi(this.myTaskParams)
         .then(res => {
           if (res.data.code === 200) {
             console.log("我的任务", res.data);
             if (type === "all") {
               this.allTaskData = res.data.data.dataList;
-              this.taskloading=false;
             } else {
               this.myTaskData = res.data.data;
             }
@@ -162,14 +160,12 @@ export default {
         });
     },
     getProInfoByIndexList(type = "") {
-      this.proloading=true;
       getProInfoByIndexApi(this.projectSurveyParams)
         .then(res => {
           if (res.data.code === 200) {
             console.log("项目概况", res.data);
             if (type === "all") {
               this.allProjectData = res.data.data.dataList;
-              this.proloading=false;
             } else {
               this.projectSurveyData = res.data.data;
             }

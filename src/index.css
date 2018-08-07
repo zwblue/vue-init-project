@@ -4,7 +4,34 @@ body {
   background: #fff;
   font-size: 14px;
 }
+body .primary-bg {
+  background: #2d8cf0 ;
+}
+body .light-bg {
+  background: #5cadff ;
+}
+body .success-bg {
+  background: #19be6b ;
+}
+body .error-bg {
+  background: #ed4014 ;
+}
 
+body .primary {
+  color: #2d8cf0 ;
+}
+body .success {
+  color: #19be6b ;
+}
+body .error {
+  color: #ed4014 ;
+}
+body .warning {
+  color: #ff9900 ;
+}
+.demo-spin-icon-load{
+  animation: ani-demo-spin 1s linear infinite;
+}
 .clearfix:after{
   content: "." ; 
   display: block ;
