@@ -32,6 +32,12 @@ body .warning {
 .demo-spin-icon-load{
   animation: ani-demo-spin 1s linear infinite;
 }
+
+.center-tab .ivu-tabs-nav{
+  left:50%;
+  margin-left:-76px;
+}
+ 
 .clearfix:after{
   content: "." ; 
   display: block ;
