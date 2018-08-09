@@ -48,3 +48,23 @@ export function projectApprovalApi (data = {}) {
     data: data,
   })
 }
+
+
+// 项目回收站
+export function selectRecProApi (data = {}) {
+  return fetch({
+    url: '/selectRecPro',
+    method: 'post',
+    data: data,
+  })
+}
+
+
+// 归档项目
+export function newSelectFinProApi (data = {}) {
+  return fetch({
+    url: '/NewSelectFinPro',
+    method: 'post',
+    data: data,
+  })
+}

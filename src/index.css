@@ -29,6 +29,9 @@ body .error {
 body .warning {
   color: #ff9900 ;
 }
+body .bold{
+  font-weight: bold;
+}
 .demo-spin-icon-load{
   animation: ani-demo-spin 1s linear infinite;
 }

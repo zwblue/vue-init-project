@@ -23,3 +23,12 @@ export function projectStatisticsDistributedApi (data = {}) {
     data: data,
   })
 }
+// 任务统计
+
+export function selectonTaskApi (data = {}) {
+  return fetch({
+    url: '/NewProReport/selectonTask',
+    method: 'post',
+    data: data,
+  })
+}

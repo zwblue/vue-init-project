@@ -134,12 +134,10 @@ export default {
         },
         tooltip: {
           trigger: "item",
-            formatter:function(params, ticket, callback) {
-              console.log(params,ticket,callback)
-            return this.seriesData2[params.dataIndex] + "<br />" + 
-            params.seriesName + "：" + params.value;
+            formatter:(params, ticket, callback)=>{
+            return params.name+'数量：' +params.data+ "<br />" + 
+            params.name + "占比：" + this.seriesData2[params.dataIndex];
         }
-          // "{b}数：{c}<br/>"
         },
         series: [{
           name: "数量",

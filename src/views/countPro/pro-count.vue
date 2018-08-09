@@ -9,10 +9,10 @@
         </div>
         <Form :label-width="100" inline>
           <FormItem label="项目发起时间" class="form-item">
-            <DatePicker placement='bottom-end' type="daterange" @on-change='selectTime' placeholder="Select date" ></DatePicker>
+            <DatePicker placement='bottom-end' type="daterange" @on-change='selectTime' placeholder="请选择时间区间" ></DatePicker>
           </FormItem>
           <FormItem class="form-item" :label-width="50">
-            <Button type='primary'>查询</Button>
+            <Button type='primary' @click="queryStatisticsOverallList">查询</Button>
           </FormItem>
         </Form>
       </div>
@@ -21,7 +21,7 @@
           <Card >
             <div class="pro-total" :style='{height:"300px"}'>
               <div>
-                  <div class="total">{{proTotal.proTotalNum}}</div>
+                  <div class="total primary bold">{{proTotal.proTotalNum}}</div>
               <div class="text">{{proTotal.proTotalText}}</div>
               </div>
             </div>
@@ -29,17 +29,32 @@
         </Col>
         <Col :span='7'>
         <Card>
-        <myPie :title='developmentData.name' :count='developmentData.totalCount' :seriesData='developmentData.developmentData'></myPie>
+          <div class="rela">
+           <myPie :title='developmentData.name' v-if='topIfShow' v-show='developmentData'  :count='developmentData.totalCount' :seriesData='developmentData.developmentData'></myPie>
+            <div class="wxtip" v-if='!topIfShow'  :style="{height:'300px',textAlign:'center',lineHeight:'300px',fontSize:'24px'}">
+            暂无数据
+       </div>
+          </div>
         </Card>
         </Col>
         <Col :span='7'>
         <Card>
-        <myPie :title='overDueData.name' :count='overDueData.totalCount' :seriesData='overDueData.overDueData'></myPie>
+          <div class="rela">
+        <myPie :title='overDueData.name' v-if='topIfShow' :count='overDueData.totalCount' :seriesData='overDueData.overDueData'></myPie>
+            <div class="wxtip" v-if='!topIfShow'  :style="{height:'300px',textAlign:'center',lineHeight:'300px',fontSize:'24px'}">
+            暂无数据
+       </div>
+          </div>
         </Card>
         </Col>
         <Col :span='7'>
         <Card>
-        <myPie :title='accomplishData.name' :count='accomplishData.totalCount' :seriesData='accomplishData.accomplishData'></myPie>
+          <div class="rela">
+        <myPie :title='accomplishData.name' v-if='topIfShow' :count='accomplishData.totalCount' :seriesData='accomplishData.accomplishData'></myPie>
+        <div class="wxtip" v-if='!topIfShow'  :style="{height:'300px',textAlign:'center',lineHeight:'300px',fontSize:'24px'}">
+            暂无数据
+       </div>
+          </div>
         </Card>
         </Col>
       </Row>
@@ -57,14 +72,19 @@
         </div>
         <Form :label-width="100" inline>
           <FormItem label="项目发起时间" class="form-item">
-            <DatePicker placement='bottom-end' type="daterange" @on-change='selectTime' placeholder="Select date" ></DatePicker>
+            <DatePicker placement='bottom-end' type="daterange" @on-change='selectTime' placeholder="请选择时间区间" ></DatePicker>
           </FormItem>
           <FormItem class="form-item" :label-width="50">
-            <Button type='primary'>查询</Button>
+            <Button type='primary' @click="queryStatisticsDistributedList">查询</Button>
           </FormItem>
         </Form>
       </div>
-    <myBar :yAxis='yAxisBar' :title='barTitle' :seriesData='seriesBar'></myBar>
+     <div class="rela">
+       <myBar :yAxis='yAxisBar' :title='barTitle' v-if='leftIfShow' :seriesData='seriesBar' :seriesData2='seriesBar2'></myBar>
+       <div class="wxtip" v-if='!leftIfShow'  :style="{height:'500px',textAlign:'center',lineHeight:'500px',fontSize:'24px'}">
+            暂无数据
+       </div>
+      </div>
     </Card>
     </Col>
     <Col span='12'>
@@ -75,14 +95,31 @@
         </div>
         <Form :label-width="100" inline>
           <FormItem label="项目发起时间" class="form-item">
-            <DatePicker placement='bottom-end' type="daterange" @on-change='selectTime' placeholder="Select date" ></DatePicker>
+            <DatePicker placement='bottom-end' type="daterange" @on-change='selectTime' placeholder="请选择时间区间" ></DatePicker>
           </FormItem>
           <FormItem class="form-item" :label-width="50">
-            <Button type='primary'>查询</Button>
+            <Button type='primary' @click="queryAccomplishList">查询</Button>
           </FormItem>
         </Form>
       </div>
-        <myPie :title='accomplishData.name' :count='accomplishData.totalCount' :seriesData='accomplishData.accomplishData'></myPie>
+     <div class="rela">
+        <finished-pie :title='accomplishData.name' v-if='rightIfShow' :count='finished.total' :seriesData='finished.data'></finished-pie>
+        <div class="wxtip" v-if='!rightIfShow' :style="{height:'500px',fontSize:'24px',textAlign:'center',lineHeight:'500px'}">
+            暂无数据
+        </div>
+        <div class="finish-desc" v-if='rightIfShow'>
+          <div :style='{margin:"0 10px"}'>
+            {{finished.data[0].name}}：{{finished.data[0].value}}（{{finished.data[0].rpercent}}）
+          </div>
+           <div :style='{margin:"0 10px"}'>
+            {{finished.data[1].name}}：{{finished.data[1].value}}（{{finished.data[1].rpercent}}）
+          </div>
+           <div :style='{margin:"0 10px"}'>
+            {{finished.data[2].name}}：{{finished.data[2].value}}（{{finished.data[2].rpercent}}）
+          </div>
+        </div>
+     </div>
+
     </Card>
     </Col>
   </Row>
@@ -99,6 +136,7 @@ import {
 } from 'iview'
 import myPie from "components/echarts/pie";
 import myBar from "components/echarts/bar";
+import finishedPie from "components/echarts/finishedPie";
 import {projectStatisticsAccomplishApi,projectStatisticsOverallApi,projectStatisticsDistributedApi} from 'api/procount.js'
 export default {
   components: {
@@ -107,13 +145,21 @@ export default {
     DatePicker,
     Form,
     myPie,
-    Circle,myBar
+    Circle,myBar,finishedPie
   },
   data() {
     return {
+      topIfShow:false,
+      leftIfShow:false,
+      rightIfShow:false,
       barTitle:'',
+      finished:{
+        total:'',
+        data:[]
+        },
       yAxisBar:[],
       seriesBar:[],
+      seriesBar2:[],
       proTotal:{
         proTotalNum:0,
         proTotalText:''
@@ -133,7 +179,7 @@ export default {
         totalCount:0,
         accomplishData:[] 
       },
-      formItem: {
+      procountParams: {
         createDate1: '',
         createDate2:''
       }
@@ -145,21 +191,43 @@ export default {
     this.projectStatisticsDistributedList();
   },
   methods: {
+    queryAccomplishList(){
+      this.projectStatisticsAccomplishList()
+    },
+        queryStatisticsOverallList(){
+      this.projectStatisticsOverallList()
+    },
+        queryStatisticsDistributedList(){
+      this.projectStatisticsDistributedList()
+    },
+
     // 项目完成情况
     projectStatisticsAccomplishList(){
-      projectStatisticsAccomplishApi().then(res=>{
+      projectStatisticsAccomplishApi(this.procountParams).then(res=>{
         if(res.data.code===200){
+          if(!res.data.data){
+            this.rightIfShow=false;
+            return;
+          }
+          this.rightIfShow=true;
           console.log('项目完成情况',res.data);
+          this.finished.total=Number(res.data.data[3].value);
+          this.finished.data=res.data.data.slice(0,3);
         }
       }).catch(error=>{
         this.$Message.error('接口故障:/NewProReport/projectStatisticsAccomplish')
       })
     },
-    // 项目分布情况
+    // 项目总体情况
     projectStatisticsOverallList(){
-      projectStatisticsOverallApi().then(res=>{
+      projectStatisticsOverallApi(this.procountParams).then(res=>{
         if(res.data.code===200){
-          console.log('项目分布情况',res.data);
+          if(!res.data.data){
+            this.topIfShow=false;
+            return;
+          }
+          this.topIfShow=true;
+          console.log('项目总体情况',res.data);
           this.proTotal.proTotalNum=res.data.data[0].value
           this.proTotal.proTotalText=res.data.data[0].name
           this.developmentData=res.data.data[1];
@@ -170,14 +238,20 @@ export default {
         this.$Message.error('接口故障:/NewProReport/projectStatisticsOverall')
       })
     },
-    // 项目总体情况
+    // 项目分布情况
     projectStatisticsDistributedList(){
-      projectStatisticsDistributedApi().then(res=>{
+      projectStatisticsDistributedApi(this.procountParams).then(res=>{
         if(res.data.code===200){
-          console.log('项目总体情况',res.data);
+            if(!res.data.data){
+            this.leftIfShow=false;
+            return;
+          }
+          this.leftIfShow=true;
+          console.log('项目分布情况',res.data);
           this.yAxisBar=res.data.data.data;
           this.barTitle=res.data.data.series[0].name
           this.seriesBar=res.data.data.series[0].value;
+          this.seriesBar2=res.data.data.series[0].rpercent;
           console.log(this.seriesBar);
         }
       }).catch(error=>{
@@ -185,8 +259,8 @@ export default {
       })
     },
     selectTime(time) {
-      this.formInline.createDateStart = time[0];
-      this.formInline.createDateEnd = time[1];
+      this.procountParams.createDate1 = time[0];
+      this.procountParams.createDate2 = time[1];
     },
   }
 }
@@ -206,6 +280,14 @@ export default {
   .text{
     font-size: 22px;
   }
+}
+.finish-desc{
+  margin:10px 0;
+  display:flex;
+  justify-content: center;
+}
+.rela{
+  position: relative;
 }
 .header {
   display: flex;

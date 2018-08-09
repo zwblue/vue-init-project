@@ -3,8 +3,8 @@
 </style>
 <template>
 <div class="par-box">
-  <div :class="{num:true,primary:count?true:false,wxtip:count?false:true}">
-    {{count||'暂无数据'}}
+  <div class="num primary">
+    {{count}}
   </div>
   <div :id="id" :style="{height:height+'px',position:'relative'}">
   </div>
@@ -28,13 +28,13 @@ export default {
       type: String,
       default: "饼图"
     },
-    count:{
-      type:[Number,String],
-      default:0
+    count: {
+      type: [Number,String],
+      default: 0
     },
     height: {
       type: Number,
-      default: 300
+      default: 458
     },
     legendData: {
       type: Array,
@@ -98,23 +98,39 @@ export default {
       this.barchart = echarts.init(document.getElementById(this.id), "walden");
       // 绘制图表
       this.barchart.setOption({
-         title: {
-          text: this.title, left: 'center',
-            bottom: 15,
-            textStyle: {
-              color: '#2d8cf0',
-              marginLeft:'-20px'
-            }
+        title: {
+          text: this.title,
+          left: 'center',
+          bottom: 10,
+          textStyle: {
+            color: '#2d8cf0'
+          }
         },
         tooltip: {
           trigger: "item",
-          formatter: "{b}数：{c}<br/>数量占比：{d}%"
+          formatter: (params, ticket, callback) => {
+            let list = this.seriesData[params.dataIndex].list
+            if (list[1]) {
+              return params.name + '数量：' + params.value + "<br />" +
+                params.name + "占比：" + this.seriesData[params.dataIndex].rpercent + "<br />" +
+                list[0].name + '数量：' + list[0].value + "<br />" +
+                list[0].name + '占比：' + list[0].rpercent + "<br />" +
+                list[1].name + '数量：' + list[1].value + "<br />" +
+                list[1].name + '占比：' + list[1].rpercent + "<br />";
+            } else {
+              return params.name + '数量：' + params.value + "<br />" +
+                params.name + "占比：" + this.seriesData[params.dataIndex].rpercent + "<br />" +
+                list[0].name + '数量：' + list[0].value + "<br />" +
+                list[0].name + '占比：' + list[0].rpercent + "<br />";
+            }
+
+          }
         },
         series: [{
           name: this.title,
           type: "pie",
           radius: ["50%", "65%"],
-          center:["50%", "40%"],
+          center: ["50%", "50%"],
           data: this.seriesData,
           labelLine: {}
         }]
@@ -130,7 +146,7 @@ export default {
 
 .num {
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 24px;
