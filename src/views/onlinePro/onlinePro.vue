@@ -76,29 +76,17 @@ export default {
               )
           }
         },
-         {
-          title: '延期上线时间',
-          align:'center',
-          key: 'delayDate'
-        },
-        {
+          {
           title: '预计上线时间',
           align:'center',
           key: 'planSDate'
         },
         {
-          title: '延期原因',
+          title: '项目状态',
           align:'center',
-          key: 'delayReason'
+          key: 'prostate'
         },
         {
-          title: '项目进度',
-          align:'center',
-          render: (h, params) => {
-            const row = params.row;
-            return h('div', row.proProgress + '%')
-          }
-        }, {
           title: '发起人',
           align:'center',
           key: 'creater'
