@@ -22,10 +22,7 @@
     <Table border :columns="taskColumns" :data="tableData">
     </Table>
     <div :style='{margin:"20px 0"}'>
-      <!-- <Row>
-        <Col span='12'> <Divider orientation="left"><Button type="text">子任务列表</Button></Divider></Col>
-        <Col span='12'> <Divider orientation="right"> <Button type='primary' ghost icon='md-add' >添加子任务</Button></Divider></Col>
-      </Row> -->
+    
           <Tabs value="name1" type="card">
             <TabPane label="子任务列表" name="name1">
               <Table border :columns="zitaskColumns" :data="taskDetails.subtaskList"></Table>
@@ -45,6 +42,9 @@
 </div>
 </template>
 <script>
+import {
+  getButtonBySubtaskApi
+} from 'api/getbutton.js'
 import {
   getTaskState,
   getProjectType,
@@ -139,6 +139,16 @@ export default {
           align: "center",
           width: 130,
           render: (h, params) => {
+           let [tip,edit,del]=[true,true,true];
+            getButtonBySubtaskApi({
+            }).then(res=>{
+                  if(res.data.code===200){
+                    console.log(res.data.data);
+                    [tip,edit,del]=[true,false,false];
+                  }
+            }).catch(error=>{
+              this.$Message.error('接口故障：/getButtonBySubtask')
+            })
             return h("div", [
               h(
                 "Button",
@@ -148,7 +158,7 @@ export default {
                     size: "small"
                   },
                   style: {
-                    display: params.row.age > 25 ? "none" : ""
+                    display: !tip ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -167,7 +177,7 @@ export default {
                   },
                   style: {
                     marginLeft: "5px",
-                    display: params.row.age > 20 ? "none" : ""
+                    display:  !edit ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -186,7 +196,7 @@ export default {
                   },
                   style: {
                     marginLeft: "5px",
-                    display: params.row.age === 25 ? "none" : ""
+                    display: !del ? "none" : ""
                   },
                   on: {
                     click: () => {
