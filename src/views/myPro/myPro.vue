@@ -165,6 +165,17 @@ export default {
     this.getAllMyProjectListData();
   },
   methods: {
+    // getDownRoleMenuByParentList(){
+    //   getDownRoleMenuByParentApi().then(
+    //     res=>{
+    //       if(res.data.code===200){
+    //         console.log(res.data);
+    //       }
+    //     }
+    //   ).catch(
+    //     error=>{this.$Message.error('接口故障：/getDownRoleMenuByParent')}
+    //   )
+    // },
     gotoDetails(row){
       console.log(row);
       this.$router.push('proDetails/'+row.proId)

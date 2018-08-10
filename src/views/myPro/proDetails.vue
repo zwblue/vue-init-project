@@ -59,7 +59,7 @@
             <zitask-descrition v-show='detailsType==3' :zitaskDetails='zitaskDetails' :proName='proDetails.proName'></zitask-descrition>
           </TabPane>
           <TabPane label="甘特图" name="name2">
-            <pro-playTable></pro-playTable>
+            <pro-ganteTable></pro-ganteTable>
           </TabPane>
         </Tabs>
       </div>
@@ -84,7 +84,7 @@ import ProGress from 'components/proGress/proGress.vue'
 import ProDescrition from './pro-descrition.vue'
 import TaskDescrition from './task-descrition.vue'
 import ZitaskDescrition from './zitask-descrition.vue'
-import ProPlayTable from './pro-playTable.vue'
+import ProGanteTable from './pro-ganteTable.vue'
 import AddGroup from './model/addGroup.vue'
 import {
   getLogDetailInfoApi,
@@ -105,7 +105,7 @@ export default {
     Collapse,
     Panel,
     ProDescrition,
-    ProPlayTable,
+    ProGanteTable,
     TaskDescrition,
     ZitaskDescrition,AddGroup
   },

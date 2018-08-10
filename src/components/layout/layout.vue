@@ -37,10 +37,10 @@
 <div class="layout">
   <Layout :style="{minHeight: '100vh',minWidth:'1400px'}">
     <Sider :collapsed-width="78">
-      <Menu :active-name="activeMenu" theme="dark" width="auto" @on-select='selectMenu'>
+      <Menu :active-name="activeMenu" v-if='menuList.length!==0' theme="dark" width="auto" @on-select='selectMenu'>
         <MenuGroup title="项目管理系统">
-          <MenuItem v-for='(item,index) in menuList' :key='index' :name="item.url">
-          <span>{{item.title}}</span>
+          <MenuItem v-for='(item,index) in menuList' :key='index' :name="item.Url" >
+          <span>{{item.Name}}</span>
           </MenuItem>
         </MenuGroup>
       </Menu>
@@ -62,6 +62,9 @@
 </div>
 </template>
 <script>
+import {
+newFindRoleMenuApi
+} from "api/home.js";
 import {
   Layout,
   Content,
@@ -89,42 +92,8 @@ export default {
   },
   data() {
     return {
-      menuList: [{
-          title: "首页",
-          url: "/"
-        },
-        {
-          title: "申请",
-          url: "/applyPro"
-        },
-        {
-          title: "立项待审批",
-          url: "/createPro"
-        },
-        {
-          title: "上线待审批",
-          url: "/onlinePro"
-        },
-        {
-          title: "延期待审批",
-          url: "/delayPro"
-        },
-        {
-          title: "我的项目",
-          url: "/myPro"
-        },
-        {
-          title: "归档项目",
-          url: "/finishedPro"
-        },
-        {
-          title: "项目回收站",
-          url: "/recyclePro"
-        },
-        {
-          title: "项目统计",
-          url: "/countPro"
-        }
+      
+      menuList: [
       ],
       pageTitle: "",
       activeMenu: ''
@@ -142,18 +111,27 @@ export default {
     }
   },
   mounted() {
-    this.initData();
+    this.newFindRoleMenuList();
   },
   methods: {
+    newFindRoleMenuList(){
+      newFindRoleMenuApi().then(res=>{
+        if(res.data.code===200){
+          this.menuList=res.data.data;
+          this.initData();
+        }
+      }).catch()
+    },
     selectMenu(menu) {
       this.$router.push(menu);
     },
     initData() {
       this.menuList.forEach(val => {
-        if (val.url === this.$route.path) {
-          this.pageTitle = val.title;
-          sessionStorage.setItem('url', val.url)
-          sessionStorage.setItem('title', val.title)
+        console.log(val.Url == this.$route.path)
+        if (val.Url == this.$route.path) {
+          this.pageTitle = val.Name;
+          sessionStorage.setItem('url', val.Url)
+          sessionStorage.setItem('title', val.Name)
           this.activeMenu = this.$route.path;
         }
       });

@@ -51,9 +51,9 @@ export function projectApprovalApi (data = {}) {
 
 
 // 项目回收站
-export function selectRecProApi (data = {}) {
+export function newSelectRecPro (data = {}) {
   return fetch({
-    url: '/selectRecPro',
+    url: '/NewSelectRecPro',
     method: 'post',
     data: data,
   })
@@ -64,6 +64,23 @@ export function selectRecProApi (data = {}) {
 export function newSelectFinProApi (data = {}) {
   return fetch({
     url: '/NewSelectFinPro',
+    method: 'post',
+    data: data,
+  })
+}
+
+// 项目甘特图
+export function getGTChartByProApi (data = {}) {
+  return fetch({
+    url: '/getGTChartByPro',
+    method: 'post',
+    data: data,
+  })
+}
+// 根据项目获取按扭
+export function getDownRoleMenuByParentApi (data = {}) {
+  return fetch({
+    url: '/getDownRoleMenuByParent',
     method: 'post',
     data: data,
   })

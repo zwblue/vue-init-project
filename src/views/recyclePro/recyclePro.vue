@@ -9,12 +9,12 @@
         <DatePicker type="daterange" placement="bottom-end" @on-change='selectTime' split-panels placeholder="请选择时间" style="width: 200px"></DatePicker>
       </FormItem>
       <FormItem label="项目类型">
-        <Select v-model="formInline.proType" style="width: 150px">
+        <Select v-model="formInline.protype" style="width: 150px">
           <Option v-for='item in projectTypeArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
       </FormItem>
       <FormItem label="项目状态">
-        <Select v-model="formInline.proState" style="width: 150px">
+        <Select v-model="formInline.prostate" style="width: 150px">
           <Option v-for='item in projectStateArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
       </FormItem>
@@ -28,21 +28,16 @@
     </Form>
     <Table border class="my-table" :columns="prjectColumns" size='default' @on-row-click='gotoDetails' :data="projectList">
     </Table>
-      <Alert :style='{margin:"10px 0"}'>
-          <div class="wxtip wx-tip">温馨提示：
-           <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务
-          </div>
-      </Alert>
-    <div class="clearfix">
+    <div class="clearfix" :style='{marginTop:"20px"}'>
       <Page class="rt" :current='page.current' :pageSize='page.pageSize'  :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize'  show-total  transfer/>
     </div>
   </div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
-import {getProjectState,projectStateArray,projectTypeArray} from 'utils/common.js';
-import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page,Alert } from 'iview';
-import {getAllMyProjectListApi} from 'api/myproject'
+import {getProjectState,projectStateArray,projectTypeArray,getProjectType} from 'utils/common.js';
+import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page } from 'iview';
+import {newSelectRecPro} from 'api/myproject'
 export default {
   components: {
     FormItem,
@@ -52,7 +47,7 @@ export default {
     Input,
     DatePicker,
     Icon,
-    ProGress,Alert
+    ProGress
   },
   data() {
     return {
@@ -64,10 +59,10 @@ export default {
       formInline: {
         originator: "",
         proName: "",
-        createDateStart: "",
-        createDateEnd: "",
-        proState: "",
-        proType: "",
+        createdate1: "",
+        createdate2: "",
+        prostate: "",
+        protype: "",
         current:1,
         pageSize:10
       },
@@ -103,7 +98,7 @@ export default {
           }
         },
         {
-          title: "上线时间",
+          title: "创建时间",
           align: "center",
           key: "planSDate"
         },
@@ -123,28 +118,17 @@ export default {
           }
         },
         {
-          title: "任务数进度",
+          title: "项目类型",
           align: "center",
-          render:function(h,params){
-            return h('div',{},params.row.finishTaskNum+' / '+params.row.allTaskNum)
-          }
-        },
-        {
-          title: "项目进度（实际进度/预期进度）",
-          align: "center",
-          width: 300,
           render: (h, params) => {
-            return h(ProGress, {
-              props: {
-                currentProgress: Number(params.row.proProgress),
-                planProgress: Number(params.row.theoryProProgress)
-              }
-            });
+            return h(
+              "div",
+              getProjectType(params.row.proType)
+            );
           }
         },
-
         {
-          title: "发起人",
+          title: "创建人",
           align: "center",
           key: "creater"
         }
@@ -170,7 +154,7 @@ export default {
       this.$router.push('proDetails/'+row.proId)
     },
     getAllMyProjectListData(){
-      getAllMyProjectListApi(this.formInline).then(res=>{
+      newSelectRecPro(this.formInline).then(res=>{
         console.log(res);
         if(res.data.code===200){
           this.projectList=res.data.data;
@@ -185,8 +169,8 @@ export default {
       )
     },
     selectTime(time) {
-      this.formInline.createDateStart = time[0];
-      this.formInline.createDateEnd = time[1];
+      this.formInline.createdate1 = time[0];
+      this.formInline.createdate2 = time[1];
     },
     handleSubmit(name) {
       console.log(this.formInline)
@@ -207,14 +191,6 @@ export default {
 <style lang="scss" scoped>
 .page {
   padding: 10px 0;
-}
-.wx-tip {
-  font-size: 14px;
-}
-.icon {
-  font-size: 18px;
-  margin: 0 2px;
-  vertical-align: -3px;
 }
 </style>
 

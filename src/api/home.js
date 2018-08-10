@@ -8,7 +8,6 @@ export function getProCountByCPAndHDApi (data = {}) {
   })
 }
 // 项目概况
-
 export function getProInfoByIndexApi (data = {}) {
   return fetch({
     url: '/getProInfoByIndex',
@@ -51,3 +50,12 @@ export function getSubtaskCountByMemberApi (data = {}) {
     data: data,
   })
 }
+// 根据用户角色查询菜单
+export function newFindRoleMenuApi (data = {}) {
+  return fetch({
+    url: '/newFindRoleMenu',
+    method: 'post',
+    data: data,
+  })
+}
+

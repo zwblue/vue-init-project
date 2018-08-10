@@ -1,6 +1,6 @@
 <template>
 <div class="page">
-  <h1>项目甘特图</h1>
+  <h1>甘特图</h1>
 </div>
 </template>
 

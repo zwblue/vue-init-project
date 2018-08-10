@@ -76,7 +76,7 @@ import { Divider, Icon, Alert } from "iview";
 import {
   getProInfoByIndexApi,
   getMyTaskInfoByIndexApi,
-  getMyMemberSubtaskCountByIndexApi
+  getMyMemberSubtaskCountByIndexApi,newFindRoleMenuApi
 } from "api/home.js";
 import allProjectVue from "./allProject.vue";
 export default {
@@ -108,6 +108,10 @@ export default {
         current: "1",
         pageSize: "5"
       },
+      myMemberParams:{
+        current: "1",
+        pageSize: "10000"
+      },
       projectSurveyData: {
         sum: 0,
         dataList: []
@@ -132,7 +136,7 @@ export default {
   },
   methods: {
     getMyMemberSubtaskCountByIndexList() {
-      getMyMemberSubtaskCountByIndexApi()
+      getMyMemberSubtaskCountByIndexApi(this.myMemberParams)
         .then(res => {
           if (res.data.code === 200) {
             console.log("组员任务", res.data);
