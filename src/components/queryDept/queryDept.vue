@@ -59,7 +59,6 @@ export default {
         });
     },
     deptComputed(array) {
-      console.log(array)
       const newArray = array.concat();
 
       function plan(newArray) {

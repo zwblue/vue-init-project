@@ -6,7 +6,7 @@
             <my-task :dataList="dataList" :loading='loading'></my-task>
         </div>
         <div slot="footer">
-            <Page :total="100" @on-change='changeCurrent' @on-page-size-change='changePageSize' show-sizer  show-total transfer/>
+            <Page :total="page.total"  :current='page.current' :pageSize='page.pageSize'  @on-change='changeCurrent' @on-page-size-change='changePageSize' show-sizer  show-total transfer/>
         </div>
     </Modal>
 </div>
@@ -26,6 +26,12 @@ export default {
         return {
           allTaskShow: false
         };
+      }
+    },
+     page:{
+      type:Object,
+      default:function(){
+        return {}
       }
     },
     dataList:{

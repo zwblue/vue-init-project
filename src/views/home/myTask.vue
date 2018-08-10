@@ -1,13 +1,19 @@
 <template>
-  <div>
-    <Table border :loading='loading' class="my-table" :columns="columns1" size='default' :data="dataList">
-    </Table>
-  </div>
+<div>
+  <Table border :loading='loading' class="my-table" :columns="columns1" size='default' :data="dataList">
+  </Table>
+</div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
-import { Table, Icon, Divider } from 'iview';
-import {getTaskState} from 'utils/common.js'
+import {
+  Table,
+  Icon,
+  Divider
+} from 'iview';
+import {
+  getTaskState
+} from 'utils/common.js'
 export default {
   components: {
     Table,
@@ -15,28 +21,26 @@ export default {
     Divider,
     ProGress
   },
-   props:{
-    dataList:{
-      type:Array,
-      default:function(){
+  props: {
+    dataList: {
+      type: Array,
+      default: function() {
         return []
       }
     },
-    loading:{
-      type:Boolean,
-      default:false
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      columns1: [
-        {
+      columns1: [{
           title: "任务名称",
           align: "center",
           render: (h, params) => {
             return h(
-              "div",
-              {
+              "div", {
                 class: {
                   primary: true
                 }
@@ -71,10 +75,9 @@ export default {
           align: "center",
           render: (h, params) => {
             return h(
-              "div",
-              {
+              "div", {
                 class: {
-                  error: params.row.proState ==5
+                  error: params.row.proState == 5
                 }
               },
               getTaskState(params.row.subtaskState)
@@ -97,12 +100,11 @@ export default {
         {
           title: "操作",
           align: "center",
-          width: 200,
+          width: 100,
           render: (h, params) => {
             return h("div", [
               h(
-                "Button",
-                {
+                "Button", {
                   props: {
                     type: "primary",
                     size: "small"
@@ -112,71 +114,27 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.remindClick(params.row.subtaskId);
+                      this.updateMytask(params.row.subtaskId);
                     }
                   }
                 },
-                "提醒"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "warning",
-                    size: "small"
-                  },
-                  style: {
-                    marginLeft: "5px",
-                    display: params.row.age > 20 ? "none" : ""
-                  },
-                  on: {
-                    click: () => {
-                      this.eidtClick(params.row.subtaskId);
-                    }
-                  }
-                },
-                "修改"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "error",
-                    size: "small"
-                  },
-                  style: {
-                    marginLeft: "5px",
-                    display: params.row.age === 25 ? "none" : ""
-                  },
-                  on: {
-                    click: () => {
-                      this.delClick(params.row.subtaskId);
-                    }
-                  }
-                },
-                "删除"
+                "更新"
               )
-            ]);
+            ])
           }
         }
       ]
-    };
+    }
+
   },
   methods: {
-    remindClick(val) {
-      console.log('remind', val);
-    },
-    eidtClick(val) {
-      console.log('eidt', val);
-    },
-    delClick(val) {
-      console.log('del', val);
+    updateMytask(val) {
+      console.log('updateMytask', val);
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.page {
-}
+.page {}
 </style>

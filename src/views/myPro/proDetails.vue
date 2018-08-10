@@ -15,7 +15,7 @@
           <div class="pro-state"><span :class="addClass(proDetails.proState)">{{getProjectState(proDetails.proState)}}</span></div>
         </div>
       </div>
-      <Button icon='md-add' type='primary' long @click="modelShow.addGroupShow=!modelShow.addGroupShow"> 添加参与部门</Button>
+      <Button icon='md-add' type='primary' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
       <Collapse v-model="openPanelIndex" accordion class="pro-details-panel">
         <Panel :name="String(index)" v-for='(task,index) in taskList' :key='index'>
           <div class="task-intr" @click="openTask(task.taskId,2)">
@@ -66,10 +66,8 @@
     </Card>
     </Col>
   </Row>
-  
   <!-- 添加参与组的组件 -->
-  <add-group :modelShow='modelShow' :proDetails='proDetails'></add-group>
-
+  <add-joinDept v-if='model.applydept' @getTaskListByProIdData="getTaskListByProIdData" :proDetails='proDetails' :model='model' ></add-joinDept>
 </div>
 </template>
 <script>
@@ -80,12 +78,12 @@ import {
   Collapse,
   Panel
 } from 'iview'
+import AddJoinDept from 'components/pro-operation/addJoinDept.vue'
 import ProGress from 'components/proGress/proGress.vue'
 import ProDescrition from './pro-descrition.vue'
 import TaskDescrition from './task-descrition.vue'
 import ZitaskDescrition from './zitask-descrition.vue'
 import ProGanteTable from './pro-ganteTable.vue'
-import AddGroup from './model/addGroup.vue'
 import {
   getLogDetailInfoApi,
   getTaskListByProIdApi
@@ -107,7 +105,7 @@ export default {
     ProDescrition,
     ProGanteTable,
     TaskDescrition,
-    ZitaskDescrition,AddGroup
+    ZitaskDescrition,AddJoinDept
   },
   data() {
     return {
@@ -121,7 +119,7 @@ export default {
       activeId: 0,
 
       // 各种弹框的显示
-      modelShow: {addGroupShow:false}
+      model: {applydept:false}
     };
   },
   computed: {

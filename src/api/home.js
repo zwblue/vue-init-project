@@ -33,7 +33,7 @@ export function getMyTaskInfoByIndexApi (data = {}) {
   })
 }
 
-// 组员下面的所能子任务
+// 组员下面的所有子任务
 export function getAllSubtaskInfoByMenmberApi (data = {}) {
   return fetch({
     url: '/getAllSubtaskInfoByMenmber',

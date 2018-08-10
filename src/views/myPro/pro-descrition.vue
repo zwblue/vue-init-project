@@ -196,7 +196,91 @@ export default {
       ],
     }
   },
-  mounted() {}
+  mounted() {},
+  methods:{
+    
+    // 项目作废
+    onDelete() {
+      let params = {
+        id: this.$route.params.id,
+        proId: this.$route.query.proId,
+        userId: sessionStorage.getItem("id"),
+        creatName: sessionStorage.getItem("userName"),
+        explain: "",
+        proState: 6
+      };
+      this.$Modal.confirm({
+        render: h => {
+          return h("Input", {
+            props: {
+              value: this.value,
+              autofocus: true,
+              type: "textarea",
+              rows: 4,
+              placeholder: "请输入作废原因..."
+            },
+            on: {
+              input: val => {
+                params.explain = val;
+              }
+            }
+          });
+        },
+        loading: true,
+        onOk: () => {
+          if (params.explain !== "") {
+            passOrReject(params)
+              .then(res => {
+                const data = res.data;
+                if (data.code == 200) {
+                  this.$Message.success(res.data.msg);
+                  this.$router.push({
+                    name: "我的项目"
+                  });
+                } else {
+                  this.$Message.error(res.data.msg);
+                }
+              })
+              .catch(err => {
+                this.$Message.error("系统异常！");
+              });
+            this.$Modal.remove();
+          } else {
+            this.$Message.error("请输入作废原因！");
+            this.$Modal.remove();
+          }
+        }
+      });
+    },
+     // 回复
+    replayrequest(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          messagePush(this.replayParams)
+            .then(res => {
+              if (res.data.code == 200) {
+                this.initDevLogList();
+                this.initProjectRecomdList();
+                this.$Message.success(res.data.msg);
+                this.replayParams.fileName = "";
+                this.filelist = [];
+              } else {
+                this.$Message.error(res.data.msg);
+                this.replayParams.fileName = "";
+                this.replayParams.filePath = "";
+              }
+              this.$refs[name].resetFields();
+            })
+            .catch(err => {
+              this.$Message.error("系统异常！");
+            });
+        } else {
+          // 不关闭弹窗，提示错误信息
+          this.$Message.error("表单验证失败，请填写完整的信息！");
+        }
+      });
+    },
+  }
 }
 </script>
 <style lang="scss" scoped>

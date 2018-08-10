@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { Button, Message, Row, Col ,Table,Icon} from 'iview'
+import { Button, Message, Row, Col ,Table,Icon,Modal} from 'iview'
 import 'iview/dist/styles/iview.css'
 import "./index.css";
 Vue.component('Button', Button);
@@ -12,6 +12,7 @@ Vue.component('Col', Col);
 Vue.component('Table', Table);
 Vue.component('Icon', Icon);
 Vue.prototype.$Message = Message
+Vue.prototype.$Modal = Modal
 Vue.config.productionTip = false
 Vue.prototype.$IVIEW = {}//size报错的处理
 

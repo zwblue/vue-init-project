@@ -1,41 +1,43 @@
 <template>
-  <div>
-    <Table border class="my-table" height="280" @on-row-click='rowClick' :columns="columns1" size='default' :data="dataList">
-    </Table>
-    <transition name="slide-fade">
-      <right-model v-show='rightModel.ifShow' :rightModel='rightModel' :tableData='tableData'>
-      </right-model>
-    </transition>
-  </div>
+<div>
+  <Table border class="my-table" height="280" @on-row-click='rowClick' :columns="columns1" size='default' :data="dataList">
+  </Table>
+  <transition name="slide-fade">
+    <right-model v-show='rightModel.ifShow' :rightModel='rightModel' v-if='tableData' :tableData='tableData'>
+    </right-model>
+  </transition>
+</div>
 </template>
 <script>
-import { Table } from 'iview';
+import {
+  Table
+} from 'iview';
 import RightModel from './rightModel.vue';
 export default {
   components: {
     Table,
     RightModel
   },
-  props:{
-    dataList:{
-      type:Array,
-      default:function(){
+  props: {
+    dataList: {
+      type: Array,
+      default: function() {
         return []
       }
     }
   },
   data() {
     return {
-      tableData:[],
-      rightModel: {ifShow:false},
-      columns1: [
-        {
+      tableData: null,
+      rightModel: {
+        ifShow: false
+      },
+      columns1: [{
           title: "组员姓名",
           align: "center",
           render: (h, params) => {
             return h(
-              "div",
-              {
+              "div", {
                 class: {
                   primary: true
                 }
@@ -74,7 +76,7 @@ export default {
           align: "center",
           key: "wcrate",
           render: (h, params) => {
-            return h("div", params.row.age + "%");
+            return h("div", params.row.wcrate + "%");
           }
         }
       ]
@@ -82,9 +84,8 @@ export default {
   },
   methods: {
     rowClick(row) {
-      this.rightModel.ifShow = true;
-      this.tableData=[];
-      this.tableData.push(row)
+        this.rightModel.ifShow = true;
+        this.tableData = row;
     }
   }
 };
@@ -95,10 +96,11 @@ export default {
 .slide-fade-leave-active {
   transition: all 0.3s linear;
 }
+
 .slide-fade-enter,
 .slide-fade-leave-to {
   transform: translateX(100%);
 }
-.page {
-}
+
+.page {}
 </style>

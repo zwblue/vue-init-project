@@ -8,7 +8,7 @@
         <project-survey :loading='loading' :dataList="dataList"></project-survey>
       </div>
       <div slot="footer">
-        <Page :total="100" show-sizer show-total transfer @on-change='changeCurrent' @on-page-size-change='changePageSize'/>
+        <Page :total="page.total"  :current='page.current' :pageSize='page.pageSize' show-sizer show-total transfer @on-change='changeCurrent' @on-page-size-change='changePageSize'/>
       </div>
     </Modal>
   </div>
@@ -28,7 +28,13 @@ export default {
           allProjectShow: false
         };
       }
-    }, 
+    },
+     page:{
+      type:Object,
+      default:function(){
+        return {}
+      }
+    },
     dataList:{
       type:Array,
       default:function(){

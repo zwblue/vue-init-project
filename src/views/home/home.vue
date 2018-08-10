@@ -60,8 +60,8 @@
         <member-task :dataList='myMemberData.dataList'></member-task>
       </Row>
     </div>
-    <all-project :modelShow='modelShow' :loading='proloading' :dataList='allProjectData' @changeCurrent='changeCurrent' @changePageSize='changePageSize'></all-project>
-    <all-task :modelShow='modelShow' :dataList='allTaskData' :loading='taskloading' @changePageSize='changePageSize' @changeCurrent='changeCurrent'></all-task>
+    <all-project :modelShow='modelShow' :loading='proloading' :page='page' :dataList='allProjectData' @changeCurrent='changeCurrent' @changePageSize='changePageSize'></all-project>
+    <all-task :modelShow='modelShow' :dataList='allTaskData' :page='page' :loading='taskloading' @changePageSize='changePageSize' @changeCurrent='changeCurrent'></all-task>
   </div>
 </template>
 
@@ -99,6 +99,11 @@ export default {
       modelShow: {
         allProjectShow: false,
         allTaskShow: false
+      },
+      page:{
+        pageSize:10,
+        current:1,
+        total:0
       },
       projectSurveyParams: {
         current: "1",
@@ -140,7 +145,8 @@ export default {
         .then(res => {
           if (res.data.code === 200) {
             console.log("组员任务", res.data);
-            this.myMemberData = res.data.data;
+            this.myMemberData.dataList = res.data.data;
+              this.myMemberData.sum = res.data.page.total;
           }
         })
         .catch(error => {
@@ -153,9 +159,11 @@ export default {
           if (res.data.code === 200) {
             console.log("我的任务", res.data);
             if (type === "all") {
-              this.allTaskData = res.data.data.dataList;
+              this.allTaskData = res.data.data;
+              this.page=res.data.page;
             } else {
-              this.myTaskData = res.data.data;
+              this.myTaskData.sum = res.data.page.total;
+              this.myTaskData.dataList = res.data.data;
             }
           }
         })
@@ -169,9 +177,11 @@ export default {
           if (res.data.code === 200) {
             console.log("项目概况", res.data);
             if (type === "all") {
-              this.allProjectData = res.data.data.dataList;
+              this.allProjectData = res.data.data;
+              this.page=res.data.page;
             } else {
-              this.projectSurveyData = res.data.data;
+              this.projectSurveyData.sum = res.data.page.total;
+              this.projectSurveyData.dataList = res.data.data;
             }
           }
         })
