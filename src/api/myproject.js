@@ -7,15 +7,7 @@ export function getAllMyProjectListApi (data = {}) {
     data: data,
   })
 }
-// 项目参与组
 
-export function newGroupHandleApi (data = {}) {
-  return fetch({
-    url: '/newGroupHandle',
-    method: 'post',
-    data: data,
-  })
-}
 // 项目详情信息
 export function getLogDetailInfoApi (data = {}) {
   return fetch({
@@ -83,5 +75,50 @@ export function getDownRoleMenuByParentApi (data = {}) {
     url: '/getDownRoleMenuByParent',
     method: 'post',
     data: data,
+  })
+}
+// 项目参与组添加，修改，删除
+
+export function newGroupHandleApi (data = {}) {
+  return fetch({
+    url: '/newGroupHandle',
+    method: 'post',
+    data: data,
+  })
+}
+
+
+// 子任务的添加，修改，删除
+export function updSubtaskhandleApi (data = {}) {
+  return fetch({
+    url: '/updSubtaskhandle',
+    method: 'post',
+    data: data,
+  })
+}
+
+// 根据部门id查找项目中任务，子任务负责人
+export function getMembersBySquadId(params){
+  return fetch({
+      url:'/getMembersBySquadId',
+      method:'post',
+      data:params
+  })
+}
+// 提醒子任务
+export function getHomePageRemindingApi(data){
+  return fetch({
+      url:'/getHomePageReminding',
+      method:'post',
+      data:data
+  })
+}
+
+// 更新子任务
+export function updSubtaskProgressApi(data){
+  return fetch({
+      url:'/updSubtaskProgress',
+      method:'post',
+      data:data
   })
 }

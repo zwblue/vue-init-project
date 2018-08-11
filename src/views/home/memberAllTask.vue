@@ -2,16 +2,21 @@
 <div>
   <Table border :loading='loading' class="my-table" :columns="columns1" size='default' :data="dataList">
   </Table>
+  <edit-zitask :zitaskDetails='zitaskDetails' @resetAllZitaskList='resetAllZitaskList' v-if='model.editZitask&&zitaskDetails' :model='model'></edit-zitask>
 </div>
 </template>
 <script>
+import EditZitask from 'components/pro-operation/editZitask.vue'
 import ProGress from 'components/proGress/proGress';
-
 import {
   Table,
   Icon,
   Divider
 } from 'iview';
+import {
+  updSubtaskhandleApi,
+  getHomePageRemindingApi
+} from 'api/myproject.js';
 import {
   getTaskState
 } from 'utils/common.js'
@@ -20,7 +25,8 @@ export default {
     Table,
     Icon,
     Divider,
-    ProGress
+    ProGress,
+    EditZitask
   },
   props: {
     dataList: {
@@ -36,6 +42,10 @@ export default {
   },
   data() {
     return {
+      zitaskDetails: null,
+      model: {
+        editZitask: false
+      },
       columns1: [{
           title: "任务名称",
           align: "center",
@@ -115,7 +125,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.remindClick(params.row.subtaskId);
+                      this.remindClick(params.row);
                     }
                   }
                 },
@@ -133,7 +143,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.editClick(params.row.subtaskId);
+                      this.editClick(params.row);
                     }
                   }
                 },
@@ -150,7 +160,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.delClick(params.row.subtaskId);
+                      this.delClick(params.row);
                     }
                   }
                 },
@@ -161,46 +171,56 @@ export default {
         }
       ]
     }
-
   },
   methods: {
-    delClick(val) {
-        this.$Modal.confirm({
-          title: "删除对话框",
-          content: "<p>是否确认删除子任务？</p>",
-          onOk: () => {
-            handleSubTaskList(params)
-              .then(res => {
-                let data = res.data;
-                if (data.code == 200) {
-                  this.$Message.success(data.msg);
-                  this.initSubTaskData(this.taskParams);
-                  this.initDetailsData();
-                } else {
-                  this.$Message.error(data.msg);
-                }
-              })
-              .catch(err => {
-                this.$Message.error("系统异常！");
-              });
-          },
-          onCancel: () => {}
-        });
+    resetAllZitaskList() {
+      this.$emit('getAllSubtaskInfoByMenmberList')
+    },
+    delClick(obj) {
+      this.$Modal.confirm({
+        title: "删除对话框",
+        content: "<p>是否确认删除子任务？</p>",
+        onOk: () => {
+          updSubtaskhandleApi({
+              subtaskId: obj.subtaskId,
+              subtaskName: obj.subtaskName,
+              type: 3
+            })
+            .then(res => {
+              let data = res.data;
+              if (data.code == 200) {
+                this.$Message.success(data.msg);
+                this.resetAllZitaskList();
+              } else {
+                this.$Message.error(data.msg);
+              }
+            })
+            .catch(err => {
+              this.$Message.error("接口故障：/updSubtaskhandle");
+              return false;
+            });
+        },
+        onCancel: () => {
+          this.$Message.info("你取消了删除操作！");
+        }
+      });
     },
     editClick(val) {
-      
+      this.zitaskDetails = val;
+      this.model.editZitask = !this.model.editZitask;
     },
+    // 提醒
     remindClick(row) {
-        const remindingParams = {
-                        taskId: row.taskId,
-                        subtaskId: "",
-                        type: '2'
-                      }
+      const remindingParams = {
+        taskId: row.taskId,
+        subtaskId: row.subtaskId,
+        type: '3'
+      }
       this.$Modal.confirm({
         title: "提醒对话框",
         content: "<p>确认提醒该任务负责人尽快完成此任务？</p>",
         onOk: () => {
-          getHomePageReminding(remindingParams)
+          getHomePageRemindingApi(remindingParams)
             .then(res => {
               if (res.data.code == 200) {
                 this.$Message.success("提醒成功！");
@@ -213,7 +233,7 @@ export default {
             });
         },
         onCancel: () => {
-          this.$Message.info('你取消了提醒用户！');
+          this.$Message.info("你取消了提醒用户！");
         }
       });
     }

@@ -3,9 +3,10 @@
   <div class="header" :style='{margin:"10px 0"}'>
     <h3 class="title">{{projectDetails.proName||''}}</h3>
     <div class="center">
-      <Button type='warning' ghost v-if='projectDetails.proState==7'>延期申请</Button>
-      <Button type='success' ghost v-if='projectDetails.proProgress==100'>上线审批</Button>
-      <Button type='success' ghost v-if='projectDetails.proState==8'>上线审批中</Button>
+      <Button type='warning' ghost :disabled='projectDetails.proState!=7'>延期申请</Button>
+      <Button type='warning' ghost v-if='projectDetails.proState==8'>延期申请中</Button>
+      <Button type='success' ghost :disabled='projectDetails.proProgress!=100'>上线审批</Button>
+      <Button type='success' ghost v-if='projectDetails.proState==3'>上线审批中</Button>
       <Button type='error' ghost>作废项目</Button>
     </div>
   </div>

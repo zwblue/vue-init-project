@@ -7,7 +7,7 @@
     <Divider class="title"> 全部任务
       <span class="error">（共6个）</span>
     </Divider>
-    <member-allTask :dataList='myAllTaskList'></member-allTask>
+    <member-allTask :dataList='myAllTaskList' @getAllSubtaskInfoByMenmberList='getAllSubtaskInfoByMenmberList'></member-allTask>
   </div>
 </template>
 <script>

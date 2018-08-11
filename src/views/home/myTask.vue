@@ -2,10 +2,14 @@
 <div>
   <Table border :loading='loading' class="my-table" :columns="columns1" size='default' :data="dataList">
   </Table>
+  <update-zitask :zitaskDetails='zitaskDetails' :model="model">
+
+  </update-zitask>
 </div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
+import UpdateZitask from 'components/pro-operation/updateZitask';
 import {
   Table,
   Icon,
@@ -19,7 +23,8 @@ export default {
     Table,
     Icon,
     Divider,
-    ProGress
+    ProGress,
+    UpdateZitask
   },
   props: {
     dataList: {
@@ -35,6 +40,10 @@ export default {
   },
   data() {
     return {
+      model: {
+        updateZitask: false
+      },
+      zitaskDetails:null,
       columns1: [{
           title: "任务名称",
           align: "center",
@@ -114,7 +123,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.updateMytask(params.row.subtaskId);
+                      this.updateMytask(params.row);
                     }
                   }
                 },
@@ -130,6 +139,8 @@ export default {
   methods: {
     updateMytask(val) {
       console.log('updateMytask', val);
+      this.zitaskDetails=val;
+      this.model.updateZitask=!this.model.updateZitask;
     }
   }
 };
