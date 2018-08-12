@@ -140,11 +140,11 @@ export default {
           width: 130,
           render: (h, params) => {
            let [tip,edit,del]=[true,true,true];
-            getButtonBySubtaskApi({
+            getButtonBySubtaskApi({subtaskId:params.row.subtaskId
             }).then(res=>{
                   if(res.data.code===200){
                     console.log(res.data.data);
-                    [tip,edit,del]=[true,false,false];
+                    [tip,edit,del]=[res.data.data.subtask_tx,res.data.data.subtask_gx,res.data.data.subtask_sc];
                   }
             }).catch(error=>{
               this.$Message.error('接口故障：/getButtonBySubtask')
