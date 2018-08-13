@@ -4,13 +4,14 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-import { Button, Message, Row, Col ,Table,Icon,Modal} from 'iview'
+import { Button, Message, Row, Col ,Table,Icon,Modal,Input} from 'iview'
 import 'iview/dist/styles/iview.css'
 import "./index.css";
 Vue.component('Button', Button);
 Vue.component('Row', Row);
 Vue.component('Col', Col);
 Vue.component('Table', Table);
+Vue.component('Input', Input);
 Vue.component('Icon', Icon);
 Vue.prototype.$Message = Message
 Vue.prototype.$Modal = Modal

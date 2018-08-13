@@ -3,11 +3,11 @@
   <div class="header" :style='{margin:"10px 0"}'>
     <h3 class="title">{{projectDetails.proName||''}}</h3>
     <div class="center">
-      <Button type='warning' ghost :disabled='projectDetails.proState!=7'>延期申请</Button>
+      <Button type='warning' ghost :disabled='projectDetails.proState!=7' @click="model.delay=!model.delay">延期申请</Button>
       <Button type='warning' ghost v-if='projectDetails.proState==8'>延期申请中</Button>
       <Button type='success' ghost :disabled='projectDetails.proProgress!=100'>上线审批</Button>
       <Button type='success' ghost v-if='projectDetails.proState==3'>上线审批中</Button>
-      <Button type='error' ghost>作废项目</Button>
+      <Button type='error' ghost @click='giveUpPro'>作废项目</Button>
     </div>
   </div>
   <div :style='{margin:"30px 0"}'>
@@ -23,6 +23,8 @@
       </TabPane>
     </Tabs>
   </div>
+  <delay-model :projectDetails='projectDetails' :model='model' v-if='model.delay'></delay-model>
+  <online-model :model='model' v-if='model.online'></online-model>
 </div>
 </template>
 
@@ -35,15 +37,17 @@ import {
 import {
   Alert,
   Tabs,
-  TabPane
+  TabPane,Input
 } from 'iview';
 import ProGress from 'components/proGress/proGress.vue'
+import DelayModel from './model/delayModel.vue'
+import OnlineModel from './model/onlineModel.vue'
 export default {
   components: {
     ProGress,
     Alert,
     Tabs,
-    TabPane
+    TabPane,Input,OnlineModel,DelayModel
   },
   props: {
     projectDetails: {
@@ -63,6 +67,10 @@ export default {
   },
   data() {
     return {
+      model:{
+        delay:false,
+        online:false
+      },
       devColumns: [{
           title: '类型',
           align: 'center',
@@ -199,16 +207,12 @@ export default {
   },
   mounted() {},
   methods:{
-    
     // 项目作废
-    onDelete() {
+    giveUpPro() {
       let params = {
-        id: this.$route.params.id,
-        proId: this.$route.query.proId,
-        userId: sessionStorage.getItem("id"),
-        creatName: sessionStorage.getItem("userName"),
+        id: this.projectDetails.id,
+        proId: this.$route.params.id,
         explain: "",
-        proState: 6
       };
       this.$Modal.confirm({
         render: h => {
@@ -250,37 +254,12 @@ export default {
             this.$Message.error("请输入作废原因！");
             this.$Modal.remove();
           }
+        },
+        onCancel:()=>{
+          this.$Message.info('取消此次操作')
         }
       });
-    },
-     // 回复
-    replayrequest(name) {
-      this.$refs[name].validate(valid => {
-        if (valid) {
-          messagePush(this.replayParams)
-            .then(res => {
-              if (res.data.code == 200) {
-                this.initDevLogList();
-                this.initProjectRecomdList();
-                this.$Message.success(res.data.msg);
-                this.replayParams.fileName = "";
-                this.filelist = [];
-              } else {
-                this.$Message.error(res.data.msg);
-                this.replayParams.fileName = "";
-                this.replayParams.filePath = "";
-              }
-              this.$refs[name].resetFields();
-            })
-            .catch(err => {
-              this.$Message.error("系统异常！");
-            });
-        } else {
-          // 不关闭弹窗，提示错误信息
-          this.$Message.error("表单验证失败，请填写完整的信息！");
-        }
-      });
-    },
+    }
   }
 }
 </script>

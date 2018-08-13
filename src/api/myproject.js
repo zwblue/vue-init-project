@@ -122,3 +122,11 @@ export function updSubtaskProgressApi(data){
       data:data
   })
 }
+// 延期申请
+export function applyProStateToDelay(data){
+  return fetch({
+      url:'/applyProStateToDelay',
+      method:'post',
+      data:data
+  })
+}
