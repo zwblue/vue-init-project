@@ -2,8 +2,7 @@
 <div>
   <Table border :loading='loading' class="my-table" :columns="columns1" size='default' :data="dataList">
   </Table>
-  <update-zitask :zitaskDetails='zitaskDetails' :model="model">
-
+  <update-zitask :zitaskDetails='zitaskDetails' @updateZitask='updateZitask' v-if='model.updateZitask' :model="model">
   </update-zitask>
 </div>
 </template>
@@ -141,6 +140,9 @@ export default {
       console.log('updateMytask', val);
       this.zitaskDetails=val;
       this.model.updateZitask=!this.model.updateZitask;
+    },
+    updateZitask(){
+      this.$emit('updateZitask')
     }
   }
 };

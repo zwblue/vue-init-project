@@ -3,7 +3,7 @@
   <Modal v-model="modelShow.allTaskShow"  width="1200" :fullscreen='ifFullScreen' transfer>
         <p slot="header">我的任务<Button @click="ifFullScreen=!ifFullScreen" icon="md-qr-scanner" size='small' type='text' shape="circle"></Button></p>
         <div>
-            <my-task :dataList="dataList" :loading='loading'></my-task>
+            <my-task :dataList="dataList"  @updateZitask='updateZitask' :loading='loading'></my-task>
         </div>
         <div slot="footer">
             <Page :total="page.total"  :current='page.current' :pageSize='page.pageSize'  @on-change='changeCurrent' @on-page-size-change='changePageSize' show-sizer  show-total transfer/>
@@ -53,12 +53,18 @@ export default {
        ifFullScreen:false
     }
   },
+  mounted(){
+    console.log(this.$store)
+  },
   methods:{
       changePageSize(val){
       this.$emit('changePageSize',val,'task')
     }
     ,changeCurrent(val){
       this.$emit('changeCurrent',val,'task')
+    },
+    updateZitask(){
+      this.$emit('updateZitask')
     }
   }
 }

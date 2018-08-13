@@ -4,7 +4,7 @@
     <Col span="8">
     <Card>
       <div class="project">
-        <div class="pro-title between" @click="openProject(proDetails.proId,1)">
+        <div class="pro-title between" @click="openProject(proDetails.proId)">
           <div class="title" :style='activeId==proDetails.proId?{color:"#2d8cf0"}:null'>{{proDetails.proName||''}}</div>
           <div style='min-width:200px;'>
             <pro-gress :currentProgress='Number(proDetails.proProgress||0)' :planProgress='Number(proDetails.theoryProProgress||0)'></pro-gress>
@@ -18,7 +18,7 @@
       <Button icon='md-add' type='primary' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
       <Collapse v-model="openPanelIndex" accordion class="pro-details-panel">
         <Panel :name="String(index)" v-for='(task,index) in taskList' :key='index'>
-          <div class="task-intr" @click="openTask(task.taskId,2)">
+          <div class="task-intr" @click="openTask(task.taskId)">
             <div class="pro-title between">
               <div :style='activeId==task.taskId?{color:"#2d8cf0",fontWeight:"bold"}:null'>{{task.taskName}}</div>
               <div style='min-width:200px;'>
@@ -32,7 +32,7 @@
           </div>
           <div slot="content">
             <p class="center" v-if='task.subtaskList.length===0'>暂未分配子任务</p>
-            <div v-if='task.subtaskList.length!==0' class="zi-task-intr" v-for='(subtask,index) in task.subtaskList' :key='index' @click="openziTask(subtask.subtaskId,3)">
+            <div v-if='task.subtaskList.length!==0' class="zi-task-intr" v-for='(subtask,index) in task.subtaskList' :key='index' @click="openziTask(subtask.subtaskId)">
               <div class="pro-title between">
                 <div :style='activeId==subtask.subtaskId?{color:"#2d8cf0",fontWeight:"bold"}:null'>{{subtask.subtaskName}}</div>
                 <div style='min-width:200px;'>
@@ -54,9 +54,9 @@
       <div class="pro-details">
         <Tabs value="name1">
           <TabPane :label="detailsName" name="name1">
-            <pro-descrition v-show='detailsType==1' :projectDetails='proDetails'></pro-descrition>
-            <task-descrition v-show='detailsType==2' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
-            <zitask-descrition v-show='detailsType==3' :zitaskDetails='zitaskDetails' :proName='proDetails.proName'></zitask-descrition>
+            <pro-descrition v-show='detailsType==1' @openProject='openProject' :projectDetails='proDetails'></pro-descrition>
+            <task-descrition v-show='detailsType==2'  @openTask='openTask'  @openProject='openProject'  @getTaskListByProIdData='getTaskListByProIdData' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
+            <zitask-descrition v-show='detailsType==3' @openProject='openProject'  :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails'  @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
           </TabPane>
           <TabPane label="甘特图" name="name2">
             <pro-ganteTable></pro-ganteTable>
@@ -111,6 +111,8 @@ export default {
   data() {
     return {
       // 项目基本信息
+      activeTaskId:'',
+      activeSubtaskId:'',
       openPanelIndex: '1',
       proDetails: {},
       taskDetails: {},
@@ -140,28 +142,34 @@ export default {
   },
   methods: {
     // 项目，任务，子任务切换的接口
-    openProject(id, type) {
+    openProject(id) {
       this.detailsType = 1;
       this.activeId = id;
       this.getLogDetailInfoData({
         proId: id,
-        type: type
+        type: this.detailsType
       });
     },
-    openTask(id, type) {
+    openTask(id) {
+      if(id){
+        this.activeTaskId=id;
+      }
       this.detailsType = 2;
       this.activeId = id;
       this.getLogDetailInfoData({
-        taskId: id,
-        type: type
+        taskId: this.activeTaskId,
+        type: this.detailsType
       });
     },
-    openziTask(id, type) {
+    openziTask(id) {
+      if(id){
+        this.activeSubtaskId=id;
+      }
       this.detailsType = 3;
       this.activeId = id;
       this.getLogDetailInfoData({
-        subtaskId: id,
-        type: type
+        subtaskId: this.activeSubtaskId,
+        type: this.detailsType
       });
     },
     getTaskState(state) {
@@ -194,6 +202,7 @@ export default {
             if (params.type == 1) {
               this.proDetails = res.data.data;
             } else if (params.type == 2) {
+              console.log('task',res.data.data)
               this.taskDetails = res.data.data;
             } else {
               this.zitaskDetails = res.data.data;

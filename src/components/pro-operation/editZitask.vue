@@ -132,7 +132,7 @@ export default {
   },
   mounted() {
     this.initZiProjectUserData();
-    console.log(33333, this.zitaskDetails)
+    console.log('修改子任务的参数', this.zitaskDetails)
   },
   methods: {
     sDateChange(val) {

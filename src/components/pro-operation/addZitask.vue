@@ -1,6 +1,6 @@
 <template>
 <div class="page">
-  <Modal v-model="model.editZitask" title="修改子任务" @on-cancel="cancel('partInData')">
+  <Modal v-model="model.addZitask" title="修改子任务" @on-cancel="cancel('partInData')">
     <Form ref="partInData" :model="partInData" :rules="partrules" :label-width="100">
       <FormItem prop="subtaskName" label="任务名称：">
         <Input placeholder="请输入任务名称" v-model="partInData.subtaskName"></Input>
@@ -53,7 +53,7 @@ export default {
     DatePicker
   },
   props: {
-    zitaskDetails: {
+    taskDetails: {
       type: Object,
       default: () => {
         return {};
@@ -63,21 +63,22 @@ export default {
       type: Object,
       default: function() {
         return {
-          editZitask: false
+          addZitask: false
         };
       }
     }
   },
   computed: {
     edateshow() {
-      return this.partInData.sdate ? false : true;
+      return this.partInData.sDate ? false : true;
     }
   },
   data() {
     return {
       partInData: {
+        squadId:this.taskDetails.squadId,
         subtaskId: '',
-        type: 2,
+        type: 1,
         subtaskHandler: '',
         subtaskName: '',
         sDate: '',
@@ -116,28 +117,31 @@ export default {
       },
       ziTaskdateStartOptions: {
         disabledDate: date => {
-          const sDate = new Date(this.zitaskDetails.plansDate);
+          const sDate = new Date(this.taskDetails.sDate);
+          const eDate = new Date(this.taskDetails.eDate);
+          console.log(this.taskDetails.sDate,this.taskDetails.eDate)
           return (
-            (date && date.valueOf() > sDate.getTime() - 1) ||
-            date.valueOf() < Date.now() - 86400000
+            (date && date.valueOf() < sDate.getTime() - 86399999) || (date.valueOf() > eDate.getTime() - 1)
+            // ||date.valueOf() < Date.now() - 86400000
           );
         }
       },
       ziTaskdateEndOptions: {
         disabledDate: date => {
           const partsDate = new Date(this.partInData.sDate);
-          const plansDate = new Date(this.zitaskDetails.plansDate);
+          const eDate = new Date(this.taskDetails.eDate);
           return (
             (date && date.valueOf() < partsDate.getTime() - 86399999) ||
-            (date && date.valueOf() > plansDate.getTime() - 1)
+            (date && date.valueOf() > eDate.getTime() - 1)
+             // ||date.valueOf() < Date.now() - 86400000
           );
         }
       }
     }
   },
   mounted() {
+    console.log(33333, this.taskDetails)
     this.initZiProjectUserData();
-    console.log(33333, this.zitaskDetails)
   },
   methods: {
     sDateChange(val) {
@@ -170,7 +174,7 @@ export default {
               if (res.data.code === 200) {
                 this.$Message.success(res.data.msg)
                 this.$emit('resetAllZitaskList')
-                this.model.editZitask = !this.model.editZitask;
+                this.model.addZitask = !this.model.addZitask;
               }
             }
           ).catch(error => {
@@ -183,11 +187,11 @@ export default {
     },
     cancel(name = '') {
       this.$Message.info('你取消了此操作！')
-      this.model.editZitask = false;
+      this.model.addZitask = false;
     },
     initZiProjectUserData() {
       const params = {
-        squadId: this.zitaskDetails.squadId
+        squadId: this.taskDetails.squadId
       };
       getMembersBySquadId(params).then(res => {
         this.handleUserList = res.data.data;

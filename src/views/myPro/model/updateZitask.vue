@@ -2,6 +2,11 @@
 <div class="page">
   <Modal v-model="model.updateZitask" title="更新子任务" @on-cancel="cancel('partInData')">
     <Form ref="partInData" :model="partInData" :rules="partrules" :label-width="100">
+      <FormItem label="子任务：" prop="subtaskId">
+        <Select v-model="addDevLogList.subtaskId" v-if='ziTaskList.length!==0' placeholder='请选择子任务'>
+          <Option v-for="item in ziTaskList" :value="item.taskid+','+item.subtaskid" :key="item.subtaskid">{{ item.subtaskname }}</Option>
+        </Select>
+      </FormItem>
       <FormItem label="日志类型：">
         <Select value="4" placeholder="请选择日志类型">
             <Option value="4">更新</Option>
@@ -60,6 +65,7 @@ export default {
   },
   data() {
     return {
+      ziTaskList: [],
       partInData: {
         subtaskId: '',
         taskId: '',
@@ -84,10 +90,11 @@ export default {
   },
   mounted() {},
   methods: {
+    
     sureSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          this.partInData.proId=this.zitaskDetails.proId||this.$route.params.id;
+          this.partInData.proId=this.zitaskDetails.proId;
           this.partInData.taskId=this.zitaskDetails.taskId;
           this.partInData.subtaskId=this.zitaskDetails.subtaskId;
           updSubtaskProgressApi(this.partInData).then(
@@ -95,7 +102,6 @@ export default {
               if (res.data.code === 200) {
                 this.$Message.success(res.data.msg)
                 this.model.updateZitask = !this.model.updateZitask;
-                this.$emit('updateZitask')
               }
             }
           ).catch(error => {

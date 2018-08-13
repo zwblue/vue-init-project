@@ -46,7 +46,7 @@
           </Divider>
           </Col>
         </Row>
-        <my-task :dataList='myTaskData.dataList'></my-task>
+        <my-task :dataList='myTaskData.dataList' @updateZitask='getMyTaskInfoByIndexList'></my-task>
       </Row>
       <!-- 组员任务 -->
       <Row>
@@ -61,7 +61,7 @@
       </Row>
     </div>
     <all-project :modelShow='modelShow' :loading='proloading' :page='page' :dataList='allProjectData' @changeCurrent='changeCurrent' @changePageSize='changePageSize'></all-project>
-    <all-task :modelShow='modelShow' :dataList='allTaskData' :page='page' :loading='taskloading' @changePageSize='changePageSize' @changeCurrent='changeCurrent'></all-task>
+    <all-task :modelShow='modelShow' :dataList='allTaskData' @updateZitask='queryMyAllTask' :page='page' :loading='taskloading'  @changePageSize='changePageSize' @changeCurrent='changeCurrent'></all-task>
   </div>
 </template>
 
@@ -135,11 +135,14 @@ export default {
   },
   mounted() {
     this.projectShow = !this.projectShow;
-    this.getProInfoByIndexList();
-    this.getMyTaskInfoByIndexList();
-    this.getMyMemberSubtaskCountByIndexList();
+    this.initHomeData();
   },
   methods: {
+    initHomeData(){
+      this.getProInfoByIndexList();
+      this.getMyTaskInfoByIndexList();
+      this.getMyMemberSubtaskCountByIndexList();
+    },
     getMyMemberSubtaskCountByIndexList() {
       getMyMemberSubtaskCountByIndexApi(this.myMemberParams)
         .then(res => {
@@ -190,7 +193,7 @@ export default {
         });
     },
     queryMyAllTask() {
-      this.modelShow.allTaskShow = !this.modelShow.allTaskShow;
+      this.modelShow.allTaskShow = true;
       this.myTaskParams.pageSize = "10";
       this.myTaskParams.current = "1";
       this.getMyTaskInfoByIndexList("all");
