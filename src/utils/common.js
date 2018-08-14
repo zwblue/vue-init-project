@@ -31,6 +31,7 @@ export function getNoButtonProjectState(num) {
       return false;
     }
   }
+  return true
 }
 
 

@@ -4,6 +4,8 @@
     <div class="title name">{{tableData?tableData.subtaskHandler:''}}</div>
     <Table border :columns="columns1" :data="myTaskList" >
     </Table>
+    <div class="title">任务甘特图</div>
+    <gante-table :activeSubTaskList='myAllTaskList' v-if='myAllTaskList!==0'></gante-table>
     <Divider class="title"> 全部任务
       <span class="error">（共6个）</span>
     </Divider>
@@ -14,9 +16,10 @@
 import {getAllSubtaskInfoByMenmberApi,getSubtaskCountByMemberApi} from 'api/home.js'
 import { Icon,Divider } from 'iview';
 import MemberAllTask from './memberAllTask.vue';
+import GanteTable from 'components/ganteTable/ganteTable.vue';
 export default {
   components: {
-    Icon,Divider,MemberAllTask
+    Icon,Divider,MemberAllTask,GanteTable
   },
   props: {
     rightModelstyle: {
@@ -132,6 +135,7 @@ export default {
 <style lang="scss" scoped>
 .page {
   position: fixed;
+  overflow-y: auto;
   border-left: 1px solid #ccc;
   padding: 10px 30px;
   top: 0;

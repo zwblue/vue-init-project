@@ -5,14 +5,14 @@
   </h3>
   <div class="header" :style='{margin:"10px 0"}'>
     <div v-if='ifHasButton'>
+      <Tooltip content="提醒负责人">
+        <Icon type="md-notifications" class="primary click-btn"  @click="remindClick" />
+      </Tooltip>
       <Tooltip content="修改子任务" placement="bottom-start" >
         <Icon class="icon-edit_s iconfont primary click-btn" @click="editClick"></Icon>
       </Tooltip>
       <Tooltip content="删除子任务">
         <Icon type="md-trash" class="primary click-btn"  @click="delClick" />
-      </Tooltip>
-      <Tooltip content="提醒负责人">
-        <Icon type="md-notifications" class="primary click-btn"  @click="remindClick" />
       </Tooltip>
     </div>
     <div class="center">

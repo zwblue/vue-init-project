@@ -16,6 +16,9 @@ body .success-bg {
 body .error-bg {
   background: #ed4014 ;
 }
+body .gray-bg {
+  background: #ccc ;
+}
 
 body .primary {
   color: #2d8cf0 ;
@@ -35,7 +38,9 @@ body .bold{
 .demo-spin-icon-load{
   animation: ani-demo-spin 1s linear infinite;
 }
-
+.no-wrap{
+  text-overflow:ellipsis;overflow:hidden;white-space:nowrap; 
+}
 .center-tab .ivu-tabs-nav{
   left:50%;
   margin-left:-76px;

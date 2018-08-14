@@ -12,24 +12,44 @@
       </FormItem>
       <FormItem label-position="rightr">
         <Upload :action="uploadUrl" :on-success="addApprovalSuccess">
-          <Button type="ghost" icon="ios-cloud-upload-outline">上传附件</Button>
+          <Button type="primary" ghost icon="ios-cloud-upload-outline">上传附件</Button>
         </Upload>
       </FormItem>
-
       </FormItem>
     </Form>
   </Modal>
 </div>
 </template>
-
 <script>
+import {
+  getUploadUrl
+} from 'utils/geturl.js'
+import {
+  Upload,
+  FormItem,
+  Form,
+  Modal,
+  Input
+} from 'iview'
+import {
+  updApplyHandleByProApi
+} from 'api/myproject'
 export default {
-  model: {
-    type: Object,
-    default: function() {
-      return {
-        online: false
-      };
+  components: {
+    Upload,
+    FormItem,
+    Form,
+    Modal,
+    Input
+  },
+  props: {
+    model: {
+      type: Object,
+      default: function() {
+        return {
+          online: false
+        };
+      }
     }
   },
   data() {
@@ -40,7 +60,11 @@ export default {
       }
     }
   },
-
+  computed: {
+    uploadUrl() {
+      return getUploadUrl();
+    }
+  },
   methods: {
     addApprovalSuccess(response, file) {
       //上传附件
@@ -49,7 +73,36 @@ export default {
       } else {
         this.$Message.error("上传失败，请重新上传");
       }
-    }
+    },
+    okApproval(formApprovalCustom) {
+      if (formApprovalCustom.overdueExplain !== "") {
+        let params = this.getPassOrRejectParams();
+        params.filePath = this.formApprovalCustom.filePath;
+        updApplyHandleByProApi(params)
+          .then(res => {
+            const data = res.data;
+            if (data.code == 200) {
+              this.$Message.success(res.data.msg);
+              this.$router.push({
+                name: "我的项目"
+              });
+            } else {
+              this.$Message.error(res.data.msg);
+            }
+          })
+          .catch(err => {
+            this.$Message.error("系统异常！");
+          });
+        this.$Modal.remove();
+      } else {
+        this.$Message.error("请输入逾期上线原因");
+        this.$Modal.remove();
+      }
+    },
+    cancel() {
+      this.$Message.info('你取消了此操作');
+      this.model.online = false;
+    },
   }
 }
 </script>

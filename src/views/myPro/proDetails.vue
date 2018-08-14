@@ -15,12 +15,12 @@
           <div class="pro-state"><span :class="addClass(proDetails.proState)">{{getProjectState(proDetails.proState)}}</span></div>
         </div>
       </div>
-      <Button icon='md-add' type='primary' :disabled='!ifHasButton' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
-      <Collapse v-model="openPanelIndex" accordion class="pro-details-panel">
-        <Panel :name="String(index)" v-for='(task,index) in taskList' :key='index'>
-          <div class="task-intr" @click="openTask(task.taskId)">
+      <Button icon='md-add' type='primary' :disabled='!ifHasButton&&operationProButton' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
+      <Collapse v-model="openPanelIndex" accordion class="pro-details-panel" @on-change='openPanel'>
+        <Panel :name="String(index)" v-for='(task,index) in taskList' :key='index' >
+          <div class="task-intr" @click.stop="openTask(task.taskId)">
             <div class="pro-title between">
-              <div :style='activeId==task.taskId?{color:"#2d8cf0",fontWeight:"bold"}:null'>{{task.taskName}}</div>
+              <div :style='activeId==task.taskId?{color:"#2d8cf0",fontWeight:"bold"}:null' class="no-wrap" >{{task.taskName}}</div>
               <div style='min-width:200px;'>
                 <pro-gress :currentProgress='task.taskProgress'></pro-gress>
               </div>
@@ -31,8 +31,8 @@
             </div>
           </div>
           <div slot="content">
-            <p class="center" v-if='task.subtaskList.length===0'>暂未分配子任务</p>
-            <div v-if='task.subtaskList.length!==0' class="zi-task-intr" v-for='(subtask,index) in task.subtaskList' :key='index' @click="openziTask(subtask.subtaskId)">
+            <p class="center" v-if='task.subtaskList.length===0' style='line-height:60px;'>暂未分配子任务</p>
+            <div v-if='task.subtaskList.length!==0' class="zi-task-intr" v-for='(subtask,index) in task.subtaskList' :key='index' @click.stop="openziTask(subtask.subtaskId)">
               <div class="pro-title between">
                 <div :style='activeId==subtask.subtaskId?{color:"#2d8cf0",fontWeight:"bold"}:null'>{{subtask.subtaskName}}</div>
                 <div style='min-width:200px;'>
@@ -54,12 +54,12 @@
       <div class="pro-details">
         <Tabs value="name1">
           <TabPane :label="detailsName" name="name1">
-            <pro-descrition v-show='detailsType==1' @openProject='openProject' :projectDetails='proDetails'></pro-descrition>
+            <pro-descrition v-show='detailsType==1' :operationProButton='operationProButton' @openProject='openProject' :projectDetails='proDetails'></pro-descrition>
             <task-descrition v-show='detailsType==2' @openTask='openTask' @openProject='openProject' @getTaskListByProIdData='getTaskListByProIdData' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
             <zitask-descrition v-show='detailsType==3' @openProject='openProject' :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails' @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
           </TabPane>
           <TabPane label="甘特图" name="name2">
-            <pro-ganteTable></pro-ganteTable>
+            <pro-ganteTable :activeSubTaskList='activeSubTaskList' :activeOpenPanpelIndex='activeOpenPanpelIndex'></pro-ganteTable>
           </TabPane>
         </Tabs>
       </div>
@@ -86,7 +86,7 @@ import ZitaskDescrition from './zitask-descrition.vue'
 import ProGanteTable from './pro-ganteTable.vue'
 import {
   getLogDetailInfoApi,
-  getTaskListByProIdApi
+  getTaskListByProIdApi,getHandlerPowerByProAndTaskApi
 } from 'api/myproject.js'
 
 import {
@@ -111,10 +111,13 @@ export default {
   },
   data() {
     return {
+      activeSubTaskList:[],
       // 项目基本信息
+      operationProButton:false,
       activeTaskId: '',
+      activeOpenPanpelIndex:-1,
       activeSubtaskId: '',
-      openPanelIndex: '1',
+      openPanelIndex: '0',
       proDetails: {},
       taskDetails: {},
       zitaskDetails: {},
@@ -145,8 +148,32 @@ export default {
   mounted() {
     this.openProject(this.$route.params.id, 1);
     this.getTaskListByProIdData();
+    this.initProButton();
   },
   methods: {
+    openPanel(val){
+      if(val[0]||val[0]==0){
+        this.activeOpenPanpelIndex=val[0];
+        this.activeSubTaskList=this.taskList[Number(val[0])].subtaskList
+      }else{
+        this.activeOpenPanpelIndex=-1;
+      }
+      // console.log(this.taskList[Number(val[0])].subtaskList)
+    },
+    initProButton(){
+      getHandlerPowerByProAndTaskApi({type:1,proId:this.$route.params.id,taskId:''}).then(
+        res=>{
+          if(res.data.code===200){
+            console.log(res.data);
+            if(!res.data.data){
+              this.operationProButton=true;
+            }
+          }
+        }
+      ).catch(error=>{
+        this.$Message.error('接口故障：/getHandlerPowerByProAndTask')
+      })
+    },
     // 项目，任务，子任务切换的接口
     openProject(id) {
       this.detailsType = 1;
@@ -248,6 +275,9 @@ export default {
 .pro-details-panel>.ivu-collapse-item>.ivu-collapse-header>i {
   float: left;
 }
+.pro-details-panel .ivu-collapse-content>.ivu-collapse-content-box{
+  padding:0;
+}
 </style>
 <style lang="scss" scoped>
 .between {
@@ -270,7 +300,7 @@ export default {
 }
 
 .task-intr {
-  padding: 5px 0;
+  padding: 10px 0;
   width: 90%;
   .between {
     padding: 3px 0;
@@ -278,7 +308,8 @@ export default {
 }
 
 .zi-task-intr {
-  padding: 5px 0;
+  box-sizing:border-box;
+  padding: 11.5px 0;
   font-size: 12px;
   padding-left: 10%;
   .between {
@@ -294,6 +325,7 @@ export default {
 
 .zi-task-intr:not(:first-child) {
   border-top: 1px solid #efefef;
+  
 }
 
 .page {}

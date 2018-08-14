@@ -29,7 +29,7 @@ import {
   getUploadUrl
 } from 'utils/geturl.js'
 import {
-  applyProStateToDelay
+  updApplyHandleByProApi
 } from 'api/myproject.js'
 import {
   DatePicker,
@@ -120,15 +120,18 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.deferLoading = true;
-          applyProStateToDelay(this.deferApplyParams).then(res => {
+          updApplyHandleByProApi(this.deferApplyParams).then(res => {
             if (res.data.code == 200) {
               this.$Message.success('已成功提交延期申请！');
               this.model.delay = false;
+              this.deferLoading = false;
             }
           }).catch(error => {
             this.$Message.error('网络故障，请重试！')
+            this.deferLoading = false;
           })
         } else {
+          this.deferLoading = false;
           this.$Message.error("表单验证失败，请填写完整的信息！");
         }
       })

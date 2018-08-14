@@ -3,13 +3,17 @@
   <div class="header" :style='{margin:"10px 0"}'>
     <h3 class="title">{{projectDetails.proName||''}}</h3>
     <div class="center" v-if='ifHasButton'>
-      <Button type='warning' v-if='!ifApprovalUrl' ghost :disabled='projectDetails.proState!=7' @click="model.delay=!model.delay">延期申请</Button>
-      <Button type='warning' ghost v-if='projectDetails.proState==8&&!ifApprovalUrl'>延期申请中</Button>
-      <Button type='success' v-if='!ifApprovalUrl' ghost :disabled='projectDetails.proProgress!=100'>上线审批</Button>
-      <Button type='success' ghost v-if='projectDetails.proState==3&&!ifApprovalUrl'>上线审批中</Button>
-      <Button type='error' v-if='!ifApprovalUrl' ghost @click='giveUpPro'>作废项目</Button>
-      <Button type='success' v-if='ifApprovalUrl' ghost @click='operation("pass")'>同意</Button>
-      <Button type='warning' v-if='ifApprovalUrl' ghost @click='operation("reject")'>驳回</Button>
+      <div style='display:inline-block' v-if='operationProButton'>
+        <Button type='warning' v-if='!ifApprovalUrl&&projectDetails.proState==7' ghost  @click="model.delay=!model.delay">延期申请</Button>
+        <Button type='warning' ghost v-if='projectDetails.proState==8&&!ifApprovalUrl' disabled>延期申请中</Button>
+        <Button type='success' v-if='!ifApprovalUrl' ghost :disabled='projectDetails.proProgress!=100' @click="model.online=!model.online">上线审批</Button>
+        <Button type='success' ghost v-if='projectDetails.proState==3&&!ifApprovalUrl'>上线审批中</Button>
+        <Button type='error' v-if='!ifApprovalUrl' ghost @click='giveUpPro'>作废项目</Button>
+      </div>
+      <div style='display:inline-block'>
+        <Button type='success' v-if='ifApprovalUrl' ghost @click='operation("pass")'>同意</Button>
+        <Button type='warning' v-if='ifApprovalUrl' ghost @click='operation("reject")'>驳回</Button>
+      </div>
     </div>
   </div>
   <div :style='{margin:"30px 0"}'>
@@ -23,7 +27,7 @@
       <TabPane label="操作日志" name="name2">
         <Table height='470' :columns="handColumns" :data="projectDetails.proLogRecords"></Table>
       </TabPane>
-      <Button :disabled='ifHasButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
+      <Button :disabled='!ifHasButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
     </Tabs>
   </div>
   <delay-model :projectDetails='projectDetails' :model='model' v-if='model.delay'></delay-model>
@@ -42,7 +46,8 @@ import {
 import {
   updSetProToPassOrRejectApi,
   updDelayProToPassOrRejectApi,
-  updOnlineProToPassOrRejectApi
+  updOnlineProToPassOrRejectApi,
+  updApplyHandleByProApi
 } from 'api/myproject.js'
 import {
   Alert,
@@ -73,7 +78,11 @@ export default {
 
         }
       }
-    }
+    },
+    operationProButton:{
+      type: Boolean,
+      default: false
+    },
   },
   computed: {
     tableData() {
@@ -238,9 +247,9 @@ export default {
     // 项目作废
     giveUpPro() {
       let params = {
-        id: this.projectDetails.id,
         proId: this.$route.params.id,
-        explain: "",
+        type:'3',
+        reason:''
       };
       this.$Modal.confirm({
         render: h => {
@@ -254,22 +263,20 @@ export default {
             },
             on: {
               input: val => {
-                params.explain = val;
+                params.reason = val;
               }
             }
           });
         },
         loading: true,
         onOk: () => {
-          if (params.explain !== "") {
-            passOrReject(params)
+          if (params.reason !== "") {
+            updApplyHandleByProApi(params)
               .then(res => {
                 const data = res.data;
                 if (data.code == 200) {
                   this.$Message.success(res.data.msg);
-                  this.$router.push({
-                    name: "我的项目"
-                  });
+                  this.$router.push('/myPro');
                 } else {
                   this.$Message.error(res.data.msg);
                 }

@@ -5,14 +5,14 @@
   </h3>
   <div class="header" :style='{margin:"10px 0"}'>
     <div v-if='ifHasButton'>
+      <Tooltip content="提醒任务人">
+        <Icon type="md-notifications" class="primary click-btn" @click="remindTaskClick" />
+      </Tooltip>
       <Tooltip content="修改任务" placement="bottom-start">
         <Icon class="icon-edit_s iconfont primary click-btn" @click="model.editTask=!model.editTask"></Icon>
       </Tooltip>
       <Tooltip content="删除任务">
         <Icon type="md-trash" class="primary click-btn" @click="delTaskClick" />
-      </Tooltip>
-      <Tooltip content="提醒任务人">
-        <Icon type="md-notifications" class="primary click-btn" @click="remindTaskClick" />
       </Tooltip>
     </div>
     <div class="center">
@@ -52,7 +52,8 @@ import {
 import {
   newGroupHandleApi,
   updSubtaskhandleApi,
-  getHomePageRemindingApi
+  getHomePageRemindingApi,
+  getHandlerPowerByProAndTaskApi
 } from 'api/myproject.js';
 import {
   getTaskState,
@@ -113,6 +114,7 @@ export default {
   },
   data() {
     return {
+
       zitaskDetails: null,
       model: {
         editTask: false,
@@ -174,7 +176,7 @@ export default {
           align: "center",
           width: 130,
           render: (h, params) => {
-            if (!ifHasButton) {
+            if (!this.ifHasButton) {
               return null
             }
             let [tip, edit, del] = [true, true, true];
@@ -370,8 +372,28 @@ export default {
       ],
     }
   },
-  mounted() {},
+  mounted() {
+    this.initTaskButton();
+  },
   methods: {
+    initTaskButton() {
+      getHandlerPowerByProAndTaskApi({
+        type: 2,
+        proId: this.$route.params.id,
+        taskId: this.taskDetails.taskId
+      }).then(
+        res => {
+          if (res.data.code === 200) {
+            console.log(res.data);
+            if (!res.data.data) {
+              this.operationProButton = true;
+            }
+          }
+        }
+      ).catch(error => {
+        this.$Message.error('接口故障：/getHandlerPowerByProAndTask')
+      })
+    },
     resetZitaskList() {
       this.$emit('getTaskListByProIdData');
       this.$emit('openTask', this.taskDetails.taskId);

@@ -122,14 +122,7 @@ export function updSubtaskProgressApi(data){
       data:data
   })
 }
-// 延期申请
-export function applyProStateToDelay(data){
-  return fetch({
-      url:'/applyProStateToDelay',
-      method:'post',
-      data:data
-  })
-}
+
 // 更新子任务的下拉列表 
 
 export function getUpdSubtaskSelect(params){
@@ -159,6 +152,22 @@ export function updDelayProToPassOrRejectApi(params){
 export function updSetProToPassOrRejectApi(params){
   return fetch({
       url:'/updSetProToPassOrReject',
+      method:'post',
+      data:params
+  });
+}
+// 项目操作 逾期，延期，上线，作废
+export function updApplyHandleByProApi(params){
+  return fetch({
+      url:'/updApplyHandleByPro',
+      method:'post',
+      data:params
+  });
+}
+// 查询是否有权限
+export function getHandlerPowerByProAndTaskApi(params){
+  return fetch({
+      url:'/getHandlerPowerByProAndTask',
       method:'post',
       data:params
   });
