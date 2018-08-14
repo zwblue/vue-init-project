@@ -113,9 +113,6 @@ export default {
           align: "center",
           width: 200,
           render: (h, params) => {
-            if(params.row.subtaskState==4){
-              return null;
-            }
             return h("div", [
               h(
                 "Button", {
@@ -124,7 +121,7 @@ export default {
                     size: "small"
                   },
                   style: {
-                    display: params.row.age > 25 ? "none" : ""
+                    display: params.row.subtaskState==4 ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -142,7 +139,6 @@ export default {
                   },
                   style: {
                     marginLeft: '5px',
-                    display: params.row.age > 25 ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -159,7 +155,6 @@ export default {
                   },
                   style: {
                     marginLeft: '5px',
-                    display: params.row.age > 25 ? "none" : ""
                   },
                   on: {
                     click: () => {
