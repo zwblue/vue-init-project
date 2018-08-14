@@ -55,8 +55,8 @@
         <Tabs value="name1">
           <TabPane :label="detailsName" name="name1">
             <pro-descrition v-show='detailsType==1' @openProject='openProject' :projectDetails='proDetails'></pro-descrition>
-            <task-descrition v-show='detailsType==2'  @openTask='openTask'  @openProject='openProject'  @getTaskListByProIdData='getTaskListByProIdData' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
-            <zitask-descrition v-show='detailsType==3' @openProject='openProject'  :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails'  @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
+            <task-descrition v-show='detailsType==2' @openTask='openTask' @openProject='openProject' @getTaskListByProIdData='getTaskListByProIdData' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
+            <zitask-descrition v-show='detailsType==3' @openProject='openProject' :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails' @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
           </TabPane>
           <TabPane label="甘特图" name="name2">
             <pro-ganteTable></pro-ganteTable>
@@ -67,7 +67,7 @@
     </Col>
   </Row>
   <!-- 添加参与组的组件 -->
-  <add-joinDept v-if='model.applydept' @getTaskListByProIdData="getTaskListByProIdData" :proDetails='proDetails' :model='model' ></add-joinDept>
+  <add-joinDept v-if='model.applydept' @getTaskListByProIdData="getTaskListByProIdData" :proDetails='proDetails' :model='model'></add-joinDept>
 </div>
 </template>
 <script>
@@ -92,7 +92,8 @@ import {
 import {
   getProjectState,
   addClass,
-  getTaskState
+  getTaskState,
+  getNoButtonProjectState
 } from 'utils/common.js'
 export default {
   components: {
@@ -105,19 +106,14 @@ export default {
     ProDescrition,
     ProGanteTable,
     TaskDescrition,
-    ZitaskDescrition,AddJoinDept
+    ZitaskDescrition,
+    AddJoinDept
   },
-  computed:{
-    ifHasButton() {
-      sessionStorage.getItem('url') === '/finishedPro' &&
-        sessionStorage.getItem('url') === '/recyclePro' ? false : true
-    }
-  },  
   data() {
     return {
       // 项目基本信息
-      activeTaskId:'',
-      activeSubtaskId:'',
+      activeTaskId: '',
+      activeSubtaskId: '',
       openPanelIndex: '1',
       proDetails: {},
       taskDetails: {},
@@ -127,7 +123,9 @@ export default {
       activeId: 0,
 
       // 各种弹框的显示
-      model: {applydept:false}
+      model: {
+        applydept: false
+      }
     };
   },
   computed: {
@@ -139,6 +137,9 @@ export default {
       } else {
         return '子任务详情'
       }
+    },
+    ifHasButton() {
+      return getNoButtonProjectState(this.$route.query.proState)
     }
   },
   mounted() {
@@ -156,8 +157,8 @@ export default {
       });
     },
     openTask(id) {
-      if(id){
-        this.activeTaskId=id;
+      if (id) {
+        this.activeTaskId = id;
       }
       this.detailsType = 2;
       this.activeId = id;
@@ -167,8 +168,8 @@ export default {
       });
     },
     openziTask(id) {
-      if(id){
-        this.activeSubtaskId=id;
+      if (id) {
+        this.activeSubtaskId = id;
       }
       this.detailsType = 3;
       this.activeId = id;
@@ -206,8 +207,13 @@ export default {
           if (res.data.code === 200) {
             if (params.type == 1) {
               this.proDetails = res.data.data;
+              this.$router.push({
+                query: {
+                  proState: this.proDetails.proState
+                }
+              })
             } else if (params.type == 2) {
-              console.log('task',res.data.data)
+              console.log('task', res.data.data)
               this.taskDetails = res.data.data;
             } else {
               this.zitaskDetails = res.data.data;

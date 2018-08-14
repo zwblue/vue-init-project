@@ -34,7 +34,7 @@ import {
   getProjectState,
   getProjectType,
   getDevlogType,
-  getHandlogType
+  getHandlogType,getNoButtonProjectState
 } from 'utils/common.js';
 import {
   updSetProToPassOrRejectApi,
@@ -76,11 +76,10 @@ export default {
       }]
     },
     ifHasButton() {
-      sessionStorage.getItem('url') === '/finishedPro' &&
-        sessionStorage.getItem('url') === '/recyclePro' ? false : true
+      return getNoButtonProjectState(this.$route.query.proState)
     },
     ifApprovalUrl() {
-      sessionStorage.getItem('url') === '/onlinePro' &&
+      return sessionStorage.getItem('url') === '/onlinePro' &&
         sessionStorage.getItem('url') === '/createPro' &&
         sessionStorage.getItem('url') === '/delayPro' ? true : false
     }

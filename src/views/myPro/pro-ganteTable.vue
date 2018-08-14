@@ -14,8 +14,8 @@ import {
 export default {
   data() {
     return {
-      tableSdate:'',
-      tableEdate:''
+      tableSdate: '',
+      tableEdate: ''
     }
   },
   mounted() {
@@ -28,10 +28,10 @@ export default {
       }).then(
         res => {
           if (res.data.code === 200) {
-            console.log('甘特图',res);
-            const data=res.data.data;
-            this.tableSdate=data[0].sDate;
-            this.tableEdate=data[data.length-1].eDate;
+            console.log('甘特图', res);
+            const data = res.data.data;
+            this.tableSdate = data[0].sDate;
+            this.tableEdate = data[data.length - 1].eDate;
           }
         }
       ).catch(error => {

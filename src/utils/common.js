@@ -19,6 +19,21 @@ export function getProjectState(num) {
     }
   }
 }
+let  noButtonProjectStateArray = [
+  { index: 4, name: "完成" },
+  { index: 5, name: "驳回" },
+  { index: 6, name: "作废" },
+];
+export function getNoButtonProjectState(num) {
+  if (!num) return;
+  for (let val of noButtonProjectStateArray) {
+    if (val.index == num) {
+      return false;
+    }
+  }
+}
+
+
 // 根据项目状态设置样式
 export function addClass(num) {
   if (num == 7 || num == 8) {

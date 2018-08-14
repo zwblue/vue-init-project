@@ -58,7 +58,8 @@ import {
   getTaskState,
   getProjectType,
   getDevlogType,
-  getHandlogType
+  getHandlogType,
+  getNoButtonProjectState
 } from 'utils/common.js';
 import {
   Alert,
@@ -107,8 +108,7 @@ export default {
       }]
     },
     ifHasButton() {
-      sessionStorage.getItem('url') === '/finishedPro' &&
-        sessionStorage.getItem('url') === '/recyclePro' ? false : true
+      return getNoButtonProjectState(this.$route.query.proState)
     }
   },
   data() {
@@ -174,7 +174,7 @@ export default {
           align: "center",
           width: 130,
           render: (h, params) => {
-            if(!ifHasButton){
+            if (!ifHasButton) {
               return null
             }
             let [tip, edit, del] = [true, true, true];

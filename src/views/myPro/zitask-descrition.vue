@@ -42,7 +42,7 @@ import {
   getTaskState,
   getProjectType,
   getDevlogType,
-  getHandlogType
+  getHandlogType,getNoButtonProjectState
 } from 'utils/common.js';
 import {
   updSubtaskhandleApi,
@@ -91,8 +91,7 @@ export default {
       return [{ ...this.zitaskDetails
       }]
     },ifHasButton() {
-      sessionStorage.getItem('url') === '/finishedPro' &&
-        sessionStorage.getItem('url') === '/recyclePro' ? false : true
+       return getNoButtonProjectState(this.$route.query.proState)
     }
   },
   data() {
