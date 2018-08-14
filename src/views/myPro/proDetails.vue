@@ -68,7 +68,6 @@
   </Row>
   <!-- 添加参与组的组件 -->
   <add-joinDept v-if='model.applydept' @getTaskListByProIdData="getTaskListByProIdData" :proDetails='proDetails' :model='model' ></add-joinDept>
-  <!-- <edit-joinDept v-if='model.applydept' @getTaskListByProIdData="getTaskListByProIdData" :taskDetails='proDetails' :model='model' ></add-joinDept> -->
 </div>
 </template>
 <script>

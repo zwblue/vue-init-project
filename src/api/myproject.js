@@ -130,3 +130,36 @@ export function applyProStateToDelay(data){
       data:data
   })
 }
+// 更新子任务的下拉列表 
+
+export function getUpdSubtaskSelect(params){
+  return fetch({
+      url:'/getUpdSubtaskSelect',
+      method:'post',
+      data:params
+  });
+}
+// 上线待审批
+export function updOnlineProToPassOrRejectApi(params){
+  return fetch({
+      url:'/updOnlineProToPassOrReject',
+      method:'post',
+      data:params
+  });
+}
+// 延期待审批
+export function updDelayProToPassOrRejectApi(params){
+  return fetch({
+      url:'/updDelayProToPassOrReject',
+      method:'post',
+      data:params
+  });
+}
+// 立项待审批
+export function updSetProToPassOrRejectApi(params){
+  return fetch({
+      url:'/updSetProToPassOrReject',
+      method:'post',
+      data:params
+  });
+}

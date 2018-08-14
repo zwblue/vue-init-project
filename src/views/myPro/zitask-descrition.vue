@@ -32,7 +32,7 @@
       <Button type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
     </Tabs>
   </div>
-  <edit-zitask :zitaskDetails='zitaskDetailsSquaId' @resetAllZitaskList='resetZitaskList' v-if='model.editZitask' :model='model'></edit-zitask>
+  <edit-zitask :zitaskDetails='zitaskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.editZitask' :model='model'></edit-zitask>
   <update-zitask :zitaskDetails='zitaskDetails' @updateZitask='openziTask' :model="model"  v-if='model.updateZitask'></update-zitask>
 </div>
 </template>
@@ -87,9 +87,6 @@ export default {
     }
   },
   computed: {
-    zitaskDetailsSquaId(){
-      return {...this.zitaskDetails,squadId:this.deptId}
-    },
     tableData() {
       return [{ ...this.zitaskDetails
       }]
@@ -234,12 +231,6 @@ export default {
       this.$emit('openziTask', this.zitaskDetails.subtaskId);
     },
     editClick(row) {
-      // this.zitaskDetails = { ...this.zitaskDetails,
-      //   squadId: this.deptId
-      // };
-      // console.log( this.zitaskDetails = { ...this.zitaskDetails,
-      //   squadId: this.deptId
-      // })
       this.model.editZitask = !this.model.editZitask;
     },
     remindClick(row) {

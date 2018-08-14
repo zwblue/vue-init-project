@@ -1,103 +1,123 @@
 <template>
-  <div class="page">
-    <Form ref="formInline" :model="formInline" inline :label-width='100'>
-      <FormItem  label="项目发起方">
-        <Input type="text" v-model="formInline.creater" placeholder="请输入人名或部门名">
-        </Input>
-      </FormItem>
-      <FormItem  label="预计上线时间">
-        <DatePicker type="daterange" placement="bottom-end" @on-change='selectTime' split-panels placeholder="请选择时间" style="width: 200px"></DatePicker>
-      </FormItem>
-      <FormItem label="项目类型">
-        <Select v-model="formInline.proType" style="width: 150px">
+<div class="page">
+  <Form ref="formInline" :model="formInline" inline :label-width='100'>
+    <FormItem label="项目发起方">
+      <Input type="text" v-model="formInline.creater" placeholder="请输入人名或部门名">
+      </Input>
+    </FormItem>
+    <FormItem label="预计上线时间">
+      <DatePicker type="daterange" placement="bottom-end" @on-change='selectTime' split-panels placeholder="请选择时间" style="width: 200px"></DatePicker>
+    </FormItem>
+    <FormItem label="项目类型">
+      <Select v-model="formInline.proType" style="width: 150px">
           <Option v-for='item in projectTypeArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
-      </FormItem>
-      <FormItem label="项目名称">
-        <Input type="text" v-model="formInline.proName" placeholder="请输入项目名称">
-        </Input>
-      </FormItem>
-      <FormItem>
-        <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
-      </FormItem>
-    </Form>
-     <Table border class="my-table" :columns="deferColumns" :data="projectList" @on-row-click='gotoDetails'></Table>
-    <div class="clearfix bottom-fixed-page" >
-      <Page class="rt" :current='page.current' :pageSize='page.pageSize'  :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize'  show-total  transfer/>
-    </div>
+    </FormItem>
+    <FormItem label="项目名称">
+      <Input type="text" v-model="formInline.proName" placeholder="请输入项目名称">
+      </Input>
+    </FormItem>
+    <FormItem>
+      <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
+    </FormItem>
+  </Form>
+  <Table border class="my-table" :columns="deferColumns" :data="projectList" @on-row-click='gotoDetails'></Table>
+  <div class="clearfix bottom-fixed-page">
+    <Page class="rt" :current='page.current' :pageSize='page.pageSize' :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize' show-total transfer/>
   </div>
+</div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
-import {projectTypeArray} from 'utils/common.js';
-import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page,Alert } from 'iview';
-import {projectApprovalApi} from 'api/myproject'
+import {
+  projectTypeArray
+} from 'utils/common.js';
+import {
+  FormItem,
+  Form,
+  Select,
+  Option,
+  Input,
+  DatePicker,
+  Icon,
+  Page,
+  Alert
+} from 'iview';
+import {
+  projectApprovalApi,
+  updSetProToPassOrRejectApi
+} from 'api/myproject'
 export default {
   components: {
     FormItem,
-    Form,Page,
+    Form,
+    Page,
     Select,
     Option,
     Input,
     DatePicker,
     Icon,
-    ProGress,Alert
+    ProGress,
+    Alert
   },
   data() {
     return {
-      page:{
-        current:1,
-        pageSize:10,
-        page:1
+      page: {
+        current: 1,
+        pageSize: 10,
+        page: 1
       },
       formInline: {
         creater: "",
         proName: "",
-        type:'1',
+        type: '1',
         date1: "",
         date2: "",
         proState: "1",
         proType: "",
-        current:1,
-        pageSize:10
+        current: 1,
+        pageSize: 10
       },
-          deferColumns: [
-        {
+      passParams: {
+        proId: '',
+        type: '1',
+        reason: ''
+      },
+      deferColumns: [{
           title: '项目名称',
-          align:'center',
-           render: (h, params) => {
-            return h("div", 
-                {
-                  class: {
-                    primary: true
-                  }
-                },
-                params.row.proName
-              )
+          align: 'center',
+          render: (h, params) => {
+            return h("div", {
+                class: {
+                  primary: true
+                }
+              },
+              params.row.proName
+            )
           }
         }, {
           title: '上线时间',
-          align:'center',
+          align: 'center',
           key: 'planSDate'
         },
-         {
+        {
           title: '项目状态',
-          align:'center',
+          align: 'center',
           key: 'prostate'
         },
-         {
+        {
           title: '发起人',
-          align:'center',
+          align: 'center',
           key: 'creater'
         },
-         {
+        {
           title: '创建时间',
-          align:'center',
+          align: 'center',
           key: 'createDate'
         },
         {
           title: '操作',
-          align:'center',
+          align: 'center',
           key: 'action',
           width: 150,
           align: 'center',
@@ -113,8 +133,9 @@ export default {
                   marginRight: '5px'
                 },
                 on: {
-                  click: () => {
-                    this.operation('pass', row.proid)
+                  click: (e) => {
+                    e.stopPropagation()
+                    this.operation('pass', params.row.proId)
                   }
                 }
               }, '通过'),
@@ -124,8 +145,9 @@ export default {
                   size: 'small'
                 },
                 on: {
-                  click: () => {
-                    this.operation('reject', row.proid)
+                  click: (e) => {
+                    e.stopPropagation()
+                    this.operation('reject', params.row.proId)
                   }
                 }
               }, '驳回')
@@ -133,52 +155,43 @@ export default {
           }
         }
       ],
-      projectList: [
-      ]
+      projectList: []
     };
   },
-  computed:{
-    projectStateArray(){
+  computed: {
+    projectStateArray() {
       return projectStateArray
     },
-    projectTypeArray(){
+    projectTypeArray() {
       return projectTypeArray
     }
   },
-  mounted(){
+  mounted() {
     this.getDelayProjectListData();
   },
   methods: {
     operation(style, id) {
+      console.log(style, id)
       let title = '';
       if (style === 'pass') {
         this.passParams.proId = id;
+        this.passParams.type = 1;
         title = '请输入通过原因...'
       } else {
-        this.refuseParams.proId = id;
+        this.passParams.proId = id;
+        this.passParams.type = 2;
         title = '请输入驳回原因...';
       };
       this.$Modal.confirm({
         onOk: () => {
-          if (style === 'pass') {
-            PassProStateToDelay(this.passParams).then(res => {
-              if (res.data.code === 200) {
-                this.$Message.success('延期通过');
-                this.initDeferList();
-              }
-            }).catch(error => {
-              this.$Message.error('网络故障，请重试！');
-            })
-          } else {
-            PassProStateToDelay(this.refuseParams).then(res => {
-              if (res.data.code === 200) {
-                this.$Message.success('延期驳回');
-                this.initDeferList();
-              }
-            }).catch(error => {
-              this.$Message.error('网络故障，请重试！');
-            })
-          }
+          updSetProToPassOrRejectApi(this.passParams).then(res => {
+            if (res.data.code === 200) {
+              this.$Message.success(res.data.msg);
+              this.getDelayProjectListData();
+            }
+          }).catch(error => {
+            this.$Message.error('网络故障，请重试！');
+          })
         },
         onCancel: () => {
           this.$Message.warning('你取消了此操作！');
@@ -190,38 +203,33 @@ export default {
             },
             props: {
               type: "textarea",
-              value: this.value,
               rows: 5,
               autofocus: true,
               placeholder: title
             },
             on: {
               input: (val) => {
-                if (style === 'pass') {
-                  this.passParams.explain = val;
-                } else {
-                  this.refuseParams.explain = val;
-                }
+                this.passParams.reason = val;
               }
             }
           })
         }
       })
     },
-    gotoDetails(row){
-      this.$router.push('proDetails/'+row.proId)
+    gotoDetails(row) {
+      this.$router.push('proDetails/' + row.proId)
     },
-    getDelayProjectListData(){
-      projectApprovalApi(this.formInline).then(res=>{
+    getDelayProjectListData() {
+      projectApprovalApi(this.formInline).then(res => {
         console.log(res);
-        if(res.data.code===200){
-          this.projectList=res.data.data;
-          this.page=res.data.page;
-        }else{
+        if (res.data.code === 200) {
+          this.projectList = res.data.data;
+          this.page = res.data.page;
+        } else {
           this.$Message.error(res.data.msg);
         }
       }).catch(
-        error=>{
+        error => {
           this.$Message.error('接口故障（/getAllMyProjectList）')
         }
       )
@@ -234,12 +242,12 @@ export default {
       console.log(this.formInline)
       this.getDelayProjectListData();
     },
-    changeCurrent(current){
-      this.formInline.current=current;
+    changeCurrent(current) {
+      this.formInline.current = current;
       this.getDelayProjectListData();
     },
-    changePageSize(pageSize){
-      this.formInline.pageSize=pageSize;
+    changePageSize(pageSize) {
+      this.formInline.pageSize = pageSize;
       this.getDelayProjectListData();
     },
   }
@@ -250,13 +258,15 @@ export default {
 .page {
   padding: 10px 0;
 }
+
 .bottom-fixed-page {
-  margin-top:15px;
+  margin-top: 15px;
 }
 
 .wx-tip {
   font-size: 14px;
 }
+
 .icon {
   font-size: 18px;
   margin: 0 2px;

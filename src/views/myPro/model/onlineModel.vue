@@ -15,6 +15,7 @@
           <Button type="ghost" icon="ios-cloud-upload-outline">上传附件</Button>
         </Upload>
       </FormItem>
+
       </FormItem>
     </Form>
   </Modal>
@@ -23,17 +24,31 @@
 
 <script>
 export default {
-    model: {
-      type: Object,
-      default: function() {
-        return {
-          online: false
-        };
-      }
-    },
+  model: {
+    type: Object,
+    default: function() {
+      return {
+        online: false
+      };
+    }
+  },
   data() {
     return {
+      formApprovalCustom: {
+        explain: "", //提交审批
+        overdueExplain: "" //逾期提交审批
+      }
+    }
+  },
 
+  methods: {
+    addApprovalSuccess(response, file) {
+      //上传附件
+      if (response.code == 200) {
+        this.formApprovalCustom.filePath = response.data.uploadPath;
+      } else {
+        this.$Message.error("上传失败，请重新上传");
+      }
     }
   }
 }

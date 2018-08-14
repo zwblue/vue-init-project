@@ -28,7 +28,7 @@
 </template>
 <script>
 import {
-  updSubtaskProgressApi
+  updSubtaskProgressApi,getUpdSubtaskSelect
 } from 'api/myproject.js'
 import {
   Input,
@@ -36,7 +36,8 @@ import {
   Option,
   Modal,
   Form,
-  FormItem,InputNumber
+  FormItem,
+  InputNumber
 } from 'iview'
 export default {
   components: {
@@ -45,7 +46,8 @@ export default {
     Option,
     Modal,
     Form,
-    FormItem,InputNumber
+    FormItem,
+    InputNumber
   },
   props: {
     zitaskDetails: {
@@ -90,13 +92,26 @@ export default {
   },
   mounted() {},
   methods: {
-    
+    getUpdSubtaskSelect() {
+      getUpdSubtaskSelect({
+        proId: this.$route.query.proId
+      }).then(res => {
+        if (res.data.code === 200) {
+          this.ziTaskList = res.data.data;
+          if (this.ziTaskList.length !== 0) {
+            // this.updateBtn = true;
+          }
+        }
+      }).catch(error => {
+
+      })
+    },
     sureSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          this.partInData.proId=this.zitaskDetails.proId;
-          this.partInData.taskId=this.zitaskDetails.taskId;
-          this.partInData.subtaskId=this.zitaskDetails.subtaskId;
+          this.partInData.proId = this.zitaskDetails.proId;
+          this.partInData.taskId = this.zitaskDetails.taskId;
+          this.partInData.subtaskId = this.zitaskDetails.subtaskId;
           updSubtaskProgressApi(this.partInData).then(
             res => {
               if (res.data.code === 200) {
