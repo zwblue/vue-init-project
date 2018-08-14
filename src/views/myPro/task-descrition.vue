@@ -4,7 +4,7 @@
     <Divider :style='{fontWeight:"bold"}'>{{taskDetails.taskName||''}}</Divider>
   </h3>
   <div class="header" :style='{margin:"10px 0"}'>
-    <div>
+    <div v-if='ifHasButton'>
       <Tooltip content="修改任务" placement="bottom-start">
         <Icon class="icon-edit_s iconfont primary click-btn" @click="model.editTask=!model.editTask"></Icon>
       </Tooltip>
@@ -14,7 +14,6 @@
       <Tooltip content="提醒任务人">
         <Icon type="md-notifications" class="primary click-btn" @click="remindTaskClick" />
       </Tooltip>
-
     </div>
     <div class="center">
       所属项目：<span class="primary">{{proName}}</span>
@@ -29,7 +28,7 @@
         <TabPane label="子任务列表" name="name1">
           <Table border :columns="zitaskColumns" :data="taskDetails.subtaskList"></Table>
         </TabPane>
-        <Button type='primary' icon='md-add' size='small' slot="extra" @click="model.addZitask=!model.addZitask">添加子任务</Button>
+        <Button type='primary' icon='md-add' size='small' slot="extra" :disabled='!ifHasButton' @click="model.addZitask=!model.addZitask">添加子任务</Button>
       </Tabs>
     </div>
     <Tabs value="name1" type="card">
@@ -106,6 +105,10 @@ export default {
     tableData() {
       return [{ ...this.taskDetails
       }]
+    },
+    ifHasButton() {
+      sessionStorage.getItem('url') === '/finishedPro' &&
+        sessionStorage.getItem('url') === '/recyclePro' ? false : true
     }
   },
   data() {
@@ -171,6 +174,9 @@ export default {
           align: "center",
           width: 130,
           render: (h, params) => {
+            if(!ifHasButton){
+              return null
+            }
             let [tip, edit, del] = [true, true, true];
             // getButtonBySubtaskApi({
             //   subtaskId: params.row.subtaskId

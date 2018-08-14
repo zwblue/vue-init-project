@@ -4,7 +4,7 @@
     <Divider :style='{fontWeight:"bold"}'>{{zitaskDetails.subtaskName||''}}</Divider>
   </h3>
   <div class="header" :style='{margin:"10px 0"}'>
-    <div>
+    <div v-if='ifHasButton'>
       <Tooltip content="修改子任务" placement="bottom-start" >
         <Icon class="icon-edit_s iconfont primary click-btn" @click="editClick"></Icon>
       </Tooltip>
@@ -29,7 +29,7 @@
       <TabPane label="操作日志" name="name2">
         <Table height='470' :columns="handColumns" :data="zitaskDetails.subtaskLogRecords"></Table>
       </TabPane>
-      <Button type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
+      <Button :disabled='!ifHasButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
     </Tabs>
   </div>
   <edit-zitask :zitaskDetails='zitaskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.editZitask' :model='model'></edit-zitask>
@@ -90,6 +90,9 @@ export default {
     tableData() {
       return [{ ...this.zitaskDetails
       }]
+    },ifHasButton() {
+      sessionStorage.getItem('url') === '/finishedPro' &&
+        sessionStorage.getItem('url') === '/recyclePro' ? false : true
     }
   },
   data() {

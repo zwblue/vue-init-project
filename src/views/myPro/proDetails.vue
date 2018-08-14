@@ -15,7 +15,7 @@
           <div class="pro-state"><span :class="addClass(proDetails.proState)">{{getProjectState(proDetails.proState)}}</span></div>
         </div>
       </div>
-      <Button icon='md-add' type='primary' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
+      <Button icon='md-add' type='primary' :disabled='!ifHasButton' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
       <Collapse v-model="openPanelIndex" accordion class="pro-details-panel">
         <Panel :name="String(index)" v-for='(task,index) in taskList' :key='index'>
           <div class="task-intr" @click="openTask(task.taskId)">
@@ -107,6 +107,12 @@ export default {
     TaskDescrition,
     ZitaskDescrition,AddJoinDept
   },
+  computed:{
+    ifHasButton() {
+      sessionStorage.getItem('url') === '/finishedPro' &&
+        sessionStorage.getItem('url') === '/recyclePro' ? false : true
+    }
+  },  
   data() {
     return {
       // 项目基本信息
