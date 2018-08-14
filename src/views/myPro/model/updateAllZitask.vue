@@ -3,7 +3,7 @@
   <Modal v-model="model.updateZitask" title="更新子任务" @on-cancel="cancel('partInData')">
     <Form ref="partInData" :model="partInData" :rules="partrules" :label-width="100">
       <FormItem label="子任务：" prop="subtaskId">
-        <Select v-model="addDevLogList.subtaskId" v-if='ziTaskList.length!==0' placeholder='请选择子任务'>
+        <Select v-model="partInData.subtaskId" v-if='ziTaskList.length!==0' placeholder='请选择子任务'>
           <Option v-for="item in ziTaskList" :value="item.taskid+','+item.subtaskid" :key="item.subtaskid">{{ item.subtaskname }}</Option>
         </Select>
       </FormItem>
@@ -90,28 +90,30 @@ export default {
       }
     }
   },
-  mounted() {},
+  mounted() {
+    this.getUpdSubtaskSelect();
+    this.ziTaskList = [{taskid:'12',subtaskid:'22',subtaskname:'土地'},{taskid:'87',subtaskid:'62',subtaskname:'试试'},{taskid:'8',subtaskid:'1',subtaskname:'放到'},{taskid:'22',subtaskid:'32',subtaskname:'发呆'}];
+  },
   methods: {
     getUpdSubtaskSelect() {
       getUpdSubtaskSelect({
-        proId: this.$route.query.proId
+        proId: this.$route.params.id
       }).then(res => {
         if (res.data.code === 200) {
-          this.ziTaskList = res.data.data;
+          // this.ziTaskList = res.data.data;
           if (this.ziTaskList.length !== 0) {
             // this.updateBtn = true;
           }
         }
       }).catch(error => {
-
       })
     },
     sureSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          this.partInData.proId = this.zitaskDetails.proId;
-          this.partInData.taskId = this.zitaskDetails.taskId;
-          this.partInData.subtaskId = this.zitaskDetails.subtaskId;
+          this.partInData.proId = this.$route.params.id;
+          this.partInData.taskId = this.partInData.subtaskId.split(',')[0];
+          this.partInData.subtaskId = this.partInData.subtaskId.split(',')[1];
           updSubtaskProgressApi(this.partInData).then(
             res => {
               if (res.data.code === 200) {

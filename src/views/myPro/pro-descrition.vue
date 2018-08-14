@@ -23,10 +23,12 @@
       <TabPane label="操作日志" name="name2">
         <Table height='470' :columns="handColumns" :data="projectDetails.proLogRecords"></Table>
       </TabPane>
+      <Button :disabled='ifHasButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
     </Tabs>
   </div>
   <delay-model :projectDetails='projectDetails' :model='model' v-if='model.delay'></delay-model>
   <online-model :model='model' v-if='model.online'></online-model>
+  <update-allZitask :model='model' v-if='model.updateZitask'></update-allZitask>
 </div>
 </template>
 <script>
@@ -34,7 +36,8 @@ import {
   getProjectState,
   getProjectType,
   getDevlogType,
-  getHandlogType,getNoButtonProjectState
+  getHandlogType,
+  getNoButtonProjectState
 } from 'utils/common.js';
 import {
   updSetProToPassOrRejectApi,
@@ -50,6 +53,7 @@ import {
 import ProGress from 'components/proGress/proGress.vue'
 import DelayModel from './model/delayModel.vue'
 import OnlineModel from './model/onlineModel.vue'
+import UpdateAllZitask from './model/updateAllZitask.vue'
 export default {
   components: {
     ProGress,
@@ -57,6 +61,7 @@ export default {
     Tabs,
     TabPane,
     Input,
+    UpdateAllZitask,
     OnlineModel,
     DelayModel
   },
@@ -88,7 +93,8 @@ export default {
     return {
       model: {
         delay: false,
-        online: false
+        online: false,
+        updateZitask: false
       },
       devColumns: [{
         title: '类型',
