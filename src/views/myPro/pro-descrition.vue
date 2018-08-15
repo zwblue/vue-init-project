@@ -31,7 +31,7 @@
     </Tabs>
   </div>
   <delay-model :projectDetails='projectDetails' :model='model' v-if='model.delay'></delay-model>
-  <online-model :model='model' v-if='model.online'></online-model>
+  <online-model :model='model' v-if='model.online' :projectDetails='projectDetails'></online-model>
   <update-allZitask :model='model' v-if='model.updateZitask'></update-allZitask>
 </div>
 </template>

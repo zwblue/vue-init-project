@@ -116,7 +116,7 @@ export default {
         }, {
           title: '发起人',
           align: 'center',
-          key: 'originator'
+          key: 'creater'
         },
         {
           title: '操作',

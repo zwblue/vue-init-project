@@ -36,8 +36,8 @@ export default {
   data() {
     return {
       formInline: {
-        createDate1: '',
-        createDate2: ''
+        createDateStart: '',
+        createDateEnd: ''
       },
       columns10: [{
           type: 'expand',
@@ -99,8 +99,8 @@ export default {
       })
     },
     selectTime(time) {
-      this.formInline.createDate1 = time[0];
-      this.formInline.createDate2 = time[1];
+      this.formInline.createDateStart = time[0];
+      this.formInline.createDateEnd = time[1];
     },
   }
 }

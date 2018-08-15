@@ -7,8 +7,8 @@
       <FormItem label="延期上线时间" prop="delayDate">
         <DatePicker type="datetime" :options="deferOptions" @on-change='selDeferApplyTime' placeholder="选择日期" style="width: 200px"></DatePicker>
       </FormItem>
-      <FormItem label="延期原因" prop="delayExplain">
-        <Input type="textarea" :rows="5" :maxlength="255" placeholder="请输入项目延期原因" v-model="deferApplyParams.delayExplain"></Input>
+      <FormItem label="延期原因" prop="reason">
+        <Input type="textarea" :rows="5" :maxlength="255" placeholder="请输入项目延期原因" v-model="deferApplyParams.reason"></Input>
       </FormItem>
       <FormItem label-position="right">
         <Upload :action="uploadUrl" :on-success="addApprovalSuccess">
@@ -75,8 +75,9 @@ export default {
       deferApplyParams: {
         proId: this.$route.params.id,
         delayDate: '',
-        delayExplain: '',
-        delayFilePath: ''
+        type:'2',
+        reason: '',
+        filePath: ''
       },
       deferApplyRules: {
         delayDate: [{
@@ -84,7 +85,7 @@ export default {
           message: "请填写延期时间",
           trigger: "change"
         }],
-        delayExplain: [{
+        reason: [{
           required: true,
           message: "请填写延期原因",
           trigger: "change"
