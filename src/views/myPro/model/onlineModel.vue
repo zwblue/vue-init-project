@@ -2,19 +2,13 @@
 <template>
 <div class="page">
   <!-- 提交上线审批MODAL -->
-  <Modal v-model="model.online" title="上线审批" @on-ok="okApproval(formApprovalCustom)" @on-cancel="cancel">
-    <Form :model="formApprovalCustom" label-position="left" :label-width="100">
-      <FormItem label="上线审批" prop="explain" v-if='projectDetails.proState!=7'>
-        <Input type="textarea" :rows="4" placeholder="请输入上线意见.." v-model="formApprovalCustom.explain"></Input>
+  <Modal v-model="model.online" title="上线审批" @on-ok="onlineSubmit(onlineParams)" @on-cancel="cancel">
+    <Form :model="onlineParams" label-position="left" :label-width="100" >
+      <FormItem label="上线审批" prop="reason" v-if='projectDetails.proState!=7'>
+        <Input type="textarea" :rows="4" placeholder="请输入上线意见.." v-model="onlineParams.reason"></Input>
       </FormItem>
-      <FormItem label="逾期上线(必填)" v-if='projectDetails.proState==7' prop="overdueExplain">
-        <Input type="textarea" :rows="4" :maxlength="255" placeholder="请输入逾期上线原因" v-model="formApprovalCustom.explain"></Input>
-      </FormItem>
-      <FormItem label-position="rightr">
-        <Upload :action="uploadUrl" :on-success="addApprovalSuccess">
-          <Button type="primary" ghost icon="ios-cloud-upload-outline">上传附件</Button>
-        </Upload>
-      </FormItem>
+      <FormItem label="逾期上线(必填)" v-if='projectDetails.proState==7' prop="reason">
+        <Input type="textarea" :rows="4" :maxlength="255" placeholder="请输入逾期上线原因" v-model="onlineParams.reason"></Input>
       </FormItem>
     </Form>
   </Modal>
@@ -62,10 +56,9 @@ export default {
   },
   data() {
     return {
-      formApprovalCustom: {
+      onlineParams: {
         proId: this.$route.params.id,
         type: '1',
-        filePath: '',
         reason: "", //提交审批
       }
     }
@@ -76,24 +69,16 @@ export default {
     }
   },
   methods: {
-    addApprovalSuccess(response, file) {
-      //上传附件
-      if (response.code == 200) {
-        this.formApprovalCustom.filePath = response.data.uploadPath;
-      } else {
-        this.$Message.error("上传失败，请重新上传");
-      }
-    },
-    okApproval(formApprovalCustom) {
-      if (formApprovalCustom.reason !== "") {
-        updApplyHandleByProApi(formApprovalCustom)
+    onlineSubmit() {
+      if (this.onlineParams.reason !== "") {
+        updApplyHandleByProApi(this.onlineParams)
           .then(res => {
             const data = res.data;
             if (data.code == 200) {
+              this.$router.push('/myPro');
+                this.$emit('openProject')
+              this.model.online = false;
               this.$Message.success(res.data.msg);
-              this.$router.push({
-                name: "我的项目"
-              });
             } else {
               this.$Message.error(res.data.msg);
             }

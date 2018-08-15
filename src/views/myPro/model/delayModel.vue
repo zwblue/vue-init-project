@@ -10,11 +10,13 @@
       <FormItem label="延期原因" prop="reason">
         <Input type="textarea" :rows="5" :maxlength="255" placeholder="请输入项目延期原因" v-model="deferApplyParams.reason"></Input>
       </FormItem>
-      <FormItem label-position="right">
-        <Upload :action="uploadUrl" :on-success="addApprovalSuccess">
-          <Button ghost icon="ios-cloud-upload-outline" type='primary'>上传附件</Button>
+       <FormItem label="上传附件" >
+        <Upload ref="upload" :on-remove='removeFilePath' :on-success='uploadSuccess' :action="uploadUrl" :before-upload='beforeUploadClick' :max-size="2048" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :format="['doc','docx','txt','png','PNG','jpg','JPG','jpeg','JPEG','xls','xlsx','pdf','zip','rar']">
+          <Button icon="ios-cloud-upload-outline">上传文件</Button>
         </Upload>
+        <span>{{deferApplyParams.filePath}}</span>
       </FormItem>
+     
     </Form>
     <div slot="footer">
       <Button :loading='deferLoading' type="primary" @click="sureSubmit('deferApplyParams')">{{deferLoading?'延期申请中...':'提交'}}</Button>
@@ -100,13 +102,37 @@ export default {
     }
   },
   methods: {
-    addApprovalSuccess(response, file) {
+    removeFilePath() {
+      this.formValidate.filePath = '';
+    },
       //上传附件
-      if (response.code == 200) {
-        this.deferApplyParams.delayFilePath = response.data.uploadPath;
+    uploadSuccess(res, file, fileList) {
+      if (res.code === 200) {
+        this.deferApplyParams.filePath = res.data.uploadPath;
+        this.$Message.success(res.msg)
       } else {
-        this.$Message.error("上传失败，请重新上传");
+        this.$Message.error(res.msg)
       }
+    },
+    beforeUploadClick() {
+      if (this.formValidate.filePath) {
+        this.$Message.warning({
+          content: '只能上传一个文件，请删除你之前上传的文件',
+          duration: 3
+        })
+        return false;
+      }
+    },handleFormatError(file) {
+      this.$Message.error({
+        content: file.name + '：此文件格式出错',
+        duration: 3
+      })
+    },
+    handleMaxSize(file) {
+      this.$Message.error({
+        content: file.name + '：此文件大小不能超过2M',
+        duration: 3
+      })
     },
     selDeferApplyTime(time) {
       if (time) {
@@ -123,6 +149,7 @@ export default {
           this.deferLoading = true;
           updApplyHandleByProApi(this.deferApplyParams).then(res => {
             if (res.data.code == 200) {
+                this.$emit('openProject')
               this.$Message.success('已成功提交延期申请！');
               this.model.delay = false;
               this.deferLoading = false;

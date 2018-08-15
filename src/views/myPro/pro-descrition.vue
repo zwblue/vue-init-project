@@ -30,8 +30,8 @@
       <Button :disabled='!ifHasButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
     </Tabs>
   </div>
-  <delay-model :projectDetails='projectDetails' :model='model' v-if='model.delay'></delay-model>
-  <online-model :model='model' v-if='model.online' :projectDetails='projectDetails'></online-model>
+  <delay-model :projectDetails='projectDetails' @openProject='openProject' :model='model' v-if='model.delay'></delay-model>
+  <online-model :model='model'  @openProject='openProject' v-if='model.online' :projectDetails='projectDetails'></online-model>
   <update-allZitask :model='model' v-if='model.updateZitask'></update-allZitask>
 </div>
 </template>
@@ -244,6 +244,9 @@ export default {
   },
   mounted() {},
   methods: {
+    openProject(){
+      this.$emit('openProject')
+    },
     // 项目作废
     giveUpPro() {
       let params = {
