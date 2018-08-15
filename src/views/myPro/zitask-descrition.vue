@@ -46,7 +46,7 @@ import {
 } from 'utils/common.js';
 import {
   updSubtaskhandleApi,
-  getHomePageRemindingApi
+  getHomePageRemindingApi,getHandlerPowerByProAndTaskApi
 } from 'api/myproject.js';
 import {
   Alert,
@@ -96,6 +96,7 @@ export default {
   },
   data() {
     return {
+      operationziTaskButton:false,
       model: {
         updateZitask: false,
         editZitask:false
@@ -182,7 +183,7 @@ export default {
                 class: {
                   error: params.row.subtaskState == 5
                 }
-              }, getTaskState(params.row.subtaskState)
+              }, getTaskState(params.row.subtaskState,params.row.overdueDays)
             )
           }
         }, {
@@ -223,8 +224,26 @@ export default {
       ],
     }
   },
-  mounted() {},
+  mounted() {
+    this.initziTaskButton();
+  },
   methods: {
+     initziTaskButton() {
+      console.log('init',this.zitaskDetails)
+      getHandlerPowerByProAndTaskApi({
+        type: 2,
+        proId: this.$route.params.id,
+        taskId: this.zitaskDetails.subtaskId
+      }).then(
+        res => {
+          if (res.data.code === 200) {
+              this.operationziTaskButton = res.data.data;
+          }
+        }
+      ).catch(error => {
+        this.$Message.error('接口故障：/getHandlerPowerByProAndTask')
+      })
+    },
      resetZitaskList() {
       this.$emit('getTaskListByProIdData');
       this.$emit('openziTask', this.zitaskDetails.subtaskId);

@@ -4,8 +4,19 @@
     <div class="title name">{{tableData?tableData.subtaskHandler:''}}</div>
     <Table border :columns="columns1" :data="myTaskList" >
     </Table>
-    <div class="title">任务甘特图</div>
-    <gante-table :activeSubTaskList='myAllTaskList' v-if='myAllTaskList!==0'></gante-table>
+    <div class="title gante-title" v-if='myAllTaskList.length!==0'>
+        <div>
+          任务甘特图
+        </div>
+        <div>
+          <Button type='primary' size='small'>开发中</Button>
+          <Button type='success' size='small'>已完成</Button>
+          <Button type="error" size='small'>逾期</Button>
+          <Button class="gray-bg" style='color:#fff' size='small'>未开始</Button>
+          <Button type='warning' size='small'>其他</Button>
+        </div>
+    </div>
+    <gante-table :activeSubTaskList='myAllTaskList' v-if='myAllTaskList.length!==0'></gante-table>
     <Divider class="title"> 全部任务
       <span class="error">（共6个）</span>
     </Divider>
@@ -133,6 +144,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+ .gante-title{
+   margin:10px 0;
+   display: flex;
+    justify-content: space-between;
+    align-items: center;
+ }
 .page {
   position: fixed;
   overflow-y: auto;

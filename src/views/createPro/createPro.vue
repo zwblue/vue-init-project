@@ -2,7 +2,7 @@
 <div class="page">
   <Form ref="formInline" :model="formInline" inline :label-width='100'>
     <FormItem label="项目发起方">
-      <Input type="text" v-model="formInline.creater" placeholder="请输入人名或部门名">
+      <Input type="text" v-model="formInline.originator" placeholder="请输入人名或部门名">
       </Input>
     </FormItem>
     <FormItem label="预计上线时间">
@@ -68,11 +68,11 @@ export default {
         page: 1
       },
       formInline: {
-        creater: "",
+        originator: "",
         proName: "",
         type: '1',
-        date1: "",
-        date2: "",
+        createDateStart: "",
+        createDateEnd: "",
         proState: "1",
         proType: "",
         current: 1,
@@ -108,7 +108,7 @@ export default {
         {
           title: '发起人',
           align: 'center',
-          key: 'creater'
+          key: 'originator'
         },
         {
           title: '创建时间',
@@ -235,8 +235,8 @@ export default {
       )
     },
     selectTime(time) {
-      this.formInline.date1 = time[0];
-      this.formInline.date2 = time[1];
+      this.formInline.createDateStart = time[0];
+      this.formInline.createDateEnd = time[1];
     },
     handleSubmit(name) {
       console.log(this.formInline)

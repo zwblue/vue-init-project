@@ -1,6 +1,6 @@
 <template>
-<div class="page1" >
-  <div class="table-box">
+<div class="page1" style='overflow:auto;'>
+  <div class="table-box" :style='{height:tableHeight+"px"}'>
     <div class="weeks">
       <div class="week" v-for='(item,index) in weekArray' :key='index' :style='{
       background:item!==6&&item!==0?"#fff":"#eee",width:oneDayWidth+"px"
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="show-area">
-      <div class="first-line" v-for='(item,index) in howManyWeeks' :key='index' :style='{left:(weekIndex0+(item-1)*7)*oneDayWidth-1+"px",width:5*oneDayWidth+"px"}'>
+      <div class="first-line" v-for='(item,index) in howManyWeeks' :key='index' :style='{height:tableHeight+"px",left:(weekIndex0+(item-1)*7)*oneDayWidth-1+"px",width:5*oneDayWidth+"px"}'>
         <div class="time-show">
           {{daysArray[(weekIndex0+(item-1)*7)]}}
         </div>
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="hide-area">
-      <div class="hide-data" v-for='(item,index) in howManyWeeks' :key='index' :style='{left:((weekIndex0+(item-1)*7)*oneDayWidth-1)-(2*oneDayWidth)+"px",width:2*oneDayWidth+"px"}'>
+      <div class="hide-data" v-for='(item,index) in howManyWeeks' :key='index' :style='{top:tableHeaderHegiht+"px",height:(tableHeight-tableHeaderHegiht)+"px",left:((weekIndex0+(item-1)*7)*oneDayWidth-1)-(2*oneDayWidth)+"px",width:2*oneDayWidth+"px"}'>
         <div class="time-show">
         </div>
         <div>
@@ -54,6 +54,8 @@ import {
 export default {
   data() {
     return {
+      tableHeight: '450',
+      tableHeaderHegiht: '78',
       oneBoxHeight: '50',
       listData: [],
       tableSdate: '',
@@ -81,6 +83,11 @@ export default {
   mounted() {
     this.getGTChartList();
   },
+  watch: {
+    activeSubTaskList() {
+      this.getGTChartList();
+    }
+  },
   methods: {
     coppyArray(arr) {
       return arr.map((e) => {
@@ -100,33 +107,29 @@ export default {
       this.lastWeek = new Date(this.tableSdate).getDay(); //起始是星期几
       this.nextWeek = new Date(this.tableEdate).getDay(); //结束是星期几
       console.log(111, this.lastWeek, this.nextWeek)
+      console.log(this.howManyDays);
+      // 可以向前增加的box数
+      let canAddLastBoxNum = parseInt((27 - this.howManyDays) / 2);
+      // 可以向后增加的数
+      let canAddNextBoxNum = (27 - this.howManyDays) - canAddLastBoxNum;
+      console.log(canAddLastBoxNum, canAddNextBoxNum)
+
+      if (canAddNextBoxNum <= 0) {
+        canAddNextBoxNum = 2;
+      }
       // 加前面的天数
       let addLastDaysArray = [];
-      if (this.lastWeek <= 5) { //小于星期五要补全这周
-        if (this.lastWeek == 0) {
-          // 星期天把星期六补全
-          let lastDay = new Date(this.tableSdate).getTime() - (onetimes * 1); //
-          addLastDaysArray.push(this.noHoursTimeToString(lastDay))
-        } else {
-          for (let index = 0; index < this.lastWeek - 1; index++) { //5=》加4次=》1，2，3，4前四天   2=》加1天=》提前1天
-            let day = new Date(this.tableSdate).getTime() - (onetimes * (index + 1)); //
-            addLastDaysArray.unshift(this.noHoursTimeToString(day));
-          }
-        }
+     
+      for (let index = 0; index < canAddLastBoxNum; index++) { //1 5=》加4次=》1，2，3，4前四天   2=》加1天=》提前1天
+        let day = new Date(this.tableSdate).getTime() - (onetimes * (index + 1)); //
+        addLastDaysArray.unshift(this.noHoursTimeToString(day));
       }
       // 加后面的天数
       let addNextDaysArray = [];
-      if (this.nextWeek >= 0) { //小于星期五要补全这周
-        if (this.nextWeek == 6) {
-          // 星期六把星期天补全
-          let nextDay = new Date(this.tableSdate).getTime() + (onetimes * (this.howManyDays + 1)); //
-          addNextDaysArray.push(this.noHoursTimeToString(lastDay))
-        } else {
-          for (let index = 0; index < 4 - this.lastWeek; index++) { //1=》加4次=》2，3，4，5后四天   2=》加3天=》3，4，5天
-            let day = new Date(this.tableSdate).getTime() + (onetimes * (this.howManyDays + index + 1)); //
-            addNextDaysArray.push(this.noHoursTimeToString(day));
-          }
-        }
+      console.log('nextWeek', this.nextWeek)
+      for (let index = 0; index < canAddNextBoxNum; index++) { //4 1=》加4次=》2，3，4，5后四天   2=》加3天=》3，4，5天
+        let day = new Date(this.tableSdate).getTime() + (onetimes * (this.howManyDays + index + 1)); //
+        addNextDaysArray.push(this.noHoursTimeToString(day));
       }
       // 期间的数组
       for (let i = 0; i <= this.howManyDays; i++) {
@@ -136,8 +139,7 @@ export default {
           )
         );
       }
-      console.log(222, addLastDaysArray, this.daysArray, addNextDaysArray)
-      // 总的天数
+      // 总的天数列表
       this.daysArray = addLastDaysArray.concat(this.daysArray, addNextDaysArray);
       // 总的星期数
       this.weekArray = this.daysArray.map((val, index) => {
@@ -166,8 +168,8 @@ export default {
         y = index;
         x = (new Date(val.sDate) - new Date(this.daysArray[0])) / onetimes
         width = (new Date(val.eDate) - new Date(val.sDate)) / onetimes
-        let name = val.taskName;
-        let state = val.taskState;
+        let name = val.subtaskName;
+        let state = val.subtaskState;
         console.log(x, width)
         this.positionArray.push({
           x,
@@ -224,14 +226,15 @@ export default {
     },
 
     getGTChartList() {
-      this.ganteData = this.coppyArray(this.activeSubTaskList);
+      this.howManyWeeks = [];
+      this.daysArray = [];
+      this.weekArray=[];
+        this.ganteData = this.coppyArray(this.activeSubTaskList);
       console.log(this.activeSubTaskList)
-      this.tableSdate = this.activeSubTaskList[this.activeSubTaskList.length - 1].sDate;
-      // this.tableSdate = this.activeSubTaskList[].sDate;
-      // this.tableEdate = this.activeSubTaskList[this.activeSubTaskList.length - 1].eDate;
-      this.tableEdate = this.activeSubTaskList[2].eDate;
+      this.tableSdate = this.activeSubTaskList[0].sDate;
+      this.tableEdate = this.activeSubTaskList[this.activeSubTaskList.length - 1].eDate;
       this.initDaysArray();
-
+      this.tableHeight = this.activeSubTaskList.length * 50 + 78
     },
   }
 }
@@ -252,11 +255,16 @@ export default {
   z-index: 9999;
 }
 
-.item-area,
-.text-area {
+.item-area {
   position: absolute;
   top: 82px;
   z-index: 8;
+}
+
+.text-area {
+  position: absolute;
+  top: 82px;
+  z-index: 10000;
 }
 
 .day {
@@ -276,7 +284,7 @@ export default {
   align-items: center;
   z-index: 9;
   .box {
-    background: red;
+    background: #f90;
     width: 100%;
     border-radius: 4px;
     height: 30px;
@@ -284,6 +292,7 @@ export default {
 }
 
 .text-box {
+  color: #f90;
   line-height: 50px;
   position: absolute;
   z-index: 10000;
@@ -319,9 +328,11 @@ export default {
   margin: 0;
   display: inline-block;
   height: 40px;
+  white-space: nowrap;
 }
 
 .days {
+  white-space: nowrap;
   margin: 0;
   margin-top: -6px;
   padding: 0;

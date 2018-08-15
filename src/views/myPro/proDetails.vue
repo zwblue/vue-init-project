@@ -27,7 +27,7 @@
             </div>
             <div class="pro-time between">
               <div class="time">{{task.sDate}} - {{task.eDate}} </div>
-              <div class="pro-state">{{getTaskState(task.taskState)}}</div>
+              <div class="pro-state">{{getTaskState(task.taskState,task.overdueDays)}}</div>
             </div>
           </div>
           <div slot="content">
@@ -41,7 +41,7 @@
               </div>
               <div class="pro-time between">
                 <div class="time">{{subtask.sDate}} - {{subtask.eDate}}</div>
-                <div class="pro-state">{{getTaskState(subtask.subtaskState)}}</div>
+                <div class="pro-state">{{getTaskState(subtask.subtaskState,subtask.overdueDays)}}</div>
               </div>
             </div>
           </div>
@@ -55,8 +55,8 @@
         <Tabs value="name1">
           <TabPane :label="detailsName" name="name1">
             <pro-descrition v-show='detailsType==1' :operationProButton='operationProButton' @openProject='openProject' :projectDetails='proDetails'></pro-descrition>
-            <task-descrition v-show='detailsType==2' @openTask='openTask' @openProject='openProject' @getTaskListByProIdData='getTaskListByProIdData' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
-            <zitask-descrition v-show='detailsType==3' @openProject='openProject' :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails' @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
+            <task-descrition v-show='detailsType==2' @openTask='openTask' @openProject='openProject' @getTaskListByProIdData='getTaskListByProIdData' v-if='taskDetails.taskId' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
+            <zitask-descrition v-show='detailsType==3' @openProject='openProject' :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails' v-if='zitaskDetails.subtaskId' @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
           </TabPane>
           <TabPane label="甘特图" name="name2">
             <pro-ganteTable :activeSubTaskList='activeSubTaskList' :activeOpenPanpelIndex='activeOpenPanpelIndex'></pro-ganteTable>
@@ -113,7 +113,7 @@ export default {
     return {
       activeSubTaskList:[],
       // 项目基本信息
-      operationProButton:false,
+      operationProButton:true,
       activeTaskId: '',
       activeOpenPanpelIndex:-1,
       activeSubtaskId: '',
@@ -164,10 +164,7 @@ export default {
       getHandlerPowerByProAndTaskApi({type:1,proId:this.$route.params.id,taskId:''}).then(
         res=>{
           if(res.data.code===200){
-            console.log(res.data);
-            if(!res.data.data){
-              this.operationProButton=true;
-            }
+            this.operationProButton=res.data.data;
           }
         }
       ).catch(error=>{
@@ -205,8 +202,8 @@ export default {
         type: this.detailsType
       });
     },
-    getTaskState(state) {
-      return getTaskState(state)
+    getTaskState(state,days) {
+      return getTaskState(state,days)
     },
     getTaskListByProIdData() {
       getTaskListByProIdApi({

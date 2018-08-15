@@ -49,7 +49,7 @@
         <my-task :dataList='myTaskData.dataList' @updateZitask='getMyTaskInfoByIndexList'></my-task>
       </Row>
       <!-- 组员任务 -->
-      <Row>
+      <Row v-if='userPower>0'>
         <Row style='margin-top:20px;'>
           <Col span="24">
           <Divider class="title">组员任务
@@ -64,7 +64,6 @@
     <all-task :modelShow='modelShow' :dataList='allTaskData' @updateZitask='queryMyAllTask' :page='page' :loading='taskloading'  @changePageSize='changePageSize' @changeCurrent='changeCurrent'></all-task>
   </div>
 </template>
-
 <script>
 import ProjectSurvey from "./projectSurvey.vue";
 import AllProject from "./allProject.vue";
@@ -137,11 +136,22 @@ export default {
     this.projectShow = !this.projectShow;
     this.initHomeData();
   },
+  computed:{
+    userPower(){
+      return this.$store.state.user.userPower;
+    }
+  },
+  watch:{
+    userPower(){
+      if(this.userPower>0){
+        this.getMyMemberSubtaskCountByIndexList();
+      }
+    }
+  },
   methods: {
     initHomeData(){
       this.getProInfoByIndexList();
       this.getMyTaskInfoByIndexList();
-      this.getMyMemberSubtaskCountByIndexList();
     },
     getMyMemberSubtaskCountByIndexList() {
       getMyMemberSubtaskCountByIndexApi(this.myMemberParams)

@@ -88,10 +88,10 @@ export default {
             return h(
               "div", {
                 class: {
-                  error: params.row.proState == 5
+                  error: params.row.subtaskState == 5
                 }
               },
-              getTaskState(params.row.subtaskState)
+              getTaskState(params.row.subtaskState,params.row.overdueDays)
             );
           }
         },

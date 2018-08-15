@@ -4,11 +4,11 @@
     <Divider :style='{fontWeight:"bold"}'>{{taskDetails.taskName||''}}</Divider>
   </h3>
   <div class="header" :style='{margin:"10px 0"}'>
-    <div v-if='ifHasButton'>
-      <Tooltip content="提醒任务人">
+    <div v-if='ifHasButton&&operationTaskButton'>
+      <Tooltip content="提醒任务人" placement="bottom-start">
         <Icon type="md-notifications" class="primary click-btn" @click="remindTaskClick" />
       </Tooltip>
-      <Tooltip content="修改任务" placement="bottom-start">
+      <Tooltip content="修改任务" >
         <Icon class="icon-edit_s iconfont primary click-btn" @click="model.editTask=!model.editTask"></Icon>
       </Tooltip>
       <Tooltip content="删除任务">
@@ -103,6 +103,7 @@ export default {
       default: ''
     }
   },
+ 
   computed: {
     tableData() {
       return [{ ...this.taskDetails
@@ -114,7 +115,7 @@ export default {
   },
   data() {
     return {
-
+    operationTaskButton:false,
       zitaskDetails: null,
       model: {
         editTask: false,
@@ -150,7 +151,7 @@ export default {
                 class: {
                   error: params.row.subtaskState == 5
                 }
-              }, getTaskState(params.row.subtaskState)
+              }, getTaskState(params.row.subtaskState,params.row.overdueDays)
             )
           }
         }, {
@@ -329,7 +330,7 @@ export default {
                 class: {
                   error: params.row.taskState == 5
                 }
-              }, getTaskState(params.row.taskState)
+              }, getTaskState(params.row.taskState,params.row.overdueDays)
             )
           }
         }, {
@@ -377,6 +378,7 @@ export default {
   },
   methods: {
     initTaskButton() {
+      console.log('init',this.taskDetails)
       getHandlerPowerByProAndTaskApi({
         type: 2,
         proId: this.$route.params.id,
@@ -384,10 +386,7 @@ export default {
       }).then(
         res => {
           if (res.data.code === 200) {
-            console.log(res.data);
-            if (!res.data.data) {
-              this.operationProButton = true;
-            }
+              this.operationTaskButton = res.data.data;
           }
         }
       ).catch(error => {

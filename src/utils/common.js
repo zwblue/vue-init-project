@@ -53,11 +53,15 @@ export let taskStateArray = [
   { index: 5, name: "逾期" }
 ];
 // 根据任务，子任务状态得到name
-export function getTaskState(num) {
+export function getTaskState(num,day=0) {
   if (!num) return;
-  for (let val of projectStateArray) {
+  for (let val of taskStateArray) {
     if (val.index == num) {
-      return val.name;
+      if(val.index===5){
+        return val.name+day+'天';
+      }else{
+        return val.name
+      }
     }
   }
 }

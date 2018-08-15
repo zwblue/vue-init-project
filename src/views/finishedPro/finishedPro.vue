@@ -9,7 +9,7 @@
         <DatePicker type="daterange" placement="bottom-end" @on-change='selectTime' split-panels placeholder="请选择时间" style="width: 200px"></DatePicker>
       </FormItem>
       <FormItem label="项目类型">
-        <Select v-model="formInline.protype" style="width: 150px">
+        <Select v-model="formInline.proType" style="width: 150px">
           <Option v-for='item in projectTypeArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
       </FormItem>
@@ -54,9 +54,9 @@ export default {
       formInline: {
         originator: "",
         proName: "",
-        createdate1: "",
-        createdate2: "",
-        protype: "",
+        createDateStart: "",
+        createDateEnd: "",
+        proType: "",
         current:1,
         pageSize:10
       },
@@ -170,8 +170,8 @@ export default {
       )
     },
     selectTime(time) {
-      this.formInline.createdate1 = time[0];
-      this.formInline.createdate2 = time[1];
+      this.formInline.createDateStart = time[0];
+      this.formInline.createDateEnd = time[1];
     },
     handleSubmit(name) {
       console.log(this.formInline)

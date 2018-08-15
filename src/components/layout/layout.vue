@@ -63,7 +63,7 @@
 </template>
 <script>
 import {
-newFindRoleMenuApi
+newFindRoleMenuApi,getLoginUserRoleApi
 } from "api/home.js";
 import {
   Layout,
@@ -110,10 +110,24 @@ export default {
       this.activeMenu = sessionStorage.getItem('url')
     }
   },
+  created(){
+    this.getLoginUserRoleData();
+  },
   mounted() {
     this.newFindRoleMenuList();
   },
   methods: {
+    getLoginUserRoleData(){
+      getLoginUserRoleApi().then(res=>{
+        if(res.data.code===200){
+          console.log('power',res.data);
+          console.log(this.$store)
+          this.$store.commit('user/setPower',res.data.data);
+          // console.log(this.$store)
+          sessionStorage.setItem('power',res.data.data)
+        }
+    }).catch()
+    },
     newFindRoleMenuList(){
       newFindRoleMenuApi().then(res=>{
         if(res.data.code===200){

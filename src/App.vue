@@ -49,6 +49,9 @@ html {
   .page .bg {
     background: #e8eaec;
   }
+   .gray-bg {
+   background: #aaa ;
+}
   .page .bdcolor {
     border-color: #f8f8f9;
   }

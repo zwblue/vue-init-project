@@ -1,48 +1,65 @@
 <template>
-<div class="page" style='height:100%;'>
-  <div class="table-box">
-    <div class="weeks">
-      <div class="week" v-for='(item,index) in weekArray' :key='index' :style='{
+<div :style='{overflow:"auto"}'>
+  <div :style='{position:"relative",width:"1050px"}'>
+    <div class="right-box">
+      <Button type="error" size='small'>逾期</Button>
+      <br>
+      <Button type='warning' size='small'>其他</Button>
+      <br>
+      <Button class="gray-bg" style='color:#fff' size='small'>未开始</Button>
+      <br>
+      <Button type='primary' size='small'>开发中</Button>
+      <br>
+      <Button type='success' size='small'>已完成</Button>
+      <br>
+    </div>
+    <div class="page" :style='{overflow:"auto",height:tableHeight+25+"px",width:"980px"}'>
+
+      <div class="table-box" :style='{height:tableHeight+"px"}'>
+        <div class="weeks">
+          <div class="week" v-for='(item,index) in weekArray' :key='index' :style='{
       background:item!==6&&item!==0?"#fff":"#eee",width:oneDayWidth+"px"
     }'>
-      </div>
-    </div>
-    <div class="days">
-      <div class="day" :style='{width:oneDayWidth}' v-for='(item,index) in daysArray' :key='index'>
-        {{item.slice(8,10)}}
-      </div>
-    </div>
-    <div class="show-area">
-      <div class="first-line" v-for='(item,index) in howManyWeeks' :key='index' :style='{left:(weekIndex0+(item-1)*7)*oneDayWidth-1+"px",width:5*oneDayWidth+"px"}'>
-        <div class="time-show">
-          {{daysArray[(weekIndex0+(item-1)*7)]}}
+          </div>
         </div>
-        <div>
+        <div class="days">
+          <div class="day" :style='{width:oneDayWidth+"px"}' v-for='(item,index) in daysArray' :key='index'>
+            {{item.slice(8,10)}}
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="hide-area">
-      <div class="hide-data" v-for='(item,index) in howManyWeeks' :key='index' :style='{left:((weekIndex0+(item-1)*7)*oneDayWidth-1)-(2*oneDayWidth)+"px",width:2*oneDayWidth+"px"}'>
-        <div class="time-show">
+        <div class="show-area">
+          <div class="first-line" v-for='(item,index) in howManyWeeks' :key='index' :style='{height:tableHeight+"px",left:(weekIndex0+(item-1)*7)*oneDayWidth-1+"px",width:5*oneDayWidth+"px"}'>
+            <div class="time-show">
+              {{daysArray[(weekIndex0+(item-1)*7)]}}
+            </div>
+            <div>
+            </div>
+          </div>
         </div>
-        <div>
+        <div class="hide-area">
+          <div class="hide-data" v-for='(item,index) in howManyWeeks' :key='index' :style='{height:tableHeight+"px",top:headerHeight+"px",left:((weekIndex0+(item-1)*7)*oneDayWidth-1)-(2*oneDayWidth)+"px",width:2*oneDayWidth+2+"px"}'>
+            <div class="time-show">
+            </div>
+            <div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="item-area" >
-      <div  class="item-box"  v-for='(item,index) in positionArray' :key='index' :style='{
+        <div class="item-area">
+          <div class="item-box" v-for='(item,index) in positionArray' :key='index' :style='{
         left:item.x*oneDayWidth+"px",top:item.y*oneBoxHeight+"px",width:item.width*oneDayWidth+"px",height:oneBoxHeight+"px"
       }'>
-      <div :class="{'box':true,'success-bg':item.state==4,'error-bg':item.state==5,'primary-bg':item.state==2,'gray-bg':item.state==1}">
-      </div>
-    </div>
-    </div>
-    <div class="text-area" >
-        <div :class="{'text-box':true,'success':item.state==4,'error':item.state==5,'primary':item.state==2,'text':item.state==1}" v-for='(item,index) in positionArray' :key='index' :style='{
+            <div :class="{'box':true,'success-bg':item.state==4,'error-bg':item.state==5,'primary-bg':item.state==2,'gray-bg':item.state==1}">
+            </div>
+          </div>
+        </div>
+        <div class="text-area">
+          <div :class="{'text-box':true,'success':item.state==4,'error':item.state==5,'primary':item.state==2,'text':item.state==1}" v-for='(item,index) in positionArray' :key='index' :style='{
         left:(item.x+item.width)*oneDayWidth+5+"px",top:item.y*oneBoxHeight+"px",height:oneBoxHeight+"px",width:"100px",
       }'>
-      {{item.name}}
+            {{item.name}}
+          </div>
         </div>
+      </div>
     </div>
   </div>
 </div>
@@ -54,10 +71,11 @@ import {
 export default {
   data() {
     return {
-      oneBoxHeight:'67',
+      headerHeight: 78,
+      oneBoxHeight: 67,
       listData: [],
       tableSdate: '',
-      oneDayWidth: '50',
+      oneDayWidth: 40,
       tableEdate: '',
       howManyDays: '',
       howManyWeeks: [],
@@ -67,38 +85,43 @@ export default {
       nextWeek: '',
       weekIndex0: '',
       positionArray: [],
-      ganteData:[],
+      ganteData: [],
     }
   },
-  props:{
-    activeSubTaskList:{
-      type:Array,
-      default:()=>{
+  computed: {
+    tableHeight() {
+      return this.positionArray.length * this.oneBoxHeight + this.headerHeight
+    }
+  },
+  props: {
+    activeSubTaskList: {
+      type: Array,
+      default: () => {
         return []
       }
     },
-    activeOpenPanpelIndex:{
-      type:[Number,String],
-      default:''
+    activeOpenPanpelIndex: {
+      type: [Number, String],
+      default: ''
     }
   },
   watch: {
-    activeOpenPanpelIndex(){
-      if(this.activeOpenPanpelIndex>=0){
-        console.log(this.activeOpenPanpelIndex,this.activeSubTaskList)
-         this.ganteData=this.coppyArray(this.listData);
-         console.log('gante',this.ganteData)
-         console.log('list',this.listData)
-         this.$set(this.ganteData[this.activeOpenPanpelIndex],'children',this.activeSubTaskList);
-          this.getDataPositon();
-          console.log('gante',this.ganteData)
-      }else{ 
-        console.log('close');
-        this.ganteData=this.coppyArray(this.listData);
-        console.log('list',this.listData)
-        console.log('gante',this.ganteData);
+    activeOpenPanpelIndex() {
+      if (this.activeOpenPanpelIndex >= 0) {
+        console.log(this.activeOpenPanpelIndex, this.activeSubTaskList)
+        this.ganteData = this.coppyArray(this.listData);
+        console.log('gante', this.ganteData)
+        console.log('list', this.listData)
+        this.$set(this.ganteData[this.activeOpenPanpelIndex], 'children', this.activeSubTaskList);
         this.getDataPositon();
-        console.log('gante',this.ganteData)
+        console.log('gante', this.ganteData)
+      } else {
+        console.log('close');
+        this.ganteData = this.coppyArray(this.listData);
+        console.log('list', this.listData)
+        console.log('gante', this.ganteData);
+        this.getDataPositon();
+        console.log('gante', this.ganteData)
       }
     }
   },
@@ -107,15 +130,15 @@ export default {
   },
 
   methods: {
-   coppyArray(arr){
-   return arr.map((e)=>{
-        if(typeof e==='object'){
-           return Object.assign({},e);
-         }else{
-           return e;
-       }
-     }) 
- },
+    coppyArray(arr) {
+      return arr.map((e) => {
+        if (typeof e === 'object') {
+          return Object.assign({}, e);
+        } else {
+          return e;
+        }
+      })
+    },
     initDaysArray() {
       var weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
       let onetimes = 1000 * 60 * 60 * 24; //一天的时间
@@ -125,33 +148,31 @@ export default {
       this.lastWeek = new Date(this.tableSdate).getDay(); //起始是星期几
       this.nextWeek = new Date(this.tableEdate).getDay(); //结束是星期几
       console.log(111, this.lastWeek, this.nextWeek)
+      let canAddLastBoxNum = this.lastWeek-1;
+      if(canAddLastBoxNum<0){
+        canAddLastBoxNum=2
+      }
+      console.log('last',canAddLastBoxNum)
+      // 可以向后增加的数
+      let canAddNextBoxNum = (23 - this.howManyDays) - canAddLastBoxNum;
+      console.log(canAddLastBoxNum, canAddNextBoxNum)
+
+      if (canAddNextBoxNum <= 0) {
+        canAddNextBoxNum = 2;
+      }
       // 加前面的天数
       let addLastDaysArray = [];
-      if (this.lastWeek <= 5) { //小于星期五要补全这周
-        if (this.lastWeek == 0) {
-          // 星期天把星期六补全
-          let lastDay = new Date(this.tableSdate).getTime() - (onetimes * 1); //
-          addLastDaysArray.push(this.noHoursTimeToString(lastDay))
-        } else {
-          for (let index = 0; index < this.lastWeek - 1; index++) { //5=》加4次=》1，2，3，4前四天   2=》加1天=》提前1天
-            let day = new Date(this.tableSdate).getTime() - (onetimes * (index + 1)); //
-            addLastDaysArray.unshift(this.noHoursTimeToString(day));
-          }
-        }
+
+      for (let index = 0; index < canAddLastBoxNum; index++) { //1 5=》加4次=》1，2，3，4前四天   2=》加1天=》提前1天
+        let day = new Date(this.tableSdate).getTime() - (onetimes * (index + 1)); //
+        addLastDaysArray.unshift(this.noHoursTimeToString(day));
       }
       // 加后面的天数
       let addNextDaysArray = [];
-      if (this.nextWeek >= 0) { //小于星期五要补全这周
-        if (this.nextWeek == 6) {
-          // 星期六把星期天补全
-          let nextDay = new Date(this.tableSdate).getTime() + (onetimes * (this.howManyDays + 1)); //
-          addNextDaysArray.push(this.noHoursTimeToString(lastDay))
-        } else {
-          for (let index = 0; index < 4 - this.lastWeek; index++) { //1=》加4次=》2，3，4，5后四天   2=》加3天=》3，4，5天
-            let day = new Date(this.tableSdate).getTime() + (onetimes * (this.howManyDays + index + 1)); //
-            addNextDaysArray.push(this.noHoursTimeToString(day));
-          }
-        }
+      console.log('nextWeek', this.nextWeek)
+      for (let index = 0; index < canAddNextBoxNum; index++) { //4 1=》加4次=》2，3，4，5后四天   2=》加3天=》3，4，5天
+        let day = new Date(this.tableSdate).getTime() + (onetimes * (this.howManyDays + index + 1)); //
+        addNextDaysArray.push(this.noHoursTimeToString(day));
       }
       // 期间的数组
       for (let i = 0; i <= this.howManyDays; i++) {
@@ -161,7 +182,7 @@ export default {
           )
         );
       }
-      console.log(222,addLastDaysArray,this.daysArray,addNextDaysArray)
+      console.log(222, addLastDaysArray, this.daysArray, addNextDaysArray)
       // 总的天数
       this.daysArray = addLastDaysArray.concat(this.daysArray, addNextDaysArray);
       // 总的星期数
@@ -176,7 +197,9 @@ export default {
           this.howManyWeeks.push(howmanyweek);
         }
       })
+      console.log('weekArray', this.howManyWeeks, this.weekArray)
       this.weekIndex0 = this.weekArray.indexOf(1);
+      console.log('weekIndex0', this.weekIndex0)
       this.getDataPositon();
       // console.log('0index', this.weekIndex0);
       // console.log('weekArry', this.weekArray)
@@ -185,18 +208,18 @@ export default {
     },
     getDataPositon() {
       console.log('start')
-      console.log('ganteData11',this.ganteData)
+      console.log('ganteData11', this.ganteData)
       let onetimes = 1000 * 60 * 60 * 24; //一天的时间
       let [x, y, width] = [0, 0, 0]
-      let index=0;
-      this.positionArray=[];
+      let index = 0;
+      this.positionArray = [];
       for (let val of this.ganteData) {
         console.log(val)
-        y=index;
+        y = index;
         x = (new Date(val.sDate) - new Date(this.daysArray[0])) / onetimes
         width = (new Date(val.eDate) - new Date(val.sDate)) / onetimes
-        let name=val.taskName;
-        let state=val.taskState;
+        let name = val.taskName;
+        let state = val.taskState;
         console.log(x, width)
         this.positionArray.push({
           x,
@@ -206,28 +229,28 @@ export default {
           state
         });
         index++;
-        if(val.children&&val.children.length!==0){
-          for(let item of val.children){
-             y=index;
-             x = (new Date(item.sDate) - new Date(this.daysArray[0])) / onetimes
-             width = (new Date(item.eDate) - new Date(item.sDate)) / onetimes
-            let name=item.subtaskName;
-            let state=item.subtaskState;
-              this.positionArray.push({
-                  x,
-                  y,
-                  width,
-                  name,
-                  state
-              });
+        if (val.children && val.children.length !== 0) {
+          for (let item of val.children) {
+            y = index;
+            x = (new Date(item.sDate) - new Date(this.daysArray[0])) / onetimes
+            width = (new Date(item.eDate) - new Date(item.sDate)) / onetimes
+            let name = item.subtaskName;
+            let state = item.subtaskState;
+            this.positionArray.push({
+              x,
+              y,
+              width,
+              name,
+              state
+            });
             index++;
           }
         }
       }
       console.log(this.positionArray);
     },
-    noHoursTimeToString(time){
-       let date = new Date(time);
+    noHoursTimeToString(time) {
+      let date = new Date(time);
       let yy = date.getFullYear(); //年
       let mm = date.getMonth() + 1; //月
       let dd = date.getDate(); //日
@@ -280,7 +303,7 @@ export default {
             this.tableSdate = data[0].sDate;
             this.tableEdate = data[data.length - 1].eDate;
             this.listData = data;
-            this.ganteData=this.coppyArray(this.listData);
+            this.ganteData = this.coppyArray(this.listData);
             this.initDaysArray();
           }
         }
@@ -291,25 +314,46 @@ export default {
   }
 }
 </script>
-
+<style>
+.right-box button {
+  margin: 3px 0;
+}
+</style>
 <style lang="scss" scoped>
 .page {
   position: relative;
+  .right-box {
+    text-align: right;
+    position: absolute;
+    z-index: 99;
+    opacity: 0.8;
+    right: 0px;
+    top: 0px;
+  }
 }
 
 .time-show {
   text-align: center;
   line-height: 42px;
 }
-.text{
+
+.text {
   position: absolute;
   z-index: 9999;
 }
-.item-area,.text-area{
+
+.item-area {
   position: absolute;
   top: 82px;
   z-index: 8;
 }
+
+.text-area {
+  position: absolute;
+  top: 82px;
+  z-index: 10000;
+}
+
 .day {
   width: 50px;
   height: 40px;
@@ -319,25 +363,30 @@ export default {
   line-height: 40px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  border-left: none;
 }
-.item-box{
+
+.item-box {
   position: absolute;
-  display:flex;
+  display: flex;
   align-items: center;
   z-index: 9;
-  .box{
-     background: red;
-     width: 100%;
-     border-radius:4px;
-     height: 30px;
+  .box {
+    background: red;
+    width: 100%;
+    border-radius: 4px;
+    height: 30px;
   }
 }
-.text-box{
+
+.text-box {
   line-height: 67px;
   position: absolute;
   z-index: 10000;
 }
+
 .table-box {
+  margin-top: 4px;
   display: inline-block;
   border: 1px solid #ccc;
   height: 100%;
@@ -367,12 +416,15 @@ export default {
   margin: 0;
   display: inline-block;
   height: 40px;
+  border-left: none;
+  white-space: nowrap;
 }
 
 .days {
   margin: 0;
   margin-top: -6px;
   padding: 0;
+  white-space: nowrap;
 }
 
 .week {
@@ -387,8 +439,7 @@ export default {
   text-align: center;
 }
 
-.day:not(:first-child),
-.week:not(:first-child) {
-  border-left: none;
+.day:last-child {
+  border-right: none;
 }
 </style>

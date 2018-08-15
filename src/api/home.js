@@ -59,3 +59,11 @@ export function newFindRoleMenuApi (data = {}) {
   })
 }
 
+// 登录用户的角色权限
+export function getLoginUserRoleApi (data = {}) {
+  return fetch({
+    url: '/getLoginUserRole',
+    method: 'post',
+    data: data,
+  })
+}

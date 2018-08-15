@@ -93,7 +93,7 @@ export default {
       deferOptions: {
         disabledDate: (date) => {
           let projectOnlinsDate = new Date(this.projectDetails.planSDate);
-          return date && date.valueOf() < projectOnlinsDate.getTime();
+          return date && date.valueOf() < projectOnlinsDate.getTime()||date.valueOf()<new Date();
         }
       }
     }
