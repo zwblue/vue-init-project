@@ -1,6 +1,6 @@
 <template>
 <div :style='{overflow:"auto"}'>
-  <div :style='{position:"relative",width:"1050px"}'>
+  <div :style='{position:"relative",width:"1050px"}' v-show='listData.length'>
     <div class="right-box">
       <Button type="error" size='small'>逾期</Button>
       <br>
@@ -14,7 +14,6 @@
       <br>
     </div>
     <div class="page" :style='{overflow:"auto",height:tableHeight+25+"px",width:"980px"}'>
-
       <div class="table-box" :style='{height:tableHeight+10+"px"}'>
         <div class="weeks">
           <div class="week" v-for='(item,index) in weekArray' :key='index' :style='{
@@ -61,6 +60,9 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="no-data" v-show='!listData.length'>
+    暂无数据
   </div>
 </div>
 </template>
@@ -148,11 +150,11 @@ export default {
       this.lastWeek = new Date(this.tableSdate).getDay(); //起始是星期几
       this.nextWeek = new Date(this.tableEdate).getDay(); //结束是星期几
       console.log(111, this.lastWeek, this.nextWeek)
-      let canAddLastBoxNum = this.lastWeek-1;
-      if(canAddLastBoxNum<0){
-        canAddLastBoxNum=2
+      let canAddLastBoxNum = this.lastWeek - 1;
+      if (canAddLastBoxNum < 0) {
+        canAddLastBoxNum = 2
       }
-      console.log('last',canAddLastBoxNum)
+      console.log('last', canAddLastBoxNum)
       // 可以向后增加的数
       let canAddNextBoxNum = (23 - this.howManyDays) - canAddLastBoxNum;
       console.log(canAddLastBoxNum, canAddNextBoxNum)
@@ -300,11 +302,13 @@ export default {
           if (res.data.code === 200) {
             console.log('甘特图', res);
             const data = res.data.data;
-            this.tableSdate = data[0].sDate;
-            this.tableEdate = data[data.length - 1].eDate;
             this.listData = data;
-            this.ganteData = this.coppyArray(this.listData);
-            this.initDaysArray();
+            if (data.length !== 0) {
+              this.tableSdate = data[0].sDate;
+              this.tableEdate = data[data.length - 1].eDate;
+              this.ganteData = this.coppyArray(this.listData);
+              this.initDaysArray();
+            }
           }
         }
       ).catch(error => {
@@ -425,6 +429,14 @@ export default {
   margin-top: -6px;
   padding: 0;
   white-space: nowrap;
+}
+
+.no-data {
+  border: 1px solid #eee;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  font-size: 22px;
 }
 
 .week {
