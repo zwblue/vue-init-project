@@ -15,7 +15,7 @@
     </div>
     <div class="page" :style='{overflow:"auto",height:tableHeight+25+"px",width:"980px"}'>
 
-      <div class="table-box" :style='{height:tableHeight+"px"}'>
+      <div class="table-box" :style='{height:tableHeight+10+"px"}'>
         <div class="weeks">
           <div class="week" v-for='(item,index) in weekArray' :key='index' :style='{
       background:item!==6&&item!==0?"#fff":"#eee",width:oneDayWidth+"px"
@@ -403,7 +403,7 @@ export default {
 
 .hide-data {
   position: absolute;
-  background: #bbb;
+  background: #eee;
   opacity: 0.8;
   z-index: 999;
   top: 78px;

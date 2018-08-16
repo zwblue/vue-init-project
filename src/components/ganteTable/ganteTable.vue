@@ -315,7 +315,7 @@ export default {
 
 .hide-data {
   position: absolute;
-  background: #bbb;
+  background: #eee;
   opacity: 0.8;
   z-index: 999;
   top: 78px;
