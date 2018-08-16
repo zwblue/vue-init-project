@@ -13,7 +13,7 @@ const MyPro = resolve => require(['@/views/myPro/myPro'], resolve)
 const OnlinePro = resolve => require(['@/views/onlinePro/onlinePro'], resolve)
 const RecyclePro = resolve => require(['@/views/recyclePro/recyclePro'], resolve)
 const CreatePro = resolve => require(['@/views/createPro/createPro'], resolve)
-const ProDetails = resolve => require(['@/views/myPro/ProDetails'], resolve)
+const ProDetails = resolve => require(['@/views/myPro/proDetails'], resolve)
 
 
 const pageItem = {
