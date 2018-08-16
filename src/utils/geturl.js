@@ -1,5 +1,6 @@
 // 得到后端路径
 let baseURL = ''
+console.log(process.env.type === 'test')
 if (process.env.NODE_ENV === 'development') {
   baseURL = "http://192.168.3.26:5826";
 } else {
