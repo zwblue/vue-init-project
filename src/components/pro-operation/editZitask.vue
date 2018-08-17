@@ -5,8 +5,8 @@
       <FormItem prop="subtaskName" label="任务名称：">
         <Input placeholder="请输入任务名称" v-model="partInData.subtaskName"></Input>
       </FormItem>
-      <FormItem prop="subtaskHandler" label="处理人：">
-        <Select v-model="partInData.subtaskHandler" style="width:200px">
+      <FormItem prop="handler" label="处理人：">
+        <Select v-model="partInData.handler" style="width:200px">
             <Option v-for="item in handleUserList" :value="item.UserName" :key="item.id">{{item.UserName}}</Option>
           </Select>
       </FormItem>
@@ -73,7 +73,7 @@ export default {
       partInData: {
         subtaskId: '',
         type: 2,
-        subtaskHandler: '',
+        handler: '',
         subtaskName: '',
         sDate: '',
         eDate: '',
@@ -87,7 +87,7 @@ export default {
           message: "请填写任务名称",
           trigger: "blur"
         }],
-        subtaskHandler: [{
+        handler: [{
           required: true,
           type: "string",
           message: "请选择处理人",
@@ -181,9 +181,8 @@ export default {
       this.model.editZitask = false;
     },
     initZiProjectUserData() {
-      console.log(333,this.zitaskDetails.subtaskId)
       this.partInData.subtaskId = this.zitaskDetails.subtaskId;
-      this.partInData.subtaskHandler = this.zitaskDetails.subtaskHandler;
+      this.partInData.handler = this.zitaskDetails.handler;
       this.partInData.subtaskName = this.zitaskDetails.subtaskName;
       this.partInData.sDate = this.zitaskDetails.sDate;
       this.partInData.eDate = this.zitaskDetails.eDate;

@@ -3,7 +3,13 @@
   height: 100%;
   width: 100%;
 }
-
+.left-menu{
+  position: fixed;
+  top:0;
+  left:0;
+  width: 200px;
+  bottom:0;
+}
 .menu-item span {
   display: inline-block;
   overflow: hidden;
@@ -36,8 +42,8 @@
 <template>
 <div class="layout">
   <Layout :style="{minHeight: '100vh',minWidth:'1400px'}">
-    <Sider :collapsed-width="78">
-      <Menu :active-name="activeMenu" v-if='menuList.length!==0' theme="dark" width="auto" @on-select='selectMenu'>
+    <Sider :collapsed-width="78" class="left-menu">
+      <Menu  :active-name="activeMenu" v-if='menuList.length!==0' theme="dark" width="auto" @on-select='selectMenu'>
         <MenuGroup title="项目管理系统">
           <MenuItem v-for='(item,index) in menuList' :key='index' :name="item.Url" >
           <span>{{item.Name}}</span>
@@ -45,7 +51,7 @@
         </MenuGroup>
       </Menu>
     </Sider>
-    <Layout :style="{minWidth:'1200px'}">
+    <Layout :style="{minWidth:'1200px',position:'fixed',top:'0',left:'200px',bottom:'0',right:'0'}">
       <Content :style="{padding: '0 16px 16px'}" class="my-content">
         <div>
           <Breadcrumb :style="{margin: '16px'}">
@@ -141,7 +147,6 @@ export default {
     },
     initData() {
       this.menuList.forEach(val => {
-        console.log(val.Url == this.$route.path)
         if (val.Url == this.$route.path) {
           this.pageTitle = val.Name;
           sessionStorage.setItem('url', val.Url)

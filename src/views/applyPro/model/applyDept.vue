@@ -3,13 +3,13 @@
   <Modal v-model="model.applydept" title="添加参与部门" @on-cancel="cancel('partInData')">
     <Form ref="partInData" :model="partInData" :rules="partrules" :label-width="110">
       <FormItem prop="SquadName" label="参与部门：">
-        <query-dept :deptId.sync='partInData.squadId' :deptName.sync='partInData.SquadName' ></query-dept>
+        <query-dept :deptId.sync='partInData.squadId' v-if='ifLoadDept' :deptName.sync='partInData.SquadName' :deptArray='deptArray'></query-dept>
       </FormItem>
       <FormItem prop="sdate" label="开始时间：">
-        <DatePicker type="datetime" :options="addStartPartOptions" @on-change="sdateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
+        <DatePicker type="datetime" :value='partInData.sdate' :options="addStartPartOptions" @on-change="sdateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
       </FormItem>
       <FormItem prop="edate" label="结束时间：">
-        <DatePicker type="datetime" :options="addEtartPartOptions" :disabled="edateshow" @on-change="edateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
+        <DatePicker type="datetime" :options="addEtartPartOptions" :value='partInData.edate' :disabled="edateshow" @on-change="edateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
       </FormItem>
       <FormItem label="总工时(天)：" prop="workDate">
         <Input v-model="partInData.workDate" disabled style='width:50px'></Input>
@@ -54,6 +54,10 @@ export default {
       default: function() {
         return [];
       }
+    },
+    editIndex: {
+      type: [String, Number],
+      default: ''
     }
   },
   components: {
@@ -72,6 +76,10 @@ export default {
   },
   data() {
     return {
+      ifLoadDept:false,
+      deptArray: {
+        array: []
+      },
       modalloading: false,
       partInData: {
         squadId: "",
@@ -111,7 +119,7 @@ export default {
         disabledDate: date => {
           const sdate = new Date(this.applyData.planSDate);
           return (
-            (date && date.valueOf() > sdate.getTime()-1) ||
+            (date && date.valueOf() > sdate.getTime() - 1) ||
             date.valueOf() < Date.now() - 86400000
           );
         }
@@ -128,21 +136,34 @@ export default {
       }
     };
   },
-
   mounted() {
+    this.initData();
+    this.ifLoadDept=true;
   },
   methods: {
+    initData() {
+      if (this.editIndex || this.editIndex === 0) {
+        this.partInData.squadId = this.groupData[this.editIndex].squadId
+        this.partInData.SquadName = this.groupData[this.editIndex].SquadName
+        this.partInData.sdate = this.groupData[this.editIndex].sdate
+        this.partInData.edate = this.groupData[this.editIndex].edate
+        this.partInData.workDate = this.groupData[this.editIndex].workDate
+      }
+      
+    },
     submitClick(name) {
-      console.log(this.partInData, this.selectDept);
       this.$refs[name].validate(valid => {
         if (valid) {
           if (this.partInData.sdate === this.partInData.edate) {
             this.$Message.error("开始时间不能与结束时间相同");
             return;
           }
-          this.groupData.push(this.partInData);
+          if (this.editIndex || this.editIndex === 0) {  
+            this.groupData.splice(this.editIndex,1,this.partInData);
+          } else {
+            this.groupData.push(this.partInData);
+          }
           this.model.applydept = !this.model.applydept;
-          this.$Message.success("添加参与组成功！");
         } else {
           this.$Message.error("表单验证失败！");
         }

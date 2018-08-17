@@ -30,7 +30,7 @@
       </FormItem>
       <div class="primary apply-title">参与部门</div>
       <div class="apply-title">
-        <Button type='primary' :disabled='ifCanAddDept' ghost long @click="model.applydept=!model.applydept">添加</Button>
+        <Button type='primary' :disabled='ifCanAddDept' ghost long @click="applyDeptJoin">添加</Button>
       </div>
       <Table class="apply-title" no-data-text='暂无参与部门' border :columns="columns1" :data="deptGroupList">
       </Table>
@@ -40,7 +40,7 @@
       </Col>
     </Row>
   </Form>
-  <apply-dept v-if='model.applydept' :applyData='formValidate' :model='model' :groupData='deptGroupList'></apply-dept>
+  <apply-dept v-if='model.applydept'  :applyData='formValidate' :model='model' :editIndex='activeIndex' :groupData='deptGroupList'></apply-dept>
 </div>
 </template>
 <script>
@@ -117,6 +117,7 @@ export default {
         proDeclare: "",
         myDomain: []
       },
+      activeIndex:'',
       deptGroupList: [],
       columns1: [{
           title: "部门名称",
@@ -148,6 +149,11 @@ export default {
                   props: {
                     type: "primary",
                     size: "small"
+                  }, 
+                  on: {
+                    click: () => {
+                     this.editJoinDept(params.row)
+                    }
                   }
                 },
                 "修改"
@@ -173,7 +179,6 @@ export default {
           }
         }
       ],
-      groupData: [],
       ruleValidate: {
         proName: [{
           required: true,
@@ -201,6 +206,14 @@ export default {
     }
   },
   methods: {
+    editJoinDept(row){
+      this.activeIndex=row._index;
+      this.model.applydept=!this.model.applydept;
+    },
+    applyDeptJoin(){
+      this.activeIndex='';
+      this.model.applydept=!this.model.applydept
+    },
     changeSdate(val) {
       this.formValidate.planSDate = val;
     },
@@ -247,19 +260,18 @@ export default {
           newApplyProjectApi(this.formValidate).then(
             res => {
               if (res.data.code === 200) {
-                this.$Message.success('添加成功')
+                this.$Message.success(res.data.msg)
+                this.$router.push('/myPro')
               } else {
-                this.$Message.error(res.data.msg)
+                this.$Message.warning(res.data.msg)
               }
             }
           ).catch(error => {
             this.$Message.error('接口故障--/newApplyProject')
           })
           console.log(this.formValidate)
-
-          this.$Message.success("Success!");
         } else {
-          this.$Message.error("Fail!");
+          this.$Message.error("表单验证失败");
         }
       });
     },

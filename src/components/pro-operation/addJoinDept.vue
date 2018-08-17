@@ -2,14 +2,14 @@
 <div class="page">
   <Modal v-model="model.applydept" title="添加参与部门" @on-cancel="cancel('partInData')">
     <Form ref="partInData" :model="partInData" :rules="partrules" :label-width="110">
-      <FormItem prop="SquadName" label="参与部门：">
-        <query-dept :deptId.sync='partInData.squadId' :deptName.sync='partInData.SquadName' ></query-dept>
+      <FormItem prop="squadId" label="参与部门：">
+        <query-dept :deptId.sync='partInData.squadId'></query-dept>
       </FormItem>
-      <FormItem prop="sdate" label="开始时间：">
-        <DatePicker type="datetime" :options="addStartPartOptions" @on-change="sdateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
+      <FormItem prop="sDate" label="开始时间：">
+        <DatePicker type="datetime" :options="addStartPartOptions" @on-change="sDateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
       </FormItem>
-      <FormItem prop="edate" label="结束时间：">
-        <DatePicker type="datetime" :options="addEtartPartOptions" :disabled="edateshow" @on-change="edateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
+      <FormItem prop="eDate" label="结束时间：">
+        <DatePicker type="datetime" :options="addEtartPartOptions" :disabled="eDateshow" @on-change="eDateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
       </FormItem>
       <FormItem label="总工时(天)：" prop="workDate">
         <Input v-model="partInData.workDate" disabled style='width:50px'></Input>
@@ -24,7 +24,9 @@
 </template>
 <script>
 import QueryDept from 'components/queryDept/queryDept.vue'
-import {newGroupHandleApi} from 'api/myproject.js'
+import {
+  newGroupHandleApi
+} from 'api/myproject.js'
 import {
   Input,
   Cascader,
@@ -61,40 +63,40 @@ export default {
     DatePicker
   },
   computed: {
-    edateshow() {
-      return this.partInData.sdate ? false : true;
+    eDateshow() {
+      console.log(2223, this.partInData.sDate)
+      return this.partInData.sDate ? false : true;
     }
   },
   data() {
     return {
       modalloading: false,
       partInData: {
-        proId:this.proDetails.proId,
-        type:'1',
+        proId: this.proDetails.proId,
+        type: '1',
         squadId: "",
-        SquadName: "",
         sDate: "",
-        idd:0,
+        idd: 0,
         eDate: "",
         workDate: 0,
-        taskId:''
+        taskId: ''
       },
       selectDept: [],
       deptList: [],
       partrules: {
-        SquadName: [{
+        squadId: [{
           required: true,
           type: "string",
           message: "请选择参与部门",
           trigger: "change"
         }],
-        sdate: [{
+        sDate: [{
           required: true,
           type: "string",
           message: "请填开始时间",
           trigger: "blur"
         }],
-        edate: [{
+        eDate: [{
           required: true,
           type: "string",
           message: "请填结束时间",
@@ -108,76 +110,90 @@ export default {
       },
       addStartPartOptions: {
         disabledDate: date => {
-          const sdate = new Date(this.proDetails.planSDate);
-          return (
-            (date && date.valueOf() > sdate.getTime()-1) ||
-            date.valueOf() < Date.now() - 86400000
-          );
+          let sDate = '';
+          if (this.proDetails.delayDate) {
+            sDate = new Date(this.proDetails.delayDate);
+            return (
+              (date && date.valueOf() > sDate.getTime() - 1) ||
+              date.valueOf() < Date.now() - 86400000
+            );
+          } else {
+            sDate = new Date(this.proDetails.plansDate);
+            return (
+              (date && date.valueOf() > sDate.getTime() - 1) ||
+              date.valueOf() < Date.now() - 86400000
+            );
+          }
         }
       },
       addEtartPartOptions: {
         disabledDate: date => {
-          const partsdate = new Date(this.partInData.sdate);
-          const plansdate = new Date(this.proDetails.planSDate);
-          return (
-            (date && date.valueOf() < partsdate.getTime() - 86399999) ||
-            (date && date.valueOf() > plansdate.getTime() - 1)
-          );
+          const partsDate = new Date(this.partInData.sDate);
+          const plansDate = new Date(this.proDetails.plansDate);
+          const delaydate = new Date(this.proDetails.delayDate);
+          if (delaydate) {
+            return (
+              (date && date.valueOf() < partsDate.getTime() - 86399999) ||
+              date && date.valueOf() > delaydate.getTime() - 1
+            );
+          } else {
+            (date && date.valueOf() < partsDate.getTime() - 86399999) ||
+            (date && date.valueOf() > plansDate.getTime() - 1)
+          }
         }
       }
     };
   },
 
-  mounted() {
-  },
+  mounted() {},
   methods: {
     submitClick(name) {
-      console.log(this.partInData, this.selectDept);
       this.$refs[name].validate(valid => {
         if (valid) {
-          if (this.partInData.sdate === this.partInData.edate) {
+          if (this.partInData.sDate === this.partInData.eDate) {
             this.$Message.error("开始时间不能与结束时间相同");
             return;
           }
           newGroupHandleApi(this.partInData).then(
-            res=>{
-              if(res.data.code===200){
-                  this.$Message.success(res.data.msg);
-                  this.$emit('getTaskListByProIdData')
+            res => {
+              if (res.data.code === 200) {
+                this.$Message.success(res.data.msg);
+                this.$emit('addJoinDept')
+                console.log('刷新task列表')
+                this.model.applydept = !this.model.applydept;
               }
             }
-          ).catch(error=>{
+          ).catch(error => {
+            this.model.applydept = !this.model.applydept;
             this.$Message.error('接口故障：/newGroupHandle')
           })
-          this.model.applydept = !this.model.applydept;
-          this.$Message.success("添加参与组成功！");
         } else {
           this.$Message.error("表单验证失败！");
         }
       });
     },
     cancel(name) {
-      this.model.applydept=false;
+      this.model.applydept = false;
       this.$refs[name].resetFields();
     },
-    sdateChange(val) {
+    sDateChange(val) {
       // 工作日期的变化
-      this.partInData.sdate = val;
-      if (this.partInData.edate && this.partInData.sdate) {
+      this.partInData.sDate = val;
+      if (this.partInData.eDate && this.partInData.sDate) {
         this.partInData.workDate =
-          (new Date(this.partInData.edate).getTime() -
-            new Date(this.partInData.sdate).getTime()) /
+          (new Date(this.partInData.eDate).getTime() -
+            new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
       }
     },
-    edateChange(val) {
+    eDateChange(val) {
       // 工作日期的变化
-      this.partInData.edate = val;
-      if (this.partInData.edate && this.partInData.sdate) {
+      this.partInData.eDate = val;
+      if (this.partInData.eDate && this.partInData.sDate) {
         this.partInData.workDate =
-          (new Date(this.partInData.edate).getTime() -
-            new Date(this.partInData.sdate).getTime()) /
+          (new Date(this.partInData.eDate).getTime() -
+            new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
       }

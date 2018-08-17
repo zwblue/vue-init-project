@@ -2,11 +2,11 @@
 <div class="page">
   <div class="header" :style='{margin:"10px 0"}'>
     <h3 class="title">{{projectDetails.proName||''}}</h3>
-    <div class="center" v-if='ifHasButton'>
+    <div class="center">
       <div style='display:inline-block' v-if='operationProButton'>
-        <Button type='warning' v-if='!ifApprovalUrl&&projectDetails.proState==7' ghost  @click="model.delay=!model.delay">延期申请</Button>
-        <Button type='warning' ghost v-if='projectDetails.proState==8&&!ifApprovalUrl' disabled>延期申请中</Button>
-        <Button type='success' v-if='!ifApprovalUrl' ghost :disabled='projectDetails.proProgress!=100' @click="model.online=!model.online">上线审批</Button>
+        <Button type='warning' v-if='!ifApprovalUrl&&projectDetails.proState==7' ghost @click="model.delay=!model.delay">延期申请</Button>
+        <Button type='warning' ghost v-if='projectDetails.proState==8&&!ifApprovalUrl' >延期申请中</Button>
+        <Button type='success'  ghost v-if='!ifApprovalUrl&&projectDetails.proState!=3' :disabled='projectDetails.proProgress!=100' @click="model.online=!model.online">上线审批</Button>
         <Button type='success' ghost v-if='projectDetails.proState==3&&!ifApprovalUrl'>上线审批中</Button>
         <Button type='error' v-if='!ifApprovalUrl' ghost @click='giveUpPro'>作废项目</Button>
       </div>
@@ -31,8 +31,8 @@
     </Tabs>
   </div>
   <delay-model :projectDetails='projectDetails' @openProject='openProject' :model='model' v-if='model.delay'></delay-model>
-  <online-model :model='model'  @openProject='openProject' v-if='model.online' :projectDetails='projectDetails'></online-model>
-  <update-allZitask :model='model' v-if='model.updateZitask'></update-allZitask>
+  <online-model :model='model' @openProject='openProject' v-if='model.online' :projectDetails='projectDetails'></online-model>
+  <update-allZitask :model='model' v-if='model.updateZitask' @openProject='openProject' @getTaskListByProIdData='$emit("getTaskListByProIdData")'></update-allZitask>
 </div>
 </template>
 <script>
@@ -79,7 +79,7 @@ export default {
         }
       }
     },
-    operationProButton:{
+    operationProButton: {
       type: Boolean,
       default: false
     },
@@ -91,11 +91,6 @@ export default {
     },
     ifHasButton() {
       return getNoButtonProjectState(this.$route.query.proState)
-    },
-    ifApprovalUrl() {
-      return sessionStorage.getItem('url') === '/onlinePro' &&
-        sessionStorage.getItem('url') === '/createPro' &&
-        sessionStorage.getItem('url') === '/delayPro' ? true : false
     }
   },
   data() {
@@ -126,14 +121,14 @@ export default {
       }, {
         title: '任务进度',
         align: 'center',
-        key: 'explain',
+        key: 'progress',
         render: (h, params) => {
-          return h('div', params.row.taskProgress + '%')
+          return h('div', params.row.progress + '%')
         }
       }, {
         title: '项目进度',
         align: 'center',
-        key: 'explain',
+        key: 'progress',
         render: (h, params) => {
           return h('div', params.row.proProgress + '%')
         }
@@ -235,6 +230,7 @@ export default {
           key: "creater"
         },
       ],
+      ifApprovalUrl:false,
       passParams: {
         proId: '',
         type: '1',
@@ -242,17 +238,29 @@ export default {
       },
     }
   },
-  mounted() {},
+  mounted() {
+    this.initIFApprovalUrl();
+  },
   methods: {
-    openProject(){
-      this.$emit('openProject')
+    initIFApprovalUrl() {
+      if (sessionStorage.getItem('url') === '/onlinePro' ||
+        sessionStorage.getItem('url') === '/createPro' ||
+        sessionStorage.getItem('url') === '/delayPro') {
+        this.ifApprovalUrl = true
+      } else {
+        this.ifApprovalUrl = false
+      }
+    },
+    openProject() {
+      console.log('openProject');
+      this.$emit('openProject', this.$route.params.id)
     },
     // 项目作废
     giveUpPro() {
       let params = {
         proId: this.$route.params.id,
-        type:'3',
-        reason:''
+        type: '3',
+        reason: ''
       };
       this.$Modal.confirm({
         render: h => {
@@ -316,7 +324,8 @@ export default {
             updOnlineProToPassOrRejectApi(this.passParams).then(res => {
               if (res.data.code === 200) {
                 this.$Message.success(res.data.msg);
-                this.getDelayProjectListData();
+                this.openProject();
+                this.ifApprovalUrl = false;
               }
             }).catch(error => {
               this.$Message.error('网络故障，请重试！');
@@ -325,7 +334,8 @@ export default {
             updDelayProToPassOrRejectApi(this.passParams).then(res => {
               if (res.data.code === 200) {
                 this.$Message.success(res.data.msg);
-                this.getDelayProjectListData();
+                this.openProject();
+                this.ifApprovalUrl = false;
               }
             }).catch(error => {
               this.$Message.error('网络故障，请重试！');
@@ -334,7 +344,8 @@ export default {
             updSetProToPassOrRejectApi(this.passParams).then(res => {
               if (res.data.code === 200) {
                 this.$Message.success(res.data.msg);
-                this.getDelayProjectListData();
+                this.openProject();
+                this.ifApprovalUrl = false;
               }
             }).catch(error => {
               this.$Message.error('网络故障，请重试！');
@@ -342,7 +353,7 @@ export default {
           }
         },
         onCancel: () => {
-          this.$Message.warning('你取消了此操作！');
+          this.$Message.info('你取消了此操作！');
         },
         render: (h) => {
           return h('Input', {

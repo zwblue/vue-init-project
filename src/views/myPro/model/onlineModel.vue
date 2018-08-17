@@ -2,15 +2,19 @@
 <template>
 <div class="page">
   <!-- 提交上线审批MODAL -->
-  <Modal v-model="model.online" title="上线审批" @on-ok="onlineSubmit(onlineParams)" @on-cancel="cancel">
-    <Form :model="onlineParams" label-position="left" :label-width="100" >
-      <FormItem label="上线审批" prop="reason" v-if='projectDetails.proState!=7'>
+  <Modal v-model="model.online" title="上线审批">
+    <Form :model="onlineParams" ref="onlineParams" :rules="onlineRules" label-position="left" :label-width="100">
+      <FormItem label="上线审批" :label-width="80" prop="reason" v-if='projectDetails.proState!=7'>
         <Input type="textarea" :rows="4" placeholder="请输入上线意见.." v-model="onlineParams.reason"></Input>
       </FormItem>
-      <FormItem label="逾期上线(必填)" v-if='projectDetails.proState==7' prop="reason">
+      <FormItem label="逾期上线(必填)" :label-width="100" v-if='projectDetails.proState==7' prop="reason">
         <Input type="textarea" :rows="4" :maxlength="255" placeholder="请输入逾期上线原因" v-model="onlineParams.reason"></Input>
       </FormItem>
     </Form>
+    <div slot="footer">
+      <Button type="default" @click="cancel('deferApplyParams')">取消</Button>
+      <Button type="primary" @click="onlineSubmit('onlineParams')">确定</Button>
+    </div>
   </Modal>
 </div>
 </template>
@@ -60,6 +64,13 @@ export default {
         proId: this.$route.params.id,
         type: '1',
         reason: "", //提交审批
+      },
+      onlineRules: {
+        reason: [{
+          required: true,
+          message: "原因是必须的",
+          trigger: "blur"
+        }],
       }
     }
   },
@@ -69,32 +80,32 @@ export default {
     }
   },
   methods: {
-    onlineSubmit() {
-      if (this.onlineParams.reason !== "") {
-        updApplyHandleByProApi(this.onlineParams)
-          .then(res => {
-            const data = res.data;
-            if (data.code == 200) {
-              this.$router.push('/myPro');
+    onlineSubmit(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          updApplyHandleByProApi(this.onlineParams)
+            .then(res => {
+              const data = res.data;
+              if (data.code == 200) {
                 this.$emit('openProject')
-              this.model.online = false;
-              this.$Message.success(res.data.msg);
-            } else {
-              this.$Message.error(res.data.msg);
-            }
-          })
-          .catch(err => {
-            this.$Message.error("系统异常！");
-          });
-        this.$Modal.remove();
-      } else {
-        if(this.projectDetails.proState==7){
-          this.$Message.error("请输入逾期上线原因");
-        }else{
-          this.$Message.error("请输入上线意见");
+                this.$Message.success(data.msg);
+                this.model.online = false;
+              } else {
+                this.$Message.error(data.msg);
+                this.model.online = false;
+              }
+            })
+            .catch(err => {
+              this.$Message.error("系统异常！");
+            });
+        } else {
+          if (this.projectDetails.proState == 7) {
+            this.$Message.error("请输入逾期上线原因");
+          } else {
+            this.$Message.error("请输入上线意见");
+          }
         }
-        this.$Modal.remove();
-      }
+      })
     },
     cancel() {
       this.$Message.info('你取消了此操作');

@@ -19,7 +19,9 @@ body .error-bg {
 body .gray-bg {
    background: #ccc ;
 }
-
+body .page .bg {
+  background: #e8eaec;
+}
 body .primary {
   color: #2d8cf0 ;
 }

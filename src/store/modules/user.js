@@ -1,5 +1,5 @@
 const state = {
-  userPower:''
+  userPower:'',
 }
 const getters = {
 
@@ -19,13 +19,16 @@ const mutations = {
       case '部门经理':
       state.userPower=2;
       break;
-      case '组长':
+      case '组长/副组长':
       state.userPower=1;
       break;
       default:
       state.userPower=0;
     }
     console.log('power',val)
+  },
+  changeIfCanOperationZiTask(state,val){
+    state.ifCanOperationZiTask=val;
   }
 }
 export default {

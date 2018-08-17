@@ -13,6 +13,9 @@ Vue.component('Col', Col);
 Vue.component('Table', Table);
 Vue.component('Input', Input);
 Vue.component('Icon', Icon);
+Message.config({
+  duration:3
+})
 Vue.prototype.$Message = Message
 Vue.prototype.$Modal = Modal
 Vue.config.productionTip = false

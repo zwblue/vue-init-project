@@ -13,7 +13,8 @@
       <Button type='success' size='small'>已完成</Button>
       <br>
     </div>
-    <div class="page" :style='{overflow:"auto",height:tableHeight+25+"px",width:"980px"}'>
+    <div class="page" :style='{overflow:"auto",height:tableHeight+45+"px",width:"980px"}'>
+
       <div class="table-box" :style='{height:tableHeight+10+"px"}'>
         <div class="weeks">
           <div class="week" v-for='(item,index) in weekArray' :key='index' :style='{
@@ -27,7 +28,7 @@
           </div>
         </div>
         <div class="show-area">
-          <div class="first-line" v-for='(item,index) in howManyWeeks' :key='index' :style='{height:tableHeight+"px",left:(weekIndex0+(item-1)*7)*oneDayWidth-1+"px",width:5*oneDayWidth+"px"}'>
+          <div class="first-line" v-for='(item,index) in howManyWeeks' :key='index' :style='{height:tableHeight+10+"px",left:(weekIndex0+(item-1)*7)*oneDayWidth-1+"px",width:5*oneDayWidth+1+"px"}'>
             <div class="time-show">
               {{daysArray[(weekIndex0+(item-1)*7)]}}
             </div>
@@ -36,7 +37,7 @@
           </div>
         </div>
         <div class="hide-area">
-          <div class="hide-data" v-for='(item,index) in howManyWeeks' :key='index' :style='{height:tableHeight+"px",top:headerHeight+"px",left:((weekIndex0+(item-1)*7)*oneDayWidth-1)-(2*oneDayWidth)+"px",width:2*oneDayWidth+2+"px"}'>
+          <div class="hide-data" v-for='(item,index) in howManyWeeks' :key='index' :style='{height:tableHeight+"px",top:headerHeight+"px",left:((weekIndex0+(item-1)*7)*oneDayWidth-1)-(2*oneDayWidth)+"px",width:2*oneDayWidth+1+"px"}'>
             <div class="time-show">
             </div>
             <div>
@@ -61,7 +62,7 @@
       </div>
     </div>
   </div>
-  <div class="no-data" v-show='!listData.length'>
+   <div class="no-data" v-show='!listData.length' >
     暂无数据
   </div>
 </div>
@@ -150,11 +151,11 @@ export default {
       this.lastWeek = new Date(this.tableSdate).getDay(); //起始是星期几
       this.nextWeek = new Date(this.tableEdate).getDay(); //结束是星期几
       console.log(111, this.lastWeek, this.nextWeek)
-      let canAddLastBoxNum = this.lastWeek - 1;
-      if (canAddLastBoxNum < 0) {
-        canAddLastBoxNum = 2
+      let canAddLastBoxNum = this.lastWeek-1;
+      if(canAddLastBoxNum<0){
+        canAddLastBoxNum=2
       }
-      console.log('last', canAddLastBoxNum)
+      console.log('last',canAddLastBoxNum)
       // 可以向后增加的数
       let canAddNextBoxNum = (23 - this.howManyDays) - canAddLastBoxNum;
       console.log(canAddLastBoxNum, canAddNextBoxNum)
@@ -199,6 +200,7 @@ export default {
           this.howManyWeeks.push(howmanyweek);
         }
       })
+      // this.howManyWeeks.push(++howManyWeeks);
       console.log('weekArray', this.howManyWeeks, this.weekArray)
       this.weekIndex0 = this.weekArray.indexOf(1);
       console.log('weekIndex0', this.weekIndex0)
@@ -302,12 +304,14 @@ export default {
           if (res.data.code === 200) {
             console.log('甘特图', res);
             const data = res.data.data;
-            this.listData = data;
-            if (data.length !== 0) {
+            if(data.length){
               this.tableSdate = data[0].sDate;
               this.tableEdate = data[data.length - 1].eDate;
+              this.listData = data;
               this.ganteData = this.coppyArray(this.listData);
               this.initDaysArray();
+            }else{
+              this.listData = data;
             }
           }
         }
@@ -325,6 +329,7 @@ export default {
 </style>
 <style lang="scss" scoped>
 .page {
+  margin-top: 4px;
   position: relative;
   .right-box {
     text-align: right;
@@ -390,7 +395,6 @@ export default {
 }
 
 .table-box {
-  margin-top: 4px;
   display: inline-block;
   border: 1px solid #ccc;
   height: 100%;
@@ -402,7 +406,7 @@ export default {
   position: absolute;
   top: 0;
   height: 100%;
-  border-left: 1px solid #ccc;
+  z-index: 9999999;
 }
 
 .hide-data {
@@ -412,7 +416,7 @@ export default {
   z-index: 999;
   top: 78px;
   height: 100%;
-  border-left: 1px solid #ccc;
+  
 }
 
 .weeks {
@@ -431,14 +435,6 @@ export default {
   white-space: nowrap;
 }
 
-.no-data {
-  border: 1px solid #eee;
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-  font-size: 22px;
-}
-
 .week {
   word-break: keep-all;
   /* 不换行 */
@@ -450,7 +446,13 @@ export default {
   background: #bbb;
   text-align: center;
 }
-
+.no-data {
+  border: 1px solid #eee;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  font-size: 22px;
+}
 .day:last-child {
   border-right: none;
 }

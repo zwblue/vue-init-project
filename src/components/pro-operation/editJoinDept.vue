@@ -43,6 +43,12 @@ export default {
         return {};
       }
     },
+    proDetails: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
     model: {
       type: Object,
       default: function() {
@@ -70,12 +76,12 @@ export default {
     return {
       modalloading: false,
       partInData: {
-        proId:this.taskDetails.proId||'',
+        proId: this.taskDetails.proId || '',
         type: '2',
-        squadId:this.taskDetails.squadId,
+        squadId: this.taskDetails.squadId,
         SquadName: '',
-        sDate:  this.taskDetails.sDate,
-        idd: this.taskDetails.idd||'',
+        sDate: this.taskDetails.sDate,
+        idd: this.taskDetails.idd || '',
         eDate: this.taskDetails.eDate,
         workDate: this.taskDetails.workDate,
         taskId: this.taskDetails.taskId
@@ -109,27 +115,42 @@ export default {
       },
       addStartPartOptions: {
         disabledDate: date => {
-          const sDate = new Date(this.proDetails.planSDate);
-          return (
-            (date && date.valueOf() > sDate.getTime() - 1) ||
-            date.valueOf() < Date.now() - 86400000
-          );
+          let sDate = '';
+          if (this.proDetails.delayDate) {
+            sDate = new Date(this.proDetails.delayDate);
+            return (
+              (date && date.valueOf() > sDate.getTime() - 1) ||
+              date.valueOf() < Date.now() - 86400000
+            );
+          } else {
+            sDate = new Date(this.proDetails.plansDate);
+            return (
+              (date && date.valueOf() > sDate.getTime() - 1) ||
+              date.valueOf() < Date.now() - 86400000
+            );
+          }
         }
       },
       addEtartPartOptions: {
         disabledDate: date => {
-          const partsdate = new Date(this.partInData.sDate);
-          const plansdate = new Date(this.proDetails.planSDate);
-          return (
-            (date && date.valueOf() < partsdate.getTime() - 86399999) ||
-            (date && date.valueOf() > plansdate.getTime() - 1)
-          );
+          const partsDate = new Date(this.partInData.sDate);
+          const plansDate = new Date(this.proDetails.plansDate);
+          const delaydate = new Date(this.proDetails.delayDate);
+          if (delaydate) {
+            return (
+              (date && date.valueOf() < partsDate.getTime() - 86399999) ||
+              date && date.valueOf() > delaydate.getTime() - 1
+            );
+          } else {
+            (date && date.valueOf() < partsDate.getTime() - 86399999) ||
+            (date && date.valueOf() > plansDate.getTime() - 1)
+          }
         }
       }
     };
   },
   mounted() {
-    console.log(111111111,this.taskDetails);
+    console.log(111111111, this.taskDetails);
   },
   methods: {
     submitClick(name) {
@@ -146,6 +167,8 @@ export default {
                 this.$Message.success(res.data.msg);
                 this.$emit('editJoinDept');
                 this.model.editTask = !this.model.editTask;
+              }else{
+                this.$Message.warning(res.data.msg);
               }
             }
           ).catch(error => {

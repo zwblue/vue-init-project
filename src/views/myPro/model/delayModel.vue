@@ -149,10 +149,13 @@ export default {
           this.deferLoading = true;
           updApplyHandleByProApi(this.deferApplyParams).then(res => {
             if (res.data.code == 200) {
-                this.$emit('openProject')
-              this.$Message.success('已成功提交延期申请！');
+              this.$emit('openProject')
+              this.$Message.success(res.data.msg);
               this.model.delay = false;
               this.deferLoading = false;
+            }else{
+              this.$Message.success(res.data.msg);
+              this.model.delay = false;
             }
           }).catch(error => {
             this.$Message.error('网络故障，请重试！')

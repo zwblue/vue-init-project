@@ -4,11 +4,11 @@
     <Divider :style='{fontWeight:"bold"}'>{{zitaskDetails.subtaskName||''}}</Divider>
   </h3>
   <div class="header" :style='{margin:"10px 0"}'>
-    <div v-if='ifHasButton'>
-      <Tooltip content="提醒负责人">
+    <div v-if='ifHasButton&&operationTaskButton'>
+      <Tooltip content="提醒负责人" placement="bottom-start">
         <Icon type="md-notifications" class="primary click-btn"  @click="remindClick" />
       </Tooltip>
-      <Tooltip content="修改子任务" placement="bottom-start" >
+      <Tooltip content="修改子任务"  >
         <Icon class="icon-edit_s iconfont primary click-btn" @click="editClick"></Icon>
       </Tooltip>
       <Tooltip content="删除子任务">
@@ -29,7 +29,7 @@
       <TabPane label="操作日志" name="name2">
         <Table height='470' :columns="handColumns" :data="zitaskDetails.subtaskLogRecords"></Table>
       </TabPane>
-      <Button :disabled='!ifHasButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
+      <Button :disabled='!ifHasButton||!operationziTaskButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
     </Tabs>
   </div>
   <edit-zitask :zitaskDetails='zitaskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.editZitask' :model='model'></edit-zitask>
@@ -96,6 +96,7 @@ export default {
   },
   data() {
     return {
+      operationTaskButton:false,
       operationziTaskButton:false,
       model: {
         updateZitask: false,
@@ -124,7 +125,7 @@ export default {
         align: 'center',
         key: 'explain',
         render: (h, params) => {
-          return h('div', params.row.taskProgress + '%')
+          return h('div', params.row.progress + '%')
         }
       }, {
         title: '项目进度',
@@ -224,16 +225,41 @@ export default {
       ],
     }
   },
+  watch:{
+    'zitaskDetails.taskId'(newval,val){
+      this.initTaskButton();
+    },
+     'zitaskDetails.subtaskId'(newval,val){
+      this.initziTaskButton();
+    }
+  },
   mounted() {
+    this.initTaskButton();
     this.initziTaskButton();
   },
   methods: {
-     initziTaskButton() {
+     initTaskButton() {
       console.log('init',this.zitaskDetails)
       getHandlerPowerByProAndTaskApi({
         type: 2,
         proId: this.$route.params.id,
-        taskId: this.zitaskDetails.subtaskId
+        taskId: this.zitaskDetails.taskId
+      }).then(
+        res => {
+          if (res.data.code === 200) {
+              this.operationTaskButton = res.data.data;
+          }
+        }
+      ).catch(error => {
+        this.$Message.error('接口故障：/getHandlerPowerByProAndTask')
+      })
+    },
+     initziTaskButton() {
+      getHandlerPowerByProAndTaskApi({
+        type: 3,
+        proId: this.$route.params.id,
+        taskId: this.zitaskDetails.taskId,
+        subtaskId:this.zitaskDetails.subtaskId
       }).then(
         res => {
           if (res.data.code === 200) {
@@ -249,6 +275,7 @@ export default {
       this.$emit('openziTask', this.zitaskDetails.subtaskId);
     },
     openziTask(){
+      this.$emit('getTaskListByProIdData');
       this.$emit('openziTask', this.zitaskDetails.subtaskId);
     },
     editClick(row) {
@@ -296,6 +323,7 @@ export default {
               if (data.code == 200) {
                 this.$Message.success(data.msg);
                 this.$emit('openProject',this.$route.params.id);
+                this.$emit('getTaskListByProIdData');
               } else {
                 this.$Message.error(data.msg);
               }

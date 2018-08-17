@@ -54,8 +54,8 @@
       <div class="pro-details">
         <Tabs value="name1">
           <TabPane :label="detailsName" name="name1">
-            <pro-descrition v-show='detailsType==1' :operationProButton='operationProButton' @openProject='openProject' :projectDetails='proDetails'></pro-descrition>
-            <task-descrition v-show='detailsType==2' @openTask='openTask' @openProject='openProject' @getTaskListByProIdData='getTaskListByProIdData' v-if='taskDetails.taskId' :taskDetails='taskDetails' :proName='proDetails.proName'></task-descrition>
+            <pro-descrition v-show='detailsType==1' :operationProButton='operationProButton' @openProject='openProject' :projectDetails='proDetails'  @getTaskListByProIdData='getTaskListByProIdData'></pro-descrition>
+            <task-descrition v-show='detailsType==2' :operationProButton='operationProButton' @openTask='openTask' @openProject='openProject' @getTaskListByProIdData='getTaskListByProIdData' v-if='taskDetails.taskId' :taskDetails='taskDetails' :proDetails='proDetails' :proName='proDetails.proName'></task-descrition>
             <zitask-descrition v-show='detailsType==3' @openProject='openProject' :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails' v-if='zitaskDetails.subtaskId' @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
           </TabPane>
           <TabPane label="甘特图" name="name2">
@@ -67,7 +67,7 @@
     </Col>
   </Row>
   <!-- 添加参与组的组件 -->
-  <add-joinDept v-if='model.applydept' @getTaskListByProIdData="getTaskListByProIdData" :proDetails='proDetails' :model='model'></add-joinDept>
+  <add-joinDept v-if='model.applydept' @addJoinDept="getTaskListByProIdData" :proDetails='proDetails' :model='model'></add-joinDept>
 </div>
 </template>
 <script>
@@ -158,7 +158,6 @@ export default {
       }else{
         this.activeOpenPanpelIndex=-1;
       }
-      // console.log(this.taskList[Number(val[0])].subtaskList)
     },
     initProButton(){
       getHandlerPowerByProAndTaskApi({type:1,proId:this.$route.params.id,taskId:''}).then(
@@ -222,16 +221,12 @@ export default {
       })
     },
     getLogDetailInfoData(params) {
-      // 先判断他们是不是保存了有值，有就不会请求接口
-      if (params.type == 1 && 'proId' in this.proDetails) {
-        return
-      }
       getLogDetailInfoApi(params).then(
         res => {
           if (res.data.code === 200) {
             if (params.type == 1) {
               this.proDetails = res.data.data;
-              this.$router.push({
+              this.$router.replace({
                 query: {
                   proState: this.proDetails.proState
                 }
@@ -260,7 +255,7 @@ export default {
 };
 </script>
 <style lang='scss'>
-.pro-details-panel>.ivu-collapse-item>.ivu-collapse-header {
+.ivu-collapse.pro-details-panel>.ivu-collapse-item>.ivu-collapse-header {
   height: auto;
   line-height: normal;
   overflow: hidden;
@@ -269,10 +264,10 @@ export default {
   justify-content: space-between;
 }
 
-.pro-details-panel>.ivu-collapse-item>.ivu-collapse-header>i {
+.ivu-collapse.pro-details-panel>.ivu-collapse-item>.ivu-collapse-header>i {
   float: left;
 }
-.pro-details-panel .ivu-collapse-content>.ivu-collapse-content-box{
+.ivu-collapse.pro-details-panel .ivu-collapse-content>.ivu-collapse-content-box{
   padding:0;
 }
 </style>

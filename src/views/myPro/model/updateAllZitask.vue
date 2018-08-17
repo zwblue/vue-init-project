@@ -92,7 +92,6 @@ export default {
   },
   mounted() {
     this.getUpdSubtaskSelect();
-    this.ziTaskList = [{taskid:'12',subtaskid:'22',subtaskname:'土地'},{taskid:'87',subtaskid:'62',subtaskname:'试试'},{taskid:'8',subtaskid:'1',subtaskname:'放到'},{taskid:'22',subtaskid:'32',subtaskname:'发呆'}];
   },
   methods: {
     getUpdSubtaskSelect() {
@@ -100,10 +99,7 @@ export default {
         proId: this.$route.params.id
       }).then(res => {
         if (res.data.code === 200) {
-          // this.ziTaskList = res.data.data;
-          if (this.ziTaskList.length !== 0) {
-            // this.updateBtn = true;
-          }
+          this.ziTaskList = res.data.data;
         }
       }).catch(error => {
       })
@@ -117,6 +113,8 @@ export default {
           updSubtaskProgressApi(this.partInData).then(
             res => {
               if (res.data.code === 200) {
+                this.$emit('getTaskListByProIdData');
+                this.$emit('openProject');
                 this.$Message.success(res.data.msg)
                 this.model.updateZitask = !this.model.updateZitask;
               }

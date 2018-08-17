@@ -49,7 +49,7 @@
         <my-task :dataList='myTaskData.dataList' @updateZitask='getMyTaskInfoByIndexList'></my-task>
       </Row>
       <!-- 组员任务 -->
-      <Row v-if='userPower>0'>
+      <Row v-if='userPower===1||userPower===2'>
         <Row style='margin-top:20px;'>
           <Col span="24">
           <Divider class="title">组员任务
@@ -135,6 +135,9 @@ export default {
   mounted() {
     this.projectShow = !this.projectShow;
     this.initHomeData();
+     if(this.userPower===1||this.userPower===2){
+        this.getMyMemberSubtaskCountByIndexList();
+    }
   },
   computed:{
     userPower(){
@@ -143,7 +146,7 @@ export default {
   },
   watch:{
     userPower(){
-      if(this.userPower>0){
+      if(this.userPower===1||this.userPower===2){
         this.getMyMemberSubtaskCountByIndexList();
       }
     }

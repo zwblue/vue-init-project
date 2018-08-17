@@ -234,7 +234,7 @@ export default {
       this.tableSdate = this.activeSubTaskList[0].sDate;
       this.tableEdate = this.activeSubTaskList[this.activeSubTaskList.length - 1].eDate;
       this.initDaysArray();
-      this.tableHeight = this.activeSubTaskList.length * 50 + 78
+      this.tableHeight = this.activeSubTaskList.length * 50 + 78+20
     },
   }
 }
@@ -310,7 +310,6 @@ export default {
   position: absolute;
   top: 0;
   height: 100%;
-  border-left: 1px solid #ccc;
 }
 
 .hide-data {
@@ -320,7 +319,6 @@ export default {
   z-index: 999;
   top: 78px;
   height: 100%;
-  border-left: 1px solid #ccc;
 }
 
 .weeks {

@@ -4,11 +4,11 @@
     <Divider :style='{fontWeight:"bold"}'>{{taskDetails.taskName||''}}</Divider>
   </h3>
   <div class="header" :style='{margin:"10px 0"}'>
-    <div v-if='ifHasButton&&operationTaskButton'>
+    <div v-if='ifHasButton&&operationProButton'>
       <Tooltip content="提醒任务人" placement="bottom-start">
         <Icon type="md-notifications" class="primary click-btn" @click="remindTaskClick" />
       </Tooltip>
-      <Tooltip content="修改任务" >
+      <Tooltip content="修改任务">
         <Icon class="icon-edit_s iconfont primary click-btn" @click="model.editTask=!model.editTask"></Icon>
       </Tooltip>
       <Tooltip content="删除任务">
@@ -28,7 +28,7 @@
         <TabPane label="子任务列表" name="name1">
           <Table border :columns="zitaskColumns" :data="taskDetails.subtaskList"></Table>
         </TabPane>
-        <Button type='primary' icon='md-add' size='small' slot="extra" :disabled='!ifHasButton' @click="model.addZitask=!model.addZitask">添加子任务</Button>
+        <Button type='primary' icon='md-add' size='small' slot="extra"  :disabled='!ifHasButton||!operationTaskButton' @click="model.addZitask=!model.addZitask">添加子任务</Button>
       </Tabs>
     </div>
     <Tabs value="name1" type="card">
@@ -42,7 +42,7 @@
   </div>
   <add-zitask :taskDetails='taskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.addZitask' :model='model'></add-zitask>
   <edit-zitask :zitaskDetails='zitaskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.editZitask&&zitaskDetails' :model='model'></edit-zitask>
-  <edit-joinDept :taskDetails='taskDetails' v-if='model.editTask' @editJoinDept='resetZitaskList' :model='model'></edit-joinDept>
+  <edit-joinDept :taskDetails='taskDetails' :proDetails='proDetails' v-if='model.editTask' @editJoinDept='resetZitaskList' :model='model'></edit-joinDept>
 </div>
 </template>
 <script>
@@ -98,12 +98,22 @@ export default {
         return {}
       }
     },
+    proDetails: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+     operationProButton: {
+      type: Boolean,
+      default: false
+    },
     proName: {
       type: String,
       default: ''
     }
   },
- 
+
   computed: {
     tableData() {
       return [{ ...this.taskDetails
@@ -113,9 +123,15 @@ export default {
       return getNoButtonProjectState(this.$route.query.proState)
     }
   },
+  watch:{
+    'taskDetails.taskId'(newval,val){
+      console.log(newval)
+      this.initTaskButton();
+    }
+  },
   data() {
     return {
-    operationTaskButton:false,
+      operationTaskButton: false,
       zitaskDetails: null,
       model: {
         editTask: false,
@@ -136,7 +152,7 @@ export default {
           align: 'center',
           key: "eDate",
           render: (h, params) => {
-            return h('div', params.row.planEDate || '--')
+            return h('div', params.row.eDate || '--')
           }
         }, {
           title: "预期工期（天）",
@@ -151,7 +167,7 @@ export default {
                 class: {
                   error: params.row.subtaskState == 5
                 }
-              }, getTaskState(params.row.subtaskState,params.row.overdueDays)
+              }, getTaskState(params.row.subtaskState, params.row.overdueDays)
             )
           }
         }, {
@@ -180,17 +196,9 @@ export default {
             if (!this.ifHasButton) {
               return null
             }
-            let [tip, edit, del] = [true, true, true];
-            // getButtonBySubtaskApi({
-            //   subtaskId: params.row.subtaskId
-            // }).then(res => {
-            //   if (res.data.code === 200) {
-            //     console.log(res.data.data);
-            //     [tip, edit, del] = [res.data.data.subtask_tx, res.data.data.subtask_gx, res.data.data.subtask_sc];
-            //   }
-            // }).catch(error => {
-            //   this.$Message.error('接口故障：/getButtonBySubtask')
-            // })
+            if(!this.operationTaskButton){
+              return null
+            }
             return h("div", [
               h(
                 "Button", {
@@ -199,7 +207,7 @@ export default {
                     size: "small"
                   },
                   style: {
-                    display: !tip ? "none" : ""
+                    display: params.row.subtaskProgress=='100' ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -217,7 +225,7 @@ export default {
                   },
                   style: {
                     marginLeft: "5px",
-                    display: !edit ? "none" : ""
+                    // display: !edit ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -235,7 +243,7 @@ export default {
                   },
                   style: {
                     marginLeft: "5px",
-                    display: !del ? "none" : ""
+                    // display: !del ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -272,7 +280,7 @@ export default {
         align: 'center',
         key: 'explain',
         render: (h, params) => {
-          return h('div', params.row.taskProgress + '%')
+          return h('div', params.row.progress + '%')
         }
       }, {
         title: '项目进度',
@@ -330,7 +338,7 @@ export default {
                 class: {
                   error: params.row.taskState == 5
                 }
-              }, getTaskState(params.row.taskState,params.row.overdueDays)
+              }, getTaskState(params.row.taskState, params.row.overdueDays)
             )
           }
         }, {
@@ -362,7 +370,7 @@ export default {
           align: 'center',
           key: "eDate",
           render: (h, params) => {
-            return h('div', params.row.planEDate || '--')
+            return h('div', params.row.eDate || '--')
           }
         },
         {
@@ -374,11 +382,11 @@ export default {
     }
   },
   mounted() {
-    this.initTaskButton();
+      this.initTaskButton();
   },
   methods: {
     initTaskButton() {
-      console.log('init',this.taskDetails)
+      console.log('init', this.taskDetails)
       getHandlerPowerByProAndTaskApi({
         type: 2,
         proId: this.$route.params.id,
@@ -386,7 +394,7 @@ export default {
       }).then(
         res => {
           if (res.data.code === 200) {
-              this.operationTaskButton = res.data.data;
+            this.operationTaskButton = res.data.data;
           }
         }
       ).catch(error => {
