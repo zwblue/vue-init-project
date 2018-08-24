@@ -513,6 +513,9 @@ export default {
               if (data.code == 200) {
                 this.$Message.success(data.msg);
                 this.resetZitaskList();
+                setTimeout(()=>{
+                  this.resetZitaskList();
+                },200)
               } else {
                 this.$Message.error(data.msg);
               }
