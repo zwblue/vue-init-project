@@ -33,6 +33,7 @@ import {
   updSubtaskhandleApi,
   getMembersBySquadId
 } from 'api/myproject.js'
+import {spliceWeekDay} from 'utils/common.js'
 import {
   Input,
   Select,
@@ -154,6 +155,7 @@ export default {
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
+        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
       }
     },
     eDateChange(val) {
@@ -165,6 +167,7 @@ export default {
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
+        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
       }
     },
     sureSubmit(name) {

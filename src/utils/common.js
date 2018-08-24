@@ -129,3 +129,17 @@ export function getHandlogType(num) {
 }
 
 
+export function spliceWeekDay(startTime,days){
+  console.log(startTime,days)
+  let sdate=new Date(startTime).getTime();
+  let count=0;
+  for(var i=0;i<days;i++){
+    let daytime=24*60*60*1000;
+     let day= new Date(sdate+(daytime*i)).getDay();
+     if(day===0||day===6){
+       count++;
+     } 
+  }
+  console.log('多少个星期六，星期天',count)
+  return String(days-count);
+}

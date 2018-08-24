@@ -24,6 +24,7 @@
 </template>
 <script>
 import QueryDept from 'components/queryDept/queryDept.vue'
+import {spliceWeekDay} from 'utils/common.js'
 import {
   Input,
   Cascader,
@@ -181,6 +182,7 @@ export default {
             new Date(this.partInData.sdate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
+        this.partInData.workDate= spliceWeekDay(this.partInData.sdate, this.partInData.workDate)
       }
     },
     edateChange(val) {
@@ -192,6 +194,7 @@ export default {
             new Date(this.partInData.sdate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
+        this.partInData.workDate= spliceWeekDay(this.partInData.sdate, this.partInData.workDate)
       }
     },
     replayUploadBefore() {

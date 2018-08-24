@@ -27,6 +27,7 @@ import QueryDept from 'components/queryDept/queryDept.vue'
 import {
   newGroupHandleApi
 } from 'api/myproject.js'
+import {spliceWeekDay} from 'utils/common.js'
 import {
   Input,
   Cascader,
@@ -64,7 +65,6 @@ export default {
   },
   computed: {
     eDateshow() {
-      console.log(2223, this.partInData.sDate)
       return this.partInData.sDate ? false : true;
     }
   },
@@ -179,12 +179,14 @@ export default {
     sDateChange(val) {
       // 工作日期的变化
       this.partInData.sDate = val;
+
       if (this.partInData.eDate && this.partInData.sDate) {
         this.partInData.workDate =
           (new Date(this.partInData.eDate).getTime() -
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
+        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
       }
     },
     eDateChange(val) {
@@ -196,6 +198,7 @@ export default {
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
         this.partInData.workDate = this.partInData.workDate.toFixed(1);
+        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
       }
     }
   }
