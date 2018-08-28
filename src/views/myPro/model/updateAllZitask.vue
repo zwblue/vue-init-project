@@ -3,7 +3,7 @@
   <Modal v-model="model.updateZitask" title="更新子任务" @on-cancel="cancel('partInData')">
     <Form ref="partInData" :model="partInData" :rules="partrules" :label-width="100">
       <FormItem label="子任务：" prop="subtaskId">
-        <Select v-model="partInData.subtaskId" v-if='ziTaskList.length!==0' placeholder='请选择子任务'>
+        <Select v-model="partInData.subtaskId" placeholder='请选择子任务'>
           <Option v-for="item in ziTaskList" :value="item.taskid+','+item.subtaskid" :key="item.subtaskid">{{ item.subtaskname }}</Option>
         </Select>
       </FormItem>
@@ -82,6 +82,13 @@ export default {
           message: "请输入备注",
           trigger: "blur"
         }],
+        subtaskId:[{
+          required: true,
+          type:"string",
+          message: "请选择某个子任务",
+          trigger:'change'
+
+        }],
         subtaskProgress: [{
           required: true,
           type: "number",
@@ -99,7 +106,12 @@ export default {
         proId: this.$route.params.id
       }).then(res => {
         if (res.data.code === 200) {
-          this.ziTaskList = res.data.data;
+          if(res.data.data.length){
+            this.ziTaskList = res.data.data;
+          }else{
+            // this.$Message.error('没有你可操作的子任务！')
+            this.ziTaskList = [];
+          }
         }
       }).catch(error => {
       })

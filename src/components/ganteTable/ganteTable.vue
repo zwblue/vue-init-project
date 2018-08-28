@@ -33,8 +33,18 @@
       <div class="item-box" v-for='(item,index) in positionArray' :key='index' :style='{
         left:item.x*oneDayWidth+"px",top:item.y*oneBoxHeight+"px",width:item.width*oneDayWidth+"px",height:oneBoxHeight+"px"
       }'>
-        <div :class="{'box':true,'success-bg':item.state==4,'error-bg':item.state==5,'primary-bg':item.state==2,'gray-bg':item.state==1}">
-        </div>
+        <Tooltip :placement="index!==positionArray.length-1?'bottom-start':'top-start'" class="box">
+          <div :class="{'box':true,'success-bd':item.state==4,'error-bd':item.state==5,'primary-bd':item.state==2,'gray-bd':item.state==1}">
+            <div :style='{width:item.progress+"%"}' :class="{'inner-box':true,'success-bg':item.state==4,'error-bg':item.state==5,'primary-bg':item.state==2,'gray-bg':item.state==1}">
+
+            </div>
+          </div>
+          <div slot="content" style='zIndex:9'>
+            <p>当前进度：{{item.progress}}%</p>
+            <p>开始：{{item.startDate}}</p>
+            <p>结束：{{item.endDate}}</p>
+          </div>
+        </Tooltip>
       </div>
     </div>
     <div class="text-area">
@@ -51,7 +61,11 @@
 import {
   getGTChartByProApi
 } from 'api/myproject.js'
+import {Tooltip} from 'iview';
 export default {
+   components:{
+    Tooltip
+  },
   data() {
     return {
       tableHeight: '450',
@@ -119,7 +133,7 @@ export default {
       }
       // 加前面的天数
       let addLastDaysArray = [];
-     
+
       for (let index = 0; index < canAddLastBoxNum; index++) { //1 5=》加4次=》1，2，3，4前四天   2=》加1天=》提前1天
         let day = new Date(this.tableSdate).getTime() - (onetimes * (index + 1)); //
         addLastDaysArray.unshift(this.noHoursTimeToString(day));
@@ -170,13 +184,18 @@ export default {
         width = (new Date(val.eDate) - new Date(val.sDate)) / onetimes
         let name = val.subtaskName;
         let state = val.subtaskState;
-        console.log(x, width)
+         let progress=val.taskProgress;
+        let startDate=val.sDate;
+        let endDate=val.eDate;
         this.positionArray.push({
           x,
           y,
           width,
           name,
-          state
+          state,
+          progress,
+          startDate,
+          endDate
         });
         index++;
       }
@@ -228,13 +247,13 @@ export default {
     getGTChartList() {
       this.howManyWeeks = [];
       this.daysArray = [];
-      this.weekArray=[];
-        this.ganteData = this.coppyArray(this.activeSubTaskList);
+      this.weekArray = [];
+      this.ganteData = this.coppyArray(this.activeSubTaskList);
       console.log(this.activeSubTaskList)
       this.tableSdate = this.activeSubTaskList[0].sDate;
       this.tableEdate = this.activeSubTaskList[this.activeSubTaskList.length - 1].eDate;
       this.initDaysArray();
-      this.tableHeight = this.activeSubTaskList.length * 50 + 78+20
+      this.tableHeight = this.activeSubTaskList.length * 50 + 78 + 20
     },
   }
 }
@@ -244,6 +263,21 @@ export default {
 .page {
   position: relative;
 }
+.error-bd {
+  border: 1px solid #ed4014;
+}
+
+.success-bd {
+  border: 1px solid #19be6b;
+}
+
+.primary-bd {
+  border: 1px solid #5cadff;
+}
+
+.gray-bd {
+  border: 1px solid #aaa;
+}
 
 .time-show {
   text-align: center;
@@ -252,19 +286,18 @@ export default {
 
 .text {
   position: absolute;
-  z-index: 9999;
+  z-index: 3;
 }
 
 .item-area {
   position: absolute;
   top: 82px;
-  z-index: 8;
+  z-index: 3;
 }
 
 .text-area {
   position: absolute;
   top: 82px;
-  z-index: 10000;
 }
 
 .day {
@@ -282,20 +315,23 @@ export default {
   position: absolute;
   display: flex;
   align-items: center;
-  z-index: 9;
   .box {
-    background: #f90;
     width: 100%;
-    border-radius: 4px;
+    border-radius: 3px;
     height: 30px;
   }
+  .inner-box{
+    left:0;
+    top:0;
+    border-radius:2px;
+    bottom:0;
+    position:absolute;
+  } 
 }
 
 .text-box {
-  color: #f90;
   line-height: 50px;
   position: absolute;
-  z-index: 10000;
 }
 
 .table-box {
@@ -316,7 +352,6 @@ export default {
   position: absolute;
   background: #eee;
   opacity: 0.8;
-  z-index: 999;
   top: 78px;
   height: 100%;
 }

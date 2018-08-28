@@ -17,9 +17,6 @@ import {
   updSubtaskhandleApi,
   getHomePageRemindingApi
 } from 'api/myproject.js';
-import {
-  getTaskState
-} from 'utils/common.js'
 export default {
   components: {
     Table,
@@ -87,11 +84,15 @@ export default {
           render: (h, params) => {
             return h(
               "div", {
-                class: {
-                  error: params.row.subtaskState == 5
-                }
-              },
-              getTaskState(params.row.subtaskState,params.row.overdueDays)
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.subtaskState,
+                    day: params.row.overdueDays,
+                    type: 'zitask'
+                  }
+                }]
+              }
             );
           }
         },

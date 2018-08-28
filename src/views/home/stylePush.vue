@@ -2,9 +2,9 @@
 <div class="page">
   <Row :gutter='32'>
     <Col span="12">
-    <Divider><span class="title">产品推送</span></Divider>
+    <Divider :orientation="isAllShow?'center':'left'"><span class="title">产品推送</span></Divider>
     <Row :gutter='16' class="text">
-      <Col span="6" v-for='(item,index) in sendTypeList.slice(0,4)' :key='index'>
+      <Col  span="6" v-for='(item,index) in sendTypeList.slice(0,4)' v-if='isAllShow||index===0' :key='index'>
       <div class='pro-box'>
         <div class='pro-title'>{{item.name}}</div>
         <div class='pro-num'>{{item.num}}</div>
@@ -13,9 +13,9 @@
     </Row>
     </Col>
     <Col span="12">
-    <Divider><span class="title">活动推送</span></Divider>
+    <Divider :orientation="isAllShow?'center':'left'"><span class="title">活动推送</span></Divider>
     <Row :gutter='16' class="text">
-      <Col span="6" v-for='(item,index) in sendTypeList.slice(-4)' :key='index'>
+      <Col span="6" v-for='(item,index) in sendTypeList.slice(-4)' v-if='isAllShow||index===0' :key='index'>
       <div class='pro-box'>
         <div class='pro-title'>{{item.name}}</div>
         <div class='pro-num'>{{item.num}}</div>
@@ -89,6 +89,11 @@ export default {
       ]
     }
   },
+  computed: {
+    isAllShow() {
+      return this.$store.state.user.userPower === 4
+    }
+  },
   mounted() {
     this.getProCountByCPAndHDList();
   },
@@ -133,5 +138,11 @@ $gray:#dcdee2;
     height: 40px;
     font-weight: bold;
   }
+}
+
+.title {
+  line-height: 24px;
+  font-size: 16px;
+  margin: 0 18px;
 }
 </style>

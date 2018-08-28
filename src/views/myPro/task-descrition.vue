@@ -28,7 +28,7 @@
         <TabPane label="子任务列表" name="name1">
           <Table border :columns="zitaskColumns" :data="taskDetails.subtaskList"></Table>
         </TabPane>
-        <Button type='primary' icon='md-add' size='small' slot="extra"  :disabled='!ifHasButton||!operationTaskButton' @click="model.addZitask=!model.addZitask">添加子任务</Button>
+        <Button type='primary' icon='md-add' size='small' slot="extra" :disabled='!ifHasButton||!operationTaskButton' @click="model.addZitask=!model.addZitask">添加子任务</Button>
       </Tabs>
     </div>
     <Tabs value="name1" type="card">
@@ -41,7 +41,7 @@
     </Tabs>
   </div>
   <add-zitask :taskDetails='taskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.addZitask' :model='model'></add-zitask>
-  <edit-zitask :zitaskDetails='zitaskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.editZitask&&zitaskDetails' :model='model'></edit-zitask>
+  <edit-zitask :taskDetails='taskDetails' :zitaskDetails='zitaskDetails' @resetAllZitaskList='resetZitaskList' v-if='model.editZitask&&zitaskDetails' :model='model'></edit-zitask>
   <edit-joinDept :taskDetails='taskDetails' :proDetails='proDetails' v-if='model.editTask' @editJoinDept='resetZitaskList' :model='model'></edit-joinDept>
 </div>
 </template>
@@ -56,8 +56,6 @@ import {
   getHandlerPowerByProAndTaskApi
 } from 'api/myproject.js';
 import {
-  getTaskState,
-  getProjectType,
   getDevlogType,
   getHandlogType,
   getNoButtonProjectState
@@ -104,7 +102,7 @@ export default {
         return {}
       }
     },
-     operationProButton: {
+    operationProButton: {
       type: Boolean,
       default: false
     },
@@ -123,8 +121,8 @@ export default {
       return getNoButtonProjectState(this.$route.query.proState)
     }
   },
-  watch:{
-    'taskDetails.taskId'(newval,val){
+  watch: {
+    'taskDetails.taskId' (newval, val) {
       console.log(newval)
       this.initTaskButton();
     }
@@ -163,11 +161,16 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h(
-              'div', {
-                class: {
-                  error: params.row.subtaskState == 5
-                }
-              }, getTaskState(params.row.subtaskState, params.row.overdueDays)
+              'div',  {
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.subtaskState,
+                    day: params.row.overdueDays,
+                    type: 'task'
+                  }
+                }]
+              }
             )
           }
         }, {
@@ -196,7 +199,7 @@ export default {
             if (!this.ifHasButton) {
               return null
             }
-            if(!this.operationTaskButton){
+            if (!this.operationTaskButton) {
               return null
             }
             return h("div", [
@@ -207,7 +210,7 @@ export default {
                     size: "small"
                   },
                   style: {
-                    display: params.row.subtaskProgress=='100' ? "none" : ""
+                    display: params.row.subtaskProgress == '100' ? "none" : ""
                   },
                   on: {
                     click: () => {
@@ -334,11 +337,17 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h(
-              'div', {
-                class: {
-                  error: params.row.taskState == 5
-                }
-              }, getTaskState(params.row.taskState, params.row.overdueDays)
+              'div', 
+             {
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.taskState,
+                    day: params.row.overdueDays,
+                    type: 'task'
+                  }
+                }]
+              }
             )
           }
         }, {
@@ -382,7 +391,7 @@ export default {
     }
   },
   mounted() {
-      this.initTaskButton();
+    this.initTaskButton();
   },
   methods: {
     initTaskButton() {
@@ -513,9 +522,9 @@ export default {
               if (data.code == 200) {
                 this.$Message.success(data.msg);
                 this.resetZitaskList();
-                setTimeout(()=>{
+                setTimeout(() => {
                   this.resetZitaskList();
-                },200)
+                }, 200)
               } else {
                 this.$Message.error(data.msg);
               }

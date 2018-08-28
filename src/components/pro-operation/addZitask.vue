@@ -11,10 +11,10 @@
           </Select>
       </FormItem>
       <FormItem prop="sDate" label="开始时间：">
-        <DatePicker type="datetime" :value="partInData.sDate" @on-change="sDateChange" :options="ziTaskdateStartOptions" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
+        <date-time selectType='start' :maxTime='taskDetails.eDate' :minTime='taskDetails.sDate' :value='partInData.sDate' :options="ziTaskdateStartOptions" @changeDate='sDateChange'></date-time>
       </FormItem>
       <FormItem prop="eDate" label="结束时间：">
-        <DatePicker type="datetime" :disabled="edateshow" :value="partInData.eDate" @on-change="eDateChange" :options="ziTaskdateEndOptions" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
+        <date-time selectType='end'  :maxTime='taskDetails.eDate' :minTime='partInData.sDate' :value='partInData.eDate'  :options="ziTaskdateEndOptions" @changeDate='eDateChange' :eDateshow='edateshow'></date-time>
       </FormItem>
       <FormItem label="总工时(天)：" prop="workDate">
         <Input v-model="partInData.workDate" disabled style='width:50px'></Input>
@@ -29,19 +29,21 @@
 </template>
 
 <script>
+import DateTime from 'components/dateTime/dateTime.vue'
 import {
   updSubtaskhandleApi,
   getMembersBySquadId
 } from 'api/myproject.js'
-import {spliceWeekDay} from 'utils/common.js'
+import {
+  spliceWeekDay,
+} from 'utils/common.js'
 import {
   Input,
   Select,
   Option,
   Modal,
   Form,
-  FormItem,
-  DatePicker
+  FormItem
 } from 'iview'
 export default {
   components: {
@@ -51,7 +53,7 @@ export default {
     Modal,
     Form,
     FormItem,
-    DatePicker
+    DateTime
   },
   props: {
     taskDetails: {
@@ -70,6 +72,9 @@ export default {
     }
   },
   computed: {
+    timeStepArray() {
+      return timeSteps
+    },
     edateshow() {
       return this.partInData.sDate ? false : true;
     }
@@ -77,10 +82,10 @@ export default {
   data() {
     return {
       partInData: {
-        squadId:this.taskDetails.squadId,
+        squadId: this.taskDetails.squadId,
         subtaskId: '',
         type: 1,
-        taskId:this.taskDetails.taskId,
+        taskId: this.taskDetails.taskId,
         handler: '',
         subtaskName: '',
         sDate: '',
@@ -121,7 +126,6 @@ export default {
         disabledDate: date => {
           const sDate = new Date(this.taskDetails.sDate);
           const eDate = new Date(this.taskDetails.eDate);
-          console.log(this.taskDetails.sDate,this.taskDetails.eDate)
           return (
             (date && date.valueOf() < sDate.getTime() - 86399999) || (date.valueOf() > eDate.getTime() - 1)
             // ||date.valueOf() < Date.now() - 86400000
@@ -135,39 +139,34 @@ export default {
           return (
             (date && date.valueOf() < partsDate.getTime() - 86399999) ||
             (date && date.valueOf() > eDate.getTime() - 1)
-             // ||date.valueOf() < Date.now() - 86400000
+            // ||date.valueOf() < Date.now() - 86400000
           );
         }
       }
     }
   },
   mounted() {
-    console.log(33333, this.taskDetails)
+    this.getWorkDate();
     this.initZiProjectUserData();
   },
   methods: {
     sDateChange(val) {
       // 工作日期的变化
       this.partInData.sDate = val;
-      if (this.partInData.eDate && this.partInData.sDate) {
-        this.partInData.workDate =
-          (new Date(this.partInData.eDate).getTime() -
-            new Date(this.partInData.sDate).getTime()) /
-          (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
-      }
+      this.getWorkDate();
     },
     eDateChange(val) {
       // 工作日期的变化
       this.partInData.eDate = val;
+      this.getWorkDate();
+    },
+    getWorkDate() {
       if (this.partInData.eDate && this.partInData.sDate) {
         this.partInData.workDate =
           (new Date(this.partInData.eDate).getTime() -
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
+        this.partInData.workDate = spliceWeekDay(this.partInData.sDate, this.partInData.workDate);
       }
     },
     sureSubmit(name) {

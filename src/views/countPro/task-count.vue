@@ -10,7 +10,7 @@
         <Button type='primary' @click="queryClick">查询</Button>
       </FormItem>
     </Form>
-    <Table class="task-table" :columns="columns10" :data="data9"></Table>
+    <Table class="task-table" :columns="taskColumns" :data="taskData"></Table>
     </Col>
   </Row>
 </div>
@@ -39,7 +39,7 @@ export default {
         createDateStart: '',
         createDateEnd: ''
       },
-      columns10: [{
+      taskColumns: [{
           type: 'expand',
           width: 50,
           render: (h, params) => {
@@ -76,7 +76,7 @@ export default {
           key: 'rate'
         }
       ],
-      data9: [
+      taskData: [
       ]
 
     }
@@ -92,7 +92,7 @@ export default {
       selectonTaskApi(this.formInline).then(res => {
         console.log(res.data)
         if (res.data.code === 200) {
-          this.data9=res.data.data;
+          this.taskData=res.data.data;
         }
       }).catch(error => {
         this.$Message.error('接口故障：/NewProReport/selectonTask')

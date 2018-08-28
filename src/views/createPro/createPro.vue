@@ -159,9 +159,6 @@ export default {
     };
   },
   computed: {
-    projectStateArray() {
-      return projectStateArray
-    },
     projectTypeArray() {
       return projectTypeArray
     }

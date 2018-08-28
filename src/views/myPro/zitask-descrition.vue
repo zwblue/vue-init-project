@@ -39,10 +39,9 @@
 
 <script>
 import {
-  getTaskState,
-  getProjectType,
   getDevlogType,
-  getHandlogType,getNoButtonProjectState
+  getHandlogType,
+  getNoButtonProjectState
 } from 'utils/common.js';
 import {
   updSubtaskhandleApi,
@@ -180,11 +179,16 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h(
-              'div', {
-                class: {
-                  error: params.row.subtaskState == 5
-                }
-              }, getTaskState(params.row.subtaskState,params.row.overdueDays)
+              'div',{
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.subtaskState,
+                    day: params.row.overdueDays,
+                    type: 'task'
+                  }
+                }]
+              }
             )
           }
         }, {
@@ -277,6 +281,7 @@ export default {
     openziTask(){
       this.$emit('getTaskListByProIdData');
       this.$emit('openziTask', this.zitaskDetails.subtaskId);
+      this.$emit('openProject', this.$route.params.id);
     },
     editClick(row) {
       this.model.editZitask = !this.model.editZitask;

@@ -4,9 +4,9 @@
     <h3 class="title">{{projectDetails.proName||''}}</h3>
     <div class="center">
       <div style='display:inline-block' v-if='operationProButton'>
-        <Button type='warning' v-if='!ifApprovalUrl&&projectDetails.proState==7' ghost @click="model.delay=!model.delay">延期申请</Button>
-        <Button type='warning' ghost v-if='projectDetails.proState==8&&!ifApprovalUrl' >延期申请中</Button>
-        <Button type='success'  ghost v-if='!ifApprovalUrl&&projectDetails.proState!=3' :disabled='projectDetails.proProgress!=100' @click="model.online=!model.online">上线审批</Button>
+        <Button type='warning' v-if='!ifApprovalUrl&&(projectDetails.proState==7||projectDetails.proState==2)' ghost @click="model.delay=!model.delay">延期申请</Button>
+        <Button type='warning' ghost v-if='projectDetails.proState==8&&!ifApprovalUrl'>延期申请中</Button>
+        <Button type='success' ghost v-if='!ifApprovalUrl&&projectDetails.proState!=3' :disabled='projectDetails.proProgress!=100' @click="model.online=!model.online">上线审批</Button>
         <Button type='success' ghost v-if='projectDetails.proState==3&&!ifApprovalUrl'>上线审批中</Button>
         <Button type='error' v-if='!ifApprovalUrl' ghost @click='giveUpPro'>作废项目</Button>
       </div>
@@ -27,7 +27,7 @@
       <TabPane label="操作日志" name="name2">
         <Table height='470' :columns="handColumns" :data="projectDetails.proLogRecords"></Table>
       </TabPane>
-      <Button :disabled='!ifHasButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
+      <Button :disabled='!ifHasButton||!operationProButton' type='primary' size='small' slot="extra" @click="model.updateZitask=!model.updateZitask">更新日志</Button>
     </Tabs>
   </div>
   <delay-model :projectDetails='projectDetails' @openProject='openProject' :model='model' v-if='model.delay'></delay-model>
@@ -37,7 +37,6 @@
 </template>
 <script>
 import {
-  getProjectState,
   getProjectType,
   getDevlogType,
   getHandlogType,
@@ -178,10 +177,15 @@ export default {
           render: (h, params) => {
             return h(
               'div', {
-                class: {
-                  error: params.row.proState == 7 || params.row.proState == 8
-                }
-              }, getProjectState(params.row.proState)
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.proState,
+                    day: params.row.overdueDays,
+                    type: 'pro'
+                  }
+                }]
+              }
             )
           }
         }, {
@@ -206,14 +210,14 @@ export default {
         {
           title: "预计上线时间",
           align: 'center',
-          key: "planSDate",
+          key: "planSDate"
         },
         {
           title: "预计下线时间",
           align: 'center',
           key: "planEDate",
           render: (h, params) => {
-            return h('div', params.row.planEDate || '--')
+            return h('div', params.row.proType == 1 ? '--' : params.row.planEDate)
           }
         },
         {
@@ -230,7 +234,7 @@ export default {
           key: "creater"
         },
       ],
-      ifApprovalUrl:false,
+      ifApprovalUrl: false,
       passParams: {
         proId: '',
         type: '1',

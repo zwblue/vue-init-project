@@ -10,16 +10,8 @@ export let projectStateArray = [
   { index: 8, name: "延期待审批" }
 ];
 
-// 根据项目状态得到name
-export function getProjectState(num) {
-  if (!num) return;
-  for (let val of projectStateArray) {
-    if (val.index == num) {
-      return val.name;
-    }
-  }
-}
-let  noButtonProjectStateArray = [
+// 得到没有任何操作的项目状态
+let noButtonProjectStateArray = [
   { index: 4, name: "完成" },
   { index: 5, name: "驳回" },
   { index: 6, name: "作废" },
@@ -34,16 +26,6 @@ export function getNoButtonProjectState(num) {
   return true
 }
 
-
-// 根据项目状态设置样式
-export function addClass(num) {
-  if (num == 7 || num == 8) {
-    return 'error'
-  } else {
-    return ''
-  }
-}
-
 // 任务，子任务状态
 export let taskStateArray = [
   { index: 1, name: "未开始" },
@@ -52,20 +34,6 @@ export let taskStateArray = [
   { index: 4, name: "完成" },
   { index: 5, name: "逾期" }
 ];
-// 根据任务，子任务状态得到name
-export function getTaskState(num,day=0) {
-  if (!num) return;
-  for (let val of taskStateArray) {
-    if (val.index == num) {
-      if(val.index===5){
-        return val.name+day+'天';
-      }else{
-        return val.name
-      }
-    }
-  }
-}
-
 
 // 产品类型
 export let projectTypeArray = [
@@ -106,16 +74,13 @@ export function getDevlogType(num) {
 // 操作日志类型
 export let handlogType = [
   { index: 1, name: "创建" },
-  { index: 2, name: "立项待审批" },
-  { index: 3, name: "提交上线" },
-  { index: 4, name: "上线审批（完成）" },
-  { index: 5, name: "驳回" },
-  { index: 6, name: "作废" },
-  { index: 7, name: "分配" },
-  { index: 8, name: "修改" },
-  { index: 9, name: "删除" },
-  { index: 10, name: "回复" },
-  { index: 11, name: "附件" },
+  { index: 2, name: "分配" },
+  { index: 3, name: "修改" },
+  { index: 4, name: "删除" },
+  { index: 5, name: "上线" },
+  { index: 6, name: "延期" },
+  { index: 7, name: "作废" },
+  { index: 8, name: "审批" }
 ]
 
 // 得到操作类型
@@ -128,18 +93,32 @@ export function getHandlogType(num) {
   }
 }
 
-
-export function spliceWeekDay(startTime,days){
-  console.log(startTime,days)
-  let sdate=new Date(startTime).getTime();
-  let count=0;
-  for(var i=0;i<days;i++){
-    let daytime=24*60*60*1000;
-     let day= new Date(sdate+(daytime*i)).getDay();
-     if(day===0||day===6){
-       count++;
-     } 
+// 工作时长去除周未双休
+export function spliceWeekDay(startTime, days) {
+  console.log(111, startTime, days)
+  let sdate = new Date(startTime).getTime();
+  let count = 0;
+  for (var i = 0; i < days; i++) {
+    let daytime = 24 * 60 * 60 * 1000;
+    let day = new Date(sdate + (daytime * i)).getDay();
+    if (day === 0 || day === 6) {
+      count++;
+    }
   }
-  console.log('多少个星期六，星期天',count)
-  return String(days-count);
+  console.log('多少个星期六，星期天', count)
+  let dayNum = days - count;
+  if (parseInt(dayNum) == dayNum) {
+    return String(dayNum)
+  } else {
+    let lastNum = dayNum - parseInt(dayNum)
+    let workDate = ((lastNum * 24) / 9);
+    if (lastNum <= 0.5) {
+      workDate = ((lastNum * 24) / 9);
+      return (parseInt(dayNum) + workDate).toFixed(1);
+    } else {
+      lastNum = 1 - (dayNum - parseInt(dayNum))
+      workDate = ((lastNum * 24) / 9);
+      return (Math.ceil(dayNum) - workDate).toFixed(1)
+    }
+  }
 }

@@ -6,10 +6,10 @@
         <query-dept :deptId.sync='partInData.squadId' v-if='ifLoadDept' :deptName.sync='partInData.SquadName' :deptArray='deptArray'></query-dept>
       </FormItem>
       <FormItem prop="sdate" label="开始时间：">
-        <DatePicker type="datetime" :value='partInData.sdate' :options="addStartPartOptions" @on-change="sdateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
+        <date-time selectType='start' :value='partInData.sdate'  :maxTime='applyData.planSDate' :options="addStartPartOptions" @changeDate='sdateChange'></date-time>
       </FormItem>
       <FormItem prop="edate" label="结束时间：">
-        <DatePicker type="datetime" :options="addEtartPartOptions" :value='partInData.edate' :disabled="edateshow" @on-change="edateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
+        <date-time selectType='end' :value='partInData.edate'  :minTime='partInData.sdate' :maxTime='applyData.planSDate'   :options="addEtartPartOptions" @changeDate='edateChange' :eDateshow='edateshow'></date-time>
       </FormItem>
       <FormItem label="总工时(天)：" prop="workDate">
         <Input v-model="partInData.workDate" disabled style='width:50px'></Input>
@@ -23,8 +23,11 @@
 </div>
 </template>
 <script>
+import dateTime from 'components/dateTime/dateTime.vue'
 import QueryDept from 'components/queryDept/queryDept.vue'
-import {spliceWeekDay} from 'utils/common.js'
+import {
+  spliceWeekDay,
+} from 'utils/common.js'
 import {
   Input,
   Cascader,
@@ -68,16 +71,19 @@ export default {
     Modal,
     Form,
     FormItem,
-    DatePicker
+    DatePicker,dateTime
   },
   computed: {
     edateshow() {
       return this.partInData.sdate ? false : true;
-    }
+    },
+    timeStepArray() {
+      return timeSteps
+    },
   },
   data() {
     return {
-      ifLoadDept:false,
+      ifLoadDept: false,
       deptArray: {
         array: []
       },
@@ -139,7 +145,7 @@ export default {
   },
   mounted() {
     this.initData();
-    this.ifLoadDept=true;
+    this.ifLoadDept = true;
   },
   methods: {
     initData() {
@@ -150,7 +156,7 @@ export default {
         this.partInData.edate = this.groupData[this.editIndex].edate
         this.partInData.workDate = this.groupData[this.editIndex].workDate
       }
-      
+      this.getWorkDate();
     },
     submitClick(name) {
       this.$refs[name].validate(valid => {
@@ -159,8 +165,8 @@ export default {
             this.$Message.error("开始时间不能与结束时间相同");
             return;
           }
-          if (this.editIndex || this.editIndex === 0) {  
-            this.groupData.splice(this.editIndex,1,this.partInData);
+          if (this.editIndex || this.editIndex === 0) {
+            this.groupData.splice(this.editIndex, 1, this.partInData);
           } else {
             this.groupData.push(this.partInData);
           }
@@ -173,29 +179,25 @@ export default {
     cancel(name) {
       this.$refs[name].resetFields();
     },
-    sdateChange(val) {
-      // 工作日期的变化
-      this.partInData.sdate = val;
+    getWorkDate() {
+      console.log(11111)
       if (this.partInData.edate && this.partInData.sdate) {
         this.partInData.workDate =
           (new Date(this.partInData.edate).getTime() -
             new Date(this.partInData.sdate).getTime()) /
           (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sdate, this.partInData.workDate)
+        this.partInData.workDate = spliceWeekDay(this.partInData.sdate, this.partInData.workDate)
       }
+    },
+    sdateChange(val) {
+      // 工作日期的变化
+      this.partInData.sdate = val;
+      this.getWorkDate();
     },
     edateChange(val) {
       // 工作日期的变化
       this.partInData.edate = val;
-      if (this.partInData.edate && this.partInData.sdate) {
-        this.partInData.workDate =
-          (new Date(this.partInData.edate).getTime() -
-            new Date(this.partInData.sdate).getTime()) /
-          (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sdate, this.partInData.workDate)
-      }
+      this.getWorkDate();
     },
     replayUploadBefore() {
       this.formValidate.fileName = "";

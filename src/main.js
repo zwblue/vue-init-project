@@ -4,7 +4,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
+import directive from './directive/directive'
+// 局部引入iview
 import { Button, Message, Row, Col ,Table,Icon,Modal,Input} from 'iview'
+
 import 'iview/dist/styles/iview.css'
 import "./index.css";
 Vue.component('Button', Button);
@@ -21,6 +24,7 @@ Vue.prototype.$Modal = Modal
 Vue.config.productionTip = false
 Vue.prototype.$IVIEW = {}//size报错的处理
 
+// router的处理
 router.beforeEach(
   (to, from, next) => {
     if (to.query.token) {
@@ -41,6 +45,7 @@ router.beforeEach(
     }
   }
 )
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

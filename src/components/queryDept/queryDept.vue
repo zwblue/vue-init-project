@@ -50,14 +50,11 @@ export default {
   },
   methods: {
     getAllParentDept(deptId, array) {
-      console.log(deptId,array)
       const newArray = array.concat();
       let parentsArray = [];
       function plan(id,deptarray) {
         for (let val of deptarray) {
-          console.log(val.id)
           if (val.id === Number(id)) {
-             console.log(888,val.department)
              parentsArray.unshift({id:val.id,'dept':val.department,'parentId':val._parentId});
              if(val._parentId>0){
                plan(val._parentId,newArray)

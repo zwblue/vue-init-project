@@ -7,15 +7,15 @@
         <div class="pro-title between" @click="openProject(proDetails.proId)">
           <div class="title" :style='activeId==proDetails.proId?{color:"#2d8cf0"}:null'>{{proDetails.proName||''}}</div>
           <div style='min-width:200px;'>
-            <pro-gress :currentProgress='Number(proDetails.proProgress||0)' :planProgress='Number(proDetails.theoryProProgress||0)'></pro-gress>
+            <pro-gress :currentProgress='proDetails.proProgress||0' :planProgress='proDetails.theoryProProgress||0'></pro-gress>
           </div>
         </div>
         <div class="pro-time between">
           <div class="time">{{proDetails.planSDate||''}}</div>
-          <div class="pro-state"><span :class="addClass(proDetails.proState)">{{getProjectState(proDetails.proState)}}</span></div>
+          <div class="pro-state"><span v-state='{state:proDetails.proState,day:proDetails.overdueDays,type:"pro"}'></span></div>
         </div>
       </div>
-      <Button icon='md-add' type='primary' :disabled='!ifHasButton&&operationProButton' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
+      <Button icon='md-add' type='primary' :disabled='!isHasButton||!operationProButton' long @click="model.applydept=!model.applydept"> 添加参与部门</Button>
       <Collapse v-model="openPanelIndex" accordion class="pro-details-panel" @on-change='openPanel'>
         <Panel :name="String(index)" v-for='(task,index) in taskList' :key='index' >
           <div class="task-intr" @click.stop="openTask(task.taskId)">
@@ -27,7 +27,7 @@
             </div>
             <div class="pro-time between">
               <div class="time">{{task.sDate}} - {{task.eDate}} </div>
-              <div class="pro-state">{{getTaskState(task.taskState,task.overdueDays)}}</div>
+              <div class="pro-state" v-state='{state:task.taskState,day:task.overdueDays,type:"task"}'></div>
             </div>
           </div>
           <div slot="content">
@@ -41,7 +41,7 @@
               </div>
               <div class="pro-time between">
                 <div class="time">{{subtask.sDate}} - {{subtask.eDate}}</div>
-                <div class="pro-state">{{getTaskState(subtask.subtaskState,subtask.overdueDays)}}</div>
+                <div class="pro-state" v-state='{state:subtask.subtaskState,day:subtask.overdueDays,type:"zitask"}'></div>
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@
             <zitask-descrition v-show='detailsType==3' @openProject='openProject' :deptId='taskDetails.squadId' @openziTask='openziTask' :zitaskDetails='zitaskDetails' v-if='zitaskDetails.subtaskId' @getTaskListByProIdData='getTaskListByProIdData' :proName='proDetails.proName'></zitask-descrition>
           </TabPane>
           <TabPane label="甘特图" name="name2">
-            <pro-ganteTable :activeSubTaskList='activeSubTaskList' :activeOpenPanpelIndex='activeOpenPanpelIndex'></pro-ganteTable>
+            <pro-ganteTable ref='gante' :activeSubTaskList='activeSubTaskList' :activeOpenPanpelIndex='activeOpenPanpelIndex'></pro-ganteTable>
           </TabPane>
         </Tabs>
       </div>
@@ -88,11 +88,7 @@ import {
   getLogDetailInfoApi,
   getTaskListByProIdApi,getHandlerPowerByProAndTaskApi
 } from 'api/myproject.js'
-
 import {
-  getProjectState,
-  addClass,
-  getTaskState,
   getNoButtonProjectState
 } from 'utils/common.js'
 export default {
@@ -113,6 +109,7 @@ export default {
     return {
       activeSubTaskList:[],
       // 项目基本信息
+      // 操作权限
       operationProButton:true,
       activeTaskId: '',
       activeOpenPanpelIndex:-1,
@@ -141,7 +138,8 @@ export default {
         return '子任务详情'
       }
     },
-    ifHasButton() {
+    //有权限的返回true，没有的返回false
+    isHasButton() {
       return getNoButtonProjectState(this.$route.query.proState)
     }
   },
@@ -164,6 +162,7 @@ export default {
         res=>{
           if(res.data.code===200){
             this.operationProButton=res.data.data;
+            console.log('项目的操作权限',this.operationProButton)
           }
         }
       ).catch(error=>{
@@ -201,9 +200,7 @@ export default {
         type: this.detailsType
       });
     },
-    getTaskState(state,days) {
-      return getTaskState(state,days)
-    },
+   
     getTaskListByProIdData() {
       getTaskListByProIdApi({
         proId: Number(this.$route.params.id),
@@ -212,6 +209,7 @@ export default {
           console.log('tasklist', res.data);
           if (res.data.code === 200) {
             this.taskList = res.data.data.taskList;
+            this.$refs.gante.getGTChartByProList();
           } else {
             this.$Message.error('/getTaskListByProId接口：' + res.data.msg)
           }
@@ -245,12 +243,6 @@ export default {
         this.$Message.error('网络故障（/getLogDetailInfo）')
       })
     },
-    getProjectState(num) {
-      return getProjectState(num);
-    },
-    addClass(num) {
-      return addClass(num);
-    }
   }
 };
 </script>

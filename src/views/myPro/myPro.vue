@@ -1,65 +1,82 @@
 <template>
-  <div class="page">
-    <Form ref="formInline" :model="formInline" inline :label-width='100'>
-      <FormItem  label="项目发起方">
-        <Input type="text" v-model="formInline.originator" placeholder="请输入人名或部门名">
-        </Input>
-      </FormItem>
-      <FormItem  label="项目发起时间">
-        <DatePicker type="daterange" placement="bottom-end" @on-change='selectTime' split-panels placeholder="请选择时间" style="width: 200px"></DatePicker>
-      </FormItem>
-      <FormItem label="项目类型">
-        <Select v-model="formInline.proType" style="width: 150px">
+<div class="page">
+  <Form ref="formInline" :model="formInline" inline :label-width='100'>
+    <FormItem label="项目发起方">
+      <Input type="text" v-model="formInline.originator" placeholder="请输入人名或部门名">
+      </Input>
+    </FormItem>
+    <FormItem label="项目发起时间">
+      <DatePicker type="daterange" placement="bottom-end" @on-change='selectTime' split-panels placeholder="请选择时间" style="width: 200px"></DatePicker>
+    </FormItem>
+    <FormItem label="项目类型">
+      <Select v-model="formInline.proType" style="width: 150px">
           <Option v-for='item in projectTypeArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
-      </FormItem>
-      <FormItem label="项目状态">
-        <Select v-model="formInline.proState" style="width: 150px">
+    </FormItem>
+    <FormItem label="项目状态">
+      <Select v-model="formInline.proState" style="width: 150px">
           <Option v-for='item in projectStateArray' :key='item.index' :value="item.index">{{item.name}}</Option>
         </Select>
-      </FormItem>
-      <FormItem label="项目名称">
-        <Input type="text" v-model="formInline.proName" placeholder="请输入项目名称">
-        </Input>
-      </FormItem>
-      <FormItem>
-        <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
-      </FormItem>
-    </Form>
-    <Table border class="my-table" :columns="prjectColumns" size='default' @on-row-click='gotoDetails' :data="projectList">
-    </Table>
-      <Alert :style='{margin:"10px 0"}'>
-          <div class="wxtip wx-tip">温馨提示：
-           <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务
-          </div>
-      </Alert>
-    <div class="clearfix">
-      <Page class="rt" :current='page.current' :pageSize='page.pageSize'  :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize'  show-total  transfer/>
+    </FormItem>
+    <FormItem label="项目名称">
+      <Input type="text" v-model="formInline.proName" placeholder="请输入项目名称">
+      </Input>
+    </FormItem>
+    <FormItem>
+      <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
+    </FormItem>
+  </Form>
+  <Table border class="my-table" :columns="prjectColumns" size='default' @on-row-click='gotoDetails' :data="projectList">
+  </Table>
+  <Alert :style='{margin:"10px 0"}'>
+    <div class="wxtip wx-tip">温馨提示：
+      <Icon type="md-bookmark" class="icon warning" />表示该项目暂未分配子任务
     </div>
+  </Alert>
+  <div class="clearfix">
+    <Page class="rt" :current='page.current' :pageSize='page.pageSize' :total="page.total" show-sizer @on-change='changeCurrent' @on-page-size-change='changePageSize' show-total transfer/>
   </div>
+</div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
-import {getProjectState,projectStateArray,projectTypeArray} from 'utils/common.js';
-import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page,Alert } from 'iview';
-import {getAllMyProjectListApi} from 'api/myproject'
+import {
+  projectStateArray,
+  projectTypeArray
+} from 'utils/common.js';
+import {
+  FormItem,
+  Form,
+  Select,
+  Option,
+  Input,
+  DatePicker,
+  Icon,
+  Page,
+  Alert
+} from 'iview';
+import {
+  getAllMyProjectListApi
+} from 'api/myproject'
 export default {
   components: {
     FormItem,
-    Form,Page,
+    Form,
+    Page,
     Select,
     Option,
     Input,
     DatePicker,
     Icon,
-    ProGress,Alert
+    ProGress,
+    Alert
   },
   data() {
     return {
-      page:{
-        current:1,
-        pageSize:10,
-        page:1
+      page: {
+        current: 1,
+        pageSize: 10,
+        page: 1
       },
       formInline: {
         originator: "",
@@ -68,18 +85,17 @@ export default {
         createDateEnd: "",
         proState: "",
         proType: "",
-        current:1,
-        pageSize:10
+        current: 1,
+        pageSize: 10
       },
-      prjectColumns: [
-        {
+      prjectColumns: [{
           title: "项目名称",
           align: "center",
           render: (h, params) => {
             return h("div", [
               h("Icon", {
                 props: {
-                  type: params.row.overdueDays===null ? "md-bookmark" : "" 
+                  type: params.row.isAllotSubtask === false ? "md-bookmark" : ""
                 },
                 style: {
                   marginRight: "10px",
@@ -87,12 +103,11 @@ export default {
                 },
                 class: {
                   warning: true,
-                  warningIcon: true
+                    warningIcon: true
                 }
               }),
               h(
-                "span",
-                {
+                "span", {
                   class: {
                     primary: true
                   }
@@ -112,21 +127,24 @@ export default {
           align: "center",
           render: (h, params) => {
             return h(
-              "div",
-              {
-                class: {
-                  error: params.row.proState == 7||params.row.proState == 8
-                }
-              },
-              getProjectState(params.row.proState)
+              "div", {
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.proState,
+                    day: params.row.overdueDays,
+                    type: 'pro'
+                  }
+                }]
+              }
             );
           }
         },
         {
           title: "任务数进度",
           align: "center",
-          render:function(h,params){
-            return h('div',{},params.row.finishTaskNum+' / '+params.row.allTaskNum)
+          render: function(h, params) {
+            return h('div', {}, params.row.finishTaskNum + ' / ' + params.row.allTaskNum)
           }
         },
         {
@@ -149,37 +167,36 @@ export default {
           key: "creater"
         }
       ],
-      projectList: [
-      ]
+      projectList: []
     };
   },
-  computed:{
-    projectStateArray(){
+  computed: {
+    projectStateArray() {
       return projectStateArray
     },
-    projectTypeArray(){
+    projectTypeArray() {
       return projectTypeArray
     }
   },
-  mounted(){
+  mounted() {
     this.getAllMyProjectListData();
   },
   methods: {
-    gotoDetails(row){
+    gotoDetails(row) {
       console.log(row);
-      this.$router.push('proDetails/'+row.proId)
+      this.$router.push('proDetails/' + row.proId)
     },
-    getAllMyProjectListData(){
-      getAllMyProjectListApi(this.formInline).then(res=>{
+    getAllMyProjectListData() {
+      getAllMyProjectListApi(this.formInline).then(res => {
         console.log(res);
-        if(res.data.code===200){
-          this.projectList=res.data.data;
-          this.page=res.data.page;
-        }else{
+        if (res.data.code === 200) {
+          this.projectList = res.data.data;
+          this.page = res.data.page;
+        } else {
           this.$Message.error(res.data.msg);
         }
       }).catch(
-        error=>{
+        error => {
           this.$Message.error('接口故障（/getAllMyProjectList）')
         }
       )
@@ -192,12 +209,12 @@ export default {
       console.log(this.formInline)
       this.getAllMyProjectListData();
     },
-    changeCurrent(current){
-      this.formInline.current=current;
+    changeCurrent(current) {
+      this.formInline.current = current;
       this.getAllMyProjectListData();
     },
-    changePageSize(pageSize){
-      this.formInline.pageSize=pageSize;
+    changePageSize(pageSize) {
+      this.formInline.pageSize = pageSize;
       this.getAllMyProjectListData();
     },
   }
@@ -208,9 +225,11 @@ export default {
 .page {
   padding: 10px 0;
 }
+
 .wx-tip {
   font-size: 14px;
 }
+
 .icon {
   font-size: 18px;
   margin: 0 2px;

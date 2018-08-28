@@ -6,10 +6,10 @@
         <query-dept :deptId.sync='partInData.squadId'></query-dept>
       </FormItem>
       <FormItem prop="sDate" label="开始时间：">
-        <DatePicker type="datetime" :options="addStartPartOptions" @on-change="sDateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
+        <date-time selectType='start' :value='partInData.sdate' :maxTime='proDetails.planSDate' :options="addStartPartOptions" @changeDate='sDateChange'></date-time>
       </FormItem>
       <FormItem prop="eDate" label="结束时间：">
-        <DatePicker type="datetime" :options="addEtartPartOptions" :disabled="eDateshow" @on-change="eDateChange" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
+        <date-time selectType='end' :value='partInData.edate' :minTime='partInData.sdate' :maxTime='proDetails.planSDate' :options="addEtartPartOptions" @changeDate='eDateChange' :eDateshow='eDateshow'></date-time>
       </FormItem>
       <FormItem label="总工时(天)：" prop="workDate">
         <Input v-model="partInData.workDate" disabled style='width:50px'></Input>
@@ -23,18 +23,20 @@
 </div>
 </template>
 <script>
+import DateTime from 'components/dateTime/dateTime.vue'
 import QueryDept from 'components/queryDept/queryDept.vue'
 import {
   newGroupHandleApi
 } from 'api/myproject.js'
-import {spliceWeekDay} from 'utils/common.js'
+import {
+  spliceWeekDay,
+} from 'utils/common.js'
 import {
   Input,
   Cascader,
   Modal,
   Form,
-  FormItem,
-  DatePicker
+  FormItem
 } from 'iview';
 export default {
   name: "ApplyDept",
@@ -61,9 +63,12 @@ export default {
     Modal,
     Form,
     FormItem,
-    DatePicker
+    DateTime
   },
   computed: {
+    timeStepArray() {
+      return timeSteps
+    },
     eDateshow() {
       return this.partInData.sDate ? false : true;
     }
@@ -118,7 +123,7 @@ export default {
               date.valueOf() < Date.now() - 86400000
             );
           } else {
-            sDate = new Date(this.proDetails.plansDate);
+            sDate = new Date(this.proDetails.planSDate);
             return (
               (date && date.valueOf() > sDate.getTime() - 1) ||
               date.valueOf() < Date.now() - 86400000
@@ -129,23 +134,26 @@ export default {
       addEtartPartOptions: {
         disabledDate: date => {
           const partsDate = new Date(this.partInData.sDate);
-          const plansDate = new Date(this.proDetails.plansDate);
+          const plansDate = new Date(this.proDetails.planSDate);
           const delaydate = new Date(this.proDetails.delayDate);
-          if (delaydate) {
+          if (this.proDetails.delayDate) {
             return (
               (date && date.valueOf() < partsDate.getTime() - 86399999) ||
               date && date.valueOf() > delaydate.getTime() - 1
             );
           } else {
-            (date && date.valueOf() < partsDate.getTime() - 86399999) ||
-            (date && date.valueOf() > plansDate.getTime() - 1)
+            return ( 
+              (date && date.valueOf() < partsDate.getTime() - 86399999) ||
+            (date && date.valueOf() > plansDate.getTime() - 1))
           }
         }
       }
     };
   },
 
-  mounted() {},
+  mounted() {
+    this.getWordDate();
+  },
   methods: {
     submitClick(name) {
       this.$refs[name].validate(valid => {
@@ -176,30 +184,24 @@ export default {
       this.model.applydept = false;
       this.$refs[name].resetFields();
     },
-    sDateChange(val) {
-      // 工作日期的变化
-      this.partInData.sDate = val;
-
+    getWordDate() {
       if (this.partInData.eDate && this.partInData.sDate) {
         this.partInData.workDate =
           (new Date(this.partInData.eDate).getTime() -
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
+        this.partInData.workDate = spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
       }
+    },
+    sDateChange(val) {
+      // 工作日期的变化
+      this.partInData.sDate = val;
+      this.getWordDate();
     },
     eDateChange(val) {
       // 工作日期的变化
       this.partInData.eDate = val;
-      if (this.partInData.eDate && this.partInData.sDate) {
-        this.partInData.workDate =
-          (new Date(this.partInData.eDate).getTime() -
-            new Date(this.partInData.sDate).getTime()) /
-          (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
-      }
+      this.getWordDate();
     }
   }
 };

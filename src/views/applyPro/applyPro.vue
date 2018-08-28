@@ -5,7 +5,7 @@
       <Col span="24">
       <div class="primary apply-title">基本信息</div>
       <FormItem label="项目名称" prop="proName">
-        <Input v-model="formValidate.proName" placeholder="请输入项目名称（最多50字）"></Input>
+        <Input v-model="formValidate.proName" :maxlength="50" placeholder="请输入项目名称（最多50字）"></Input>
       </FormItem>
       <FormItem label="项目类型" prop="proType">
         <RadioGroup v-model="formValidate.proType">
@@ -14,10 +14,10 @@
         </RadioGroup>
       </FormItem>
       <FormItem label="上线时间" prop="planSDate">
-        <DatePicker type="datetime" placeholder="选择上线时间" :options="sdateOptions" @on-change='changeSdate'></DatePicker>
+        <date-time selectType='end'   :options="sdateOptions" :value='formValidate.planSDate' @changeDate='changeSdate'></date-time>
       </FormItem>
       <FormItem label="下线时间" prop="planEDate" v-show='ifActivity'>
-        <DatePicker type="datetime" placeholder="选择下线时间" @on-change='changeEdate' :options="edateOptions"></DatePicker>
+        <date-time selectType='end' :minTime='formValidate.planSDate'  :options="edateOptions" :value='formValidate.planEDate' @changeDate='changeEdate' :eDateshow='eDateshow'></date-time>
       </FormItem>
       <FormItem label="项目概况" prop="proDeclare">
         <Input v-model="formValidate.proDeclare" type="textarea" :autosize="{minRows: 3,maxRows: 5}" placeholder="请输入项目概况"></Input>
@@ -40,7 +40,7 @@
       </Col>
     </Row>
   </Form>
-  <apply-dept v-if='model.applydept'  :applyData='formValidate' :model='model' :editIndex='activeIndex' :groupData='deptGroupList'></apply-dept>
+  <apply-dept v-if='model.applydept' :applyData='formValidate' :model='model' :editIndex='activeIndex' :groupData='deptGroupList'></apply-dept>
 </div>
 </template>
 <script>
@@ -50,14 +50,13 @@ import {
 import {
   newApplyProjectApi
 } from 'api/myproject.js'
-
 import ApplyDept from './model/applyDept.vue'
+import DateTime from 'components/dateTime/dateTime.vue'
 import {
   FormItem,
   Form,
   Radio,
   Input,
-  DatePicker,
   RadioGroup,
   Card,
   Upload
@@ -68,13 +67,19 @@ export default {
     Form,
     Radio,
     Input,
-    DatePicker,
     RadioGroup,
     Card,
     Upload,
-    ApplyDept
+    ApplyDept,DateTime
   },
   computed: {
+    // 结束时间是否显示
+    eDateshow() {
+      return this.formValidate.planSDate ? false : true;
+    },
+    timeStepArray() {
+      return timeSteps
+    },
     uploadUrl() {
       return getUploadUrl();
     },
@@ -89,6 +94,12 @@ export default {
       } else {
         return this.formValidate.planSDate && this.formValidate.planEDate ? false : true
       }
+    }
+  },
+  watch:{
+    'formValidate.proType'(newval,val){
+      newval==1?this.formValidate.planEDate='':null;
+      console.log(newval,this.formValidate.planEDate)
     }
   },
   data() {
@@ -117,7 +128,7 @@ export default {
         proDeclare: "",
         myDomain: []
       },
-      activeIndex:'',
+      activeIndex: '',
       deptGroupList: [],
       columns1: [{
           title: "部门名称",
@@ -149,10 +160,10 @@ export default {
                   props: {
                     type: "primary",
                     size: "small"
-                  }, 
+                  },
                   on: {
                     click: () => {
-                     this.editJoinDept(params.row)
+                      this.editJoinDept(params.row)
                     }
                   }
                 },
@@ -205,14 +216,16 @@ export default {
       }
     }
   },
+  mounted() {
+  },
   methods: {
-    editJoinDept(row){
-      this.activeIndex=row._index;
-      this.model.applydept=!this.model.applydept;
+    editJoinDept(row) {
+      this.activeIndex = row._index;
+      this.model.applydept = !this.model.applydept;
     },
-    applyDeptJoin(){
-      this.activeIndex='';
-      this.model.applydept=!this.model.applydept
+    applyDeptJoin() {
+      this.activeIndex = '';
+      this.model.applydept = !this.model.applydept
     },
     changeSdate(val) {
       this.formValidate.planSDate = val;

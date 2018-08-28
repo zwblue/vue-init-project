@@ -180,8 +180,8 @@ export default {
         accomplishData:[] 
       },
       procountParams: {
-        createDate1: '',
-        createDate2:''
+        createDateStart: '',
+        createDateEnd:''
       }
     }
   },
@@ -259,8 +259,8 @@ export default {
       })
     },
     selectTime(time) {
-      this.procountParams.createDate1 = time[0];
-      this.procountParams.createDate2 = time[1];
+      this.procountParams.createDateStart = time[0];
+      this.procountParams.createDateEnd = time[1];
     },
   }
 }

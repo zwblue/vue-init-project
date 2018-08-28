@@ -1,12 +1,14 @@
 <template>
 <div>
-    <Table :loading="loading" border class="my-table" :columns="columns1" size='default' :data="dataList">
-    </Table>
+  <Table :loading="loading" border class="my-table" :columns="columns1" size='default' :data="dataList">
+  </Table>
 </div>
 </template>
 <script>
 import ProGress from 'components/proGress/proGress'
-import {getProjectType,getProjectState} from 'utils/common.js'
+import {
+  getProjectType
+} from 'utils/common.js'
 import {
   Table,
   Icon
@@ -17,16 +19,16 @@ export default {
     Icon,
     ProGress
   },
-   props:{
-    dataList:{
-      type:Array,
-      default:function(){
+  props: {
+    dataList: {
+      type: Array,
+      default: function() {
         return []
       }
     },
-    loading:{
-      type:Boolean,
-      default:false
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -37,19 +39,26 @@ export default {
           render: (h, params) => {
             return h(
               'div', [h('Icon', {
-                 props: {
-                  type: params.row.isAllotSubtask===null ? "md-bookmark" : "" 
+                props: {
+                  type: params.row.isAllotSubtask === false ? "md-bookmark" : ""
                 },
                 style: {
                   marginRight: '10px',
                   fontSize: '18px',
                 },
+
                 'class': {
                   warning: true,
                   warningIcon: true
                 }
               }), h('span', {
+                on: {
+                  click: () => {
+                    this.$router.push('/proDetails/' + params.row.proId)
+                  }
+                },
                 'class': {
+                  pointer: true,
                   primary: true
                 }
               }, params.row.proName)])
@@ -81,10 +90,15 @@ export default {
           render: (h, params) => {
             return h(
               'div', {
-                'class': {
-                  error: params.row.proState ==7 || params.row.proState ==8
-                }
-              }, getProjectState(params.row.proState)
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.proState,
+                    day: params.row.overdueDays,
+                    type: 'pro'
+                  }
+                }]
+              }
             )
           }
         },
@@ -105,8 +119,7 @@ export default {
       ]
     };
   },
-  methods: {
-  }
+  methods: {}
 };
 </script>
 <style>
@@ -118,5 +131,4 @@ export default {
 </style>
 <style lang="scss" scoped>
 .page {}
-
 </style>

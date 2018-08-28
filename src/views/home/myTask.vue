@@ -14,9 +14,6 @@ import {
   Icon,
   Divider
 } from 'iview';
-import {
-  getTaskState
-} from 'utils/common.js'
 export default {
   components: {
     Table,
@@ -50,7 +47,12 @@ export default {
             return h(
               "div", {
                 class: {
-                  primary: true
+                  primary: true,
+                  pointer:true
+                }, on: {
+                  click: () => {
+                    this.$router.push('/proDetails/' + params.row.proId)
+                  }
                 }
               },
               params.row.subtaskName
@@ -83,12 +85,16 @@ export default {
           align: "center",
           render: (h, params) => {
             return h(
-              "div", {
-                class: {
-                  error: params.row.subtaskState == 5
-                }
-              },
-              getTaskState(params.row.subtaskState,params.row.overdueDays)
+              "div",  {
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.subtaskState,
+                    day: params.row.overdueDays,
+                    type: 'zitask'
+                  }
+                }]
+              }
             );
           }
         },

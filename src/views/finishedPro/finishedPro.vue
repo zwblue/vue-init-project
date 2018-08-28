@@ -30,7 +30,7 @@
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
-import {getProjectState,projectTypeArray,getProjectType} from 'utils/common.js';
+import {projectTypeArray,getProjectType} from 'utils/common.js';
 import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page } from 'iview';
 import {newSelectFinProApi} from 'api/myproject'
 export default {
@@ -98,11 +98,15 @@ export default {
             return h(
               "div",
               {
-                class: {
-                  error: params.row.proState == 7||params.row.proState == 8
-                }
-              },
-              getProjectState(params.row.proState)
+                directives: [{
+                  name: 'state',
+                  value: {
+                    state: params.row.proState,
+                    day: params.row.overdueDays,
+                    type: 'pro'
+                  }
+                }]
+              }
             );
           }
         },

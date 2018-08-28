@@ -13,12 +13,11 @@
           <Button type='success' size='small'>已完成</Button>
           <Button type="error" size='small'>逾期</Button>
           <Button class="gray-bg" style='color:#fff' size='small'>未开始</Button>
-          <Button type='warning' size='small'>其他</Button>
         </div>
     </div>
     <gante-table :activeSubTaskList='myAllTaskList' v-if='myAllTaskList.length!==0'></gante-table>
     <Divider class="title"> 全部任务
-      <span class="error">（共6个）</span>
+      <span class="error">（共{{myAllTaskList.length}}个）</span>
     </Divider>
     <member-allTask :dataList='myAllTaskList' @getAllSubtaskInfoByMenmberList='getAllSubtaskInfoByMenmberList'></member-allTask>
   </div>

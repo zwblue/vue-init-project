@@ -11,10 +11,10 @@
           </Select>
       </FormItem>
       <FormItem prop="sDate" label="开始时间：">
-        <DatePicker type="datetime" :value="partInData.sDate" @on-change="sDateChange" :options="ziTaskdateStartOptions" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择开始时间"></DatePicker>
+        <date-time selectType='start'  :maxTime='taskDetails.eDate' :minTime='taskDetails.sDate'  :value='partInData.sDate' :options="ziTaskdateStartOptions" @changeDate='sDateChange'></date-time>
       </FormItem>
       <FormItem prop="eDate" label="结束时间：">
-        <DatePicker type="datetime" :value="partInData.eDate" @on-change="eDateChange" :options="ziTaskdateEndOptions" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择结束时间"></DatePicker>
+        <date-time selectType='end'  :maxTime='taskDetails.eDate' :minTime='partInData.sDate'  :value='partInData.eDate' :options="ziTaskdateEndOptions" @changeDate='eDateChange' :eDateshow='edateshow'></date-time>
       </FormItem>
       <FormItem label="总工时(天)：" prop="workDate">
         <Input v-model="partInData.workDate" disabled style='width:50px'></Input>
@@ -33,7 +33,10 @@ import {
   updSubtaskhandleApi,
   getMembersBySquadId
 } from 'api/myproject.js'
-import {spliceWeekDay} from 'utils/common.js'
+import dateTime from 'components/dateTime/dateTime.vue'
+import {
+  spliceWeekDay
+} from 'utils/common.js'
 import {
   Input,
   Select,
@@ -51,10 +54,24 @@ export default {
     Modal,
     Form,
     FormItem,
-    DatePicker
+    dateTime
+  },
+  computed: {
+    timeStepArray() {
+      return timeSteps
+    },
+    edateshow() {
+      return this.partInData.sDate ? false : true;
+    }
   },
   props: {
     zitaskDetails: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    taskDetails: {
       type: Object,
       default: () => {
         return {};
@@ -110,22 +127,25 @@ export default {
           trigger: "change"
         }]
       },
-      ziTaskdateStartOptions: {
+       ziTaskdateStartOptions: {
         disabledDate: date => {
-          const sDate = new Date(this.zitaskDetails.plansDate);
+          const sDate = new Date(this.taskDetails.sDate);
+          const eDate = new Date(this.taskDetails.eDate);
+          console.log(this.taskDetails.sDate, this.taskDetails.eDate)
           return (
-            (date && date.valueOf() > sDate.getTime() - 1) ||
-            date.valueOf() < Date.now() - 86400000
+            (date && date.valueOf() < sDate.getTime() - 86399999) || (date.valueOf() > eDate.getTime() - 1)
+            // ||date.valueOf() < Date.now() - 86400000
           );
         }
       },
       ziTaskdateEndOptions: {
         disabledDate: date => {
           const partsDate = new Date(this.partInData.sDate);
-          const plansDate = new Date(this.zitaskDetails.plansDate);
+          const eDate = new Date(this.taskDetails.eDate);
           return (
             (date && date.valueOf() < partsDate.getTime() - 86399999) ||
-            (date && date.valueOf() > plansDate.getTime() - 1)
+            (date && date.valueOf() > eDate.getTime() - 1)
+            // ||date.valueOf() < Date.now() - 86400000
           );
         }
       }
@@ -144,8 +164,7 @@ export default {
           (new Date(this.partInData.eDate).getTime() -
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
+        this.partInData.workDate = spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
       }
     },
     eDateChange(val) {
@@ -156,8 +175,7 @@ export default {
           (new Date(this.partInData.eDate).getTime() -
             new Date(this.partInData.sDate).getTime()) /
           (24 * 60 * 60 * 1000);
-        this.partInData.workDate = this.partInData.workDate.toFixed(1);
-        this.partInData.workDate= spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
+        this.partInData.workDate = spliceWeekDay(this.partInData.sDate, this.partInData.workDate)
       }
     },
     sureSubmit(name) {
@@ -168,14 +186,14 @@ export default {
               if (res.data.code === 200) {
                 this.$Message.success(res.data.msg)
                 this.$emit('resetAllZitaskList')
-                this.model.editZitask=!this.model.editZitask;
+                this.model.editZitask = !this.model.editZitask;
               }
             }
           ).catch(error => {
             this.$Message.error('接口故障：/updSubtaskhandle')
           })
-        }else{
-            this.$Message.error('表单验证失败')
+        } else {
+          this.$Message.error('表单验证失败')
         }
       })
     },
@@ -185,7 +203,7 @@ export default {
     },
     initZiProjectUserData() {
       this.partInData.subtaskId = this.zitaskDetails.subtaskId;
-      this.partInData.handler = this.zitaskDetails.handler;
+      this.partInData.handler = this.zitaskDetails.subtaskHandler;
       this.partInData.subtaskName = this.zitaskDetails.subtaskName;
       this.partInData.sDate = this.zitaskDetails.sDate;
       this.partInData.eDate = this.zitaskDetails.eDate;

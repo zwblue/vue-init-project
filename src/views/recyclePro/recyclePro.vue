@@ -35,7 +35,7 @@
 </template>
 <script>
 import ProGress from 'components/proGress/proGress';
-import {getProjectState,projectStateArray,projectTypeArray,getProjectType} from 'utils/common.js';
+import {projectStateArray,projectTypeArray,getProjectType} from 'utils/common.js';
 import { FormItem, Form, Select, Option, Input, DatePicker, Icon,Page } from 'iview';
 import {newSelectRecPro} from 'api/myproject'
 export default {
@@ -105,17 +105,7 @@ export default {
         {
           title: "项目状态",
           align: "center",
-          render: (h, params) => {
-            return h(
-              "div",
-              {
-                class: {
-                  error: params.row.proState == 7||params.row.proState == 8
-                }
-              },
-              getProjectState(params.row.proState)
-            );
-          }
+          key: "proState"
         },
         {
           title: "项目类型",

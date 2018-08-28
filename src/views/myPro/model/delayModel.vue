@@ -2,7 +2,7 @@
 <template>
 <div class="page">
   <!-- 延期申请model -->
-  <Modal v-model="model.delay" title="延期申请" @on-ok="sureSubmit('deferApplyParams')">
+  <Modal v-model="model.delay" :mask-closable="false" title="延期申请" @on-ok="sureSubmit('deferApplyParams')">
     <Form :model="deferApplyParams" label-position="left" :label-width="100" ref="deferApplyParams" :rules="deferApplyRules">
       <FormItem label="延期上线时间" prop="delayDate">
         <DatePicker type="datetime" :options="deferOptions" @on-change='selDeferApplyTime' placeholder="选择日期" style="width: 200px"></DatePicker>
@@ -103,10 +103,11 @@ export default {
   },
   methods: {
     removeFilePath() {
-      this.formValidate.filePath = '';
+      this.deferApplyParams.filePath = '';
     },
       //上传附件
     uploadSuccess(res, file, fileList) {
+        console.log(11111,res, file, fileList)
       if (res.code === 200) {
         this.deferApplyParams.filePath = res.data.uploadPath;
         this.$Message.success(res.msg)
@@ -115,7 +116,7 @@ export default {
       }
     },
     beforeUploadClick() {
-      if (this.formValidate.filePath) {
+      if (this.deferApplyParams.filePath) {
         this.$Message.warning({
           content: '只能上传一个文件，请删除你之前上传的文件',
           duration: 3

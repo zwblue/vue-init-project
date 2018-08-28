@@ -21,7 +21,6 @@ const pageItem = {
   color: '#333',
   fontSize: '16px',
 }
-Vue.use(Router)
 const router = new Router({
   routes: [
     {
@@ -102,6 +101,7 @@ const router = new Router({
     }
   ]
 })
+Vue.use(Router)
 
 export default router;
 
